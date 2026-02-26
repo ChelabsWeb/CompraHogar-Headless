@@ -64,47 +64,49 @@
 
 @layer base {
   :root {
-    --background: #fafafa;
-    --foreground: #09090b;
+    --background: #fcfbf7;
+    --foreground: #121212;
     --card: #ffffff;
-    --card-foreground: #09090b;
+    --card-foreground: #121212;
     --popover: #ffffff;
-    --popover-foreground: #09090b;
-    --primary: #18181b;
-    --primary-foreground: #fafafa;
-    --secondary: #f4f4f5;
-    --secondary-foreground: #18181b;
-    --muted: #f4f4f5;
-    --muted-foreground: #71717a;
-    --accent: #f4f4f5;
-    --accent-foreground: #18181b;
+    --popover-foreground: #121212;
+    --primary: #000000;
+    --primary-foreground: #ffffff;
+    --secondary: #f3f3f3;
+    --secondary-foreground: #121212;
+    --muted: #f2efe7;
+    --muted-foreground: #444444;
+    --accent: #f2efe7;
+    --accent-foreground: #121212;
     --destructive: #ef4444;
     --destructive-foreground: #fafafa;
     --border: #e4e4e7;
     --input: #e4e4e7;
-    --ring: #18181b;
-    --radius: 0.5rem;
+    --ring: #000000;
+    --radius: 0.25rem;
   }
   .dark {
-    --background: #030303;
-    --foreground: #ededed;
-    --card: #0a0a0a;
-    --card-foreground: #ededed;
-    --popover: #0a0a0a;
-    --popover-foreground: #ededed;
-    --primary: #ffffff;
-    --primary-foreground: #000000;
-    --secondary: #171717;
-    --secondary-foreground: #ededed;
-    --muted: #171717;
-    --muted-foreground: #a1a1aa;
-    --accent: #171717;
-    --accent-foreground: #ededed;
-    --destructive: #7f1d1d;
-    --destructive-foreground: #ededed;
-    --border: #262626;
-    --input: #262626;
-    --ring: #d4d4d8;
+    /* Forcing light mode metrics for Kickgame aesthetic */
+    --background: #fcfbf7;
+    --foreground: #121212;
+    --card: #ffffff;
+    --card-foreground: #121212;
+    --popover: #ffffff;
+    --popover-foreground: #121212;
+    --primary: #000000;
+    --primary-foreground: #ffffff;
+    --secondary: #f3f3f3;
+    --secondary-foreground: #121212;
+    --muted: #f2efe7;
+    --muted-foreground: #444444;
+    --accent: #f2efe7;
+    --accent-foreground: #121212;
+    --destructive: #ef4444;
+    --destructive-foreground: #fafafa;
+    --border: #e4e4e7;
+    --input: #e4e4e7;
+    --ring: #000000;
+    --radius: 0.25rem;
   }
 }
 
@@ -113,35 +115,8 @@
     border-color: var(--border);
   }
   body {
-    bg-color: var(--background);
+    background-color: var(--background);
     color: var(--foreground);
-    /* For premium looking scrollytelling base setups */
     overscroll-behavior-y: none;
   }
-}
-
-.glass-panel {
-  background: rgba(10, 10, 10, 0.6);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.glow-effect {
-  position: relative;
-}
-
-.glow-effect::before {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  background: linear-gradient(to right, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-  z-index: -1;
-  border-radius: inherit;
-  opacity: 0;
-  transition: opacity 0.5s ease;
-}
-
-.glow-effect:hover::before {
-  opacity: 1;
 }

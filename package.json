@@ -22,6 +22,9 @@
     "vaul": "^1.1.2"
   },
   "devDependencies": {
+    "@akson/mcp-shopify": "^1.0.2",
+    "@modelcontextprotocol/server-github": "^2025.4.8",
+    "@shopify/dev-mcp": "^1.6.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
