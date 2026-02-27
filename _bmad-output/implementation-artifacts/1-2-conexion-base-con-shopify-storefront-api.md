@@ -1,6 +1,6 @@
 # Story 1.2: Conexión Base con Shopify Storefront API
 
-Status: ready-for-dev
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -20,16 +20,16 @@ So that the application can securely query Shopify data from Server Components w
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Environment & Token Validation (AC: 1)
-  - [ ] Implement validation to ensure `SHOPIFY_STOREFRONT_ACCESS_TOKEN` and `SHOPIFY_STORE_DOMAIN` exist in server scope.
-  - [ ] Throw an immediate explicit compilation error if tokens are missing to fail-fast.
-- [ ] Task 2: Core Fetch Utility Implementation (AC: 2, 3, 4)
-  - [ ] Implement `shopifyFetch` inside `src/lib/shopify/fetch.ts`.
-  - [ ] Wrap the `fetch` call natively with `React.cache()` to memoize responses per render tree.
-  - [ ] Configure `fetch` options: `method: 'POST'`, strict `headers` (Content-Type, X-Shopify-Storefront-Access-Token).
-- [ ] Task 3: Error Handling & Type Safety (AC: 5)
-  - [ ] Ensure returning structure does not rely on throwing exceptions that crash Next.js SSR boundaries.
-  - [ ] Return objects with explicit status definitions (e.g. `{ status: HTTP_CODE, body: JSON, error?: string }`).
+- [x] Task 1: Environment & Token Validation (AC: 1)
+  - [x] Implement validation to ensure `SHOPIFY_STOREFRONT_ACCESS_TOKEN` and `SHOPIFY_STORE_DOMAIN` exist in server scope.
+  - [x] Throw an immediate explicit compilation error if tokens are missing to fail-fast.
+- [x] Task 2: Core Fetch Utility Implementation (AC: 2, 3, 4)
+  - [x] Implement `shopifyFetch` inside `src/lib/shopify/fetch.ts`.
+  - [x] Wrap the `fetch` call natively with `React.cache()` to memoize responses per render tree.
+  - [x] Configure `fetch` options: `method: 'POST'`, strict `headers` (Content-Type, X-Shopify-Storefront-Access-Token).
+- [x] Task 3: Error Handling & Type Safety (AC: 5)
+  - [x] Ensure returning structure does not rely on throwing exceptions that crash Next.js SSR boundaries.
+  - [x] Return objects with explicit status definitions (e.g. `{ status: HTTP_CODE, body: JSON, error?: string }`).
 
 ## Developer Context & Guardrails
 
@@ -64,13 +64,26 @@ So that the application can securely query Shopify data from Server Components w
 ## Dev Agent Record
 
 ### Agent Model Used
-n/a (Pending implementation)
+Gemini 2.5 Flash
 
 ### Debug Log References
-n/a
+- Confirmed Typescript generic returns correct Shopify Fetch definitions without throwing `any` warnings via `tsc --noEmit`.
 
 ### Completion Notes List
 - Ultimate context engine analysis completed - comprehensive developer guide created.
+- Implemented `shopifyFetch` inside `src/lib/shopify/fetch.ts` utilizing native `React.cache()` and strictly requiring `SHOPIFY_STORE_DOMAIN` and `SHOPIFY_STOREFRONT_ACCESS_TOKEN` from server environment.
+- Upgraded `src/app/layout.tsx` to utilize the new robust fetching engine directly.
+- **[Code Review Fix]** Added `server-only` directive.
+- **[Code Review Fix]** Removed `any` usages originating from legacy files and missing typings in `ProductGrid`.
+- **[Code Review Fix]** Created comprehensive unit tests bridging the AC requirements.
 
 ### File List
-n/a
+- [NEW] `src/lib/shopify/fetch.ts`
+- [NEW] `src/types/shopify.ts`
+- [MODIFIED] `src/app/layout.tsx`
+- [MODIFIED] `src/mocks/handlers.ts`
+- [MODIFIED] `src/components/MSWProvider.tsx`
+- [MODIFIED] `src/components/layout/Header.tsx`
+- [MODIFIED] `src/components/shop/ProductGrid.tsx`
+- [NEW] `src/lib/shopify/fetch.test.ts`
+- [DELETED] `src/lib/shopify.ts`

@@ -1,1 +1,1 @@
-﻿export function Header({ collections = [] }: { collections?: Record<string, unknown>[] }) { return <header>Header Placeholder</header> }
+﻿export function Header({ collections }: { collections?: Record<string, unknown>[] }) { return <header>Header Placeholder {collections && collections.length}</header> }

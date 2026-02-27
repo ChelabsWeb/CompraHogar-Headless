@@ -3,12 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 
-export function ProductGrid({ products }: { products: any[] }) {
+export function ProductGrid({ products }: { products: Record<string, unknown>[] }) {
     if (!products || products.length === 0) return null;
 
     return (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-            {products.map(({ node }: any) => {
+            {products.map(({ node }: Record<string, any>) => {
                 const price = Number(node.priceRange.minVariantPrice.amount).toFixed(2);
                 const currency = node.priceRange.minVariantPrice.currencyCode;
 

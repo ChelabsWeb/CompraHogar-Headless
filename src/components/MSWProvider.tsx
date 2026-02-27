@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 
 export function MSWProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {

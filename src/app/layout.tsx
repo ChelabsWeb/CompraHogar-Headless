@@ -4,7 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { MSWProvider } from "@/components/MSWProvider";
-import { shopifyFetch } from "@/lib/shopify";
+import { shopifyFetch } from "@/lib/shopify/fetch";
 import { getCollectionsQuery } from "@/lib/queries";
 
 // Variable fonts usage
@@ -21,12 +21,12 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   // Fetch site-wide collections for navigation
-  const { body } = await shopifyFetch({
+  const { body } = await shopifyFetch<{ data: { collections: { edges: { node: { id: string; title: string; handle: string; } }[] } } }>({
     query: getCollectionsQuery,
     variables: { first: 20 },
   });
 
-  const collections = body?.data?.collections?.edges?.map((edge: any) => edge.node) || [];
+  const collections = body?.data?.collections?.edges?.map((edge) => edge.node) || [];
 
   return (
     <html lang="es" className="scroll-smooth">

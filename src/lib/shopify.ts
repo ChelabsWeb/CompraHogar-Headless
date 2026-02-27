@@ -1,1 +1,0 @@
-﻿export async function shopifyFetch({ query, variables }: { query: string; variables?: Record<string, unknown> }) { return { body: { data: { collections: { edges: [] } } } }; }
