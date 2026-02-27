@@ -1,0 +1,383 @@
+﻿
+> comprahogar-headless@0.1.0 build
+> next build
+
+▲ Next.js 16.1.6 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+node.exe : Error: 
+Can't resolve 
+'tailwindcss-animate' 
+in 
+'C:\Users\Estudiante UC
+U\Desktop\CompraHogar-H
+eadless\src\app'
+En C:\Program 
+Files\nodejs\npm.ps1: 
+29 Carácter: 3
++   & $NODE_EXE 
+$NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: (Error: Can't    
+ re...adless\src\ap    
+p':String) [], Rem    
+oteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+    [2m[at 
+finishWithoutResolve 
+(C:\Users\Estudiante UC
+U\Desktop\CompraHogar-H
+eadless\node_modules\en
+hanced-resolve\lib\Reso
+lver.js:586:18)][0m
+    [2m[at 
+C:\Users\Estudiante UCU
+\Desktop\CompraHogar-He
+adless\node_modules\enh
+anced-resolve\lib\Resol
+ver.js:678:14][0m
+    [2m[at 
+C:\Users\Estudiante UCU
+\Desktop\CompraHogar-He
+adless\node_modules\enh
+anced-resolve\lib\Resol
+ver.js:739:5][0m
+    [2m[at eval (eval 
+at create 
+(C:\Users\Estudiante UC
+U\Desktop\CompraHogar-H
+eadless\node_modules\ta
+pable\lib\HookCodeFacto
+ry.js:31:10), 
+<anonymous>:15:1)][0m
+    [2m[at 
+C:\Users\Estudiante UCU
+\Desktop\CompraHogar-He
+adless\node_modules\enh
+anced-resolve\lib\Resol
+ver.js:739:5][0m
+    [2m[at eval (eval 
+at create 
+(C:\Users\Estudiante UC
+U\Desktop\CompraHogar-H
+eadless\node_modules\ta
+pable\lib\HookCodeFacto
+ry.js:31:10), 
+<anonymous>:27:1)][0m
+    [2m[at 
+C:\Users\Estudiante UCU
+\Desktop\CompraHogar-He
+adless\node_modules\enh
+anced-resolve\lib\Descr
+iptionFilePlugin.js:89:
+43][0m
+    [2m[at 
+C:\Users\Estudiante UCU
+\Desktop\CompraHogar-He
+adless\node_modules\enh
+anced-resolve\lib\Resol
+ver.js:739:5][0m
+    [2m[at eval (eval 
+at create 
+(C:\Users\Estudiante UC
+U\Desktop\CompraHogar-H
+eadless\node_modules\ta
+pable\lib\HookCodeFacto
+ry.js:31:10), 
+<anonymous>:15:1)][0m
+    [2m[at 
+C:\Users\Estudiante UCU
+\Desktop\CompraHogar-He
+adless\node_modules\enh
+anced-resolve\lib\Resol
+ver.js:739:5][0m {
+  details: "resolve 
+'tailwindcss-animate' 
+in 
+'C:\\Users\\Estudiante 
+UCU\\Desktop\\CompraHog
+ar-Headless\\src\\app'\
+n" +
+    '  Parsed request 
+is a module\n' +
+    '  using 
+description file: 
+C:\\Users\\Estudiante U
+CU\\Desktop\\CompraHoga
+r-Headless\\package.jso
+n (relative path: 
+./src/app)\n' +
+    '    resolve as 
+module\n' +
+    "      
+C:\\Users\\Estudiante U
+CU\\Desktop\\CompraHoga
+r-Headless\\src\\app\\n
+ode_modules doesn't 
+exist or is not a 
+directory\n" +
+    "      
+C:\\Users\\Estudiante U
+CU\\Desktop\\CompraHoga
+r-Headless\\src\\node_m
+odules doesn't exist 
+or is not a 
+directory\n" +
+    '      looking for 
+modules in 
+C:\\Users\\Estudiante U
+CU\\Desktop\\CompraHoga
+r-Headless\\node_module
+s\n' +
+    '        single 
+file module\n' +
+    '          using 
+description file: 
+C:\\Users\\Estudiante U
+CU\\Desktop\\CompraHoga
+r-Headless\\package.jso
+n (relative path: ./nod
+e_modules/tailwindcss-a
+nimate)\n' +
+    '            no 
+extension\n' +
+    "              
+C:\\Users\\Estudiante U
+CU\\Desktop\\CompraHoga
+r-Headless\\node_module
+s\\tailwindcss-animate 
+doesn't exist\n" +
+    '            
+.js\n' +
+    "              
+C:\\Users\\Estudiante U
+CU\\Desktop\\CompraHoga
+r-Headless\\node_module
+s\\tailwindcss-animate.
+js doesn't exist\n" +
+    '            
+.json\n' +
+    "              
+C:\\Users\\Estudiante U
+CU\\Desktop\\CompraHoga
+r-Headless\\node_module
+s\\tailwindcss-animate.
+json doesn't exist\n" +
+    '            
+.node\n' +
+    "              
+C:\\Users\\Estudiante U
+CU\\Desktop\\CompraHoga
+r-Headless\\node_module
+s\\tailwindcss-animate.
+node doesn't exist\n" +
+    '            
+.ts\n' +
+    "              
+C:\\Users\\Estudiante U
+CU\\Desktop\\CompraHoga
+r-Headless\\node_module
+s\\tailwindcss-animate.
+ts doesn't exist\n" +
+    "        
+C:\\Users\\Estudiante U
+CU\\Desktop\\CompraHoga
+r-Headless\\node_module
+s\\tailwindcss-animate 
+doesn't exist\n" +
+    "      
+C:\\Users\\Estudiante U
+CU\\Desktop\\node_modul
+es doesn't exist or is 
+not a directory\n" +
+    "      
+C:\\Users\\Estudiante 
+UCU\\node_modules 
+doesn't exist or is 
+not a directory\n" +
+    "      C:\\Users\\n
+ode_modules doesn't 
+exist or is not a 
+directory\n" +
+    "      
+C:\\node_modules 
+doesn't exist or is 
+not a directory"
+}
+
+> Build error occurred
+Error: Turbopack build 
+failed with 4 errors:
+./src/components/layout
+/Footer.tsx
+Reading source code 
+for parsing failed
+An unexpected error 
+happened while trying 
+to read the source 
+code to parse: failed 
+to convert rope into 
+string
+
+Caused by:
+- invalid utf-8 
+sequence of 1 bytes 
+from index 0
+
+Import trace:
+  Server Component:
+    ./src/components/la
+yout/Footer.tsx
+    
+./src/app/layout.tsx
+
+
+./src/components/layout
+/Header.tsx
+Reading source code 
+for parsing failed
+An unexpected error 
+happened while trying 
+to read the source 
+code to parse: failed 
+to convert rope into 
+string
+
+Caused by:
+- invalid utf-8 
+sequence of 1 bytes 
+from index 0
+
+Import trace:
+  Server Component:
+    ./src/components/la
+yout/Header.tsx
+    
+./src/app/layout.tsx
+
+
+./src/lib/queries.ts
+Reading source code 
+for parsing failed
+An unexpected error 
+happened while trying 
+to read the source 
+code to parse: failed 
+to convert rope into 
+string
+
+Caused by:
+- invalid utf-8 
+sequence of 1 bytes 
+from index 0
+
+Import trace:
+  Server Component:
+    
+./src/lib/queries.ts
+    ./src/app/page.tsx
+
+
+./src/app/globals.css
+Error evaluating 
+Node.js code
+CssSyntaxError: 
+tailwindcss: 
+C:\Users\Estudiante UCU
+\Desktop\CompraHogar-He
+adless\src\app\globals.
+css:1:1: Can't resolve 
+'tailwindcss-animate' 
+in 
+'C:\Users\Estudiante UC
+U\Desktop\CompraHogar-H
+eadless\src\app'
+    at Input.error (nod
+e_modules/postcss/lib/i
+nput.js:135:16) 
+[C:\Users\Estudiante UC
+U\Desktop\CompraHogar-H
+eadless\.next\build\chu
+nks\node_modules_fe693d
+f6._.js:4651:22]
+    at Root.error (node
+_modules/postcss/lib/no
+de.js:146:32) 
+[C:\Users\Estudiante UC
+U\Desktop\CompraHogar-H
+eadless\.next\build\chu
+nks\node_modules_fe693d
+f6._.js:928:38]
+    [at Object.Once 
+(C:\Users\Estudiante UC
+U\Desktop\CompraHogar-H
+eadless\node_modules\@t
+ailwindcss\postcss\dist
+\index.js:10:6913)]
+    at async 
+LazyResult.runAsync (no
+de_modules/postcss/lib/
+lazy-result.js:293:11) 
+[C:\Users\Estudiante UC
+U\Desktop\CompraHogar-H
+eadless\.next\build\chu
+nks\node_modules_fe693d
+f6._.js:6206:21]
+    at async transform 
+(turbopack:///[turbopac
+k-node]/transforms/post
+css.ts:70:34) 
+[C:\Users\Estudiante UC
+U\Desktop\CompraHogar-H
+eadless\.next\build\chu
+nks\[root-of-the-server
+]__51225daf._.js:146:36
+]
+    at async run (turbo
+pack:///[turbopack-node
+]/ipc/evaluate.ts:92:23
+) [C:\Users\Estudiante 
+UCU\Desktop\CompraHogar
+-Headless\.next\build\c
+hunks\[root-of-the-serv
+er]__974941ed._.js:443:
+31]
+
+Import trace:
+  Client Component 
+Browser:
+    
+./src/app/globals.css 
+[Client Component 
+Browser]
+    
+./src/app/layout.tsx 
+[Server Component]
+
+
+    at async transform 
+(turbopack:///[turbopac
+k-node]/transforms/post
+css.ts:70:34) 
+[C:\Users\Estudiante UC
+U\Desktop\CompraHogar-H
+eadless\.next\build\chu
+nks\[root-of-the-server
+]__51225daf._.js:146:36
+])
+    at async run (turbo
+pack:///[turbopack-node
+]/ipc/evaluate.ts:92:23
+) [C:\Users\Estudiante 
+UCU\Desktop\CompraHogar
+-Headless\.next\build\c
+hunks\[root-of-the-serv
+er]__974941ed._.js:443:
+31])

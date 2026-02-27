@@ -1,0 +1,1 @@
+﻿import { graphql, HttpResponse } from 'msw'; const shopifyApi = graphql.link('https://mock.myshopify.com/api/2024-01/graphql.json'); export const handlers = [ shopifyApi.query('GetProducts', () => { return HttpResponse.json({ data: { products: { edges: [] } } }); }) ];

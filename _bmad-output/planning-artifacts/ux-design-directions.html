@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CompraHogar - Design Directions (Modern Luxe)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        background: '#FCFBF7',
+                        foreground: '#1A1A1A',
+                        muted: '#F5F3EC',
+                        secondary: '#F8F8F8',
+                        accent: '#FF4D00',
+                        surface: '#FFFFFF'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        'float': '0 10px 40px -10px rgba(0, 0, 0, 0.08)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: var(--background); color: var(--foreground); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .product-image-container { position: relative; overflow: hidden; }
+        .product-image-container img { transition: transform 0.5s ease; }
+        .product-image-container:hover img { transform: scale(1.05); }
+    </style>
+</head>
+<body class="bg-background text-foreground min-h-screen pb-20">
+
+    <!-- Header / Navigation for the Showcase -->
+    <header class="bg-surface shadow-soft text-foreground p-4 sticky top-0 z-50 flex justify-between items-center border-b border-gray-100">
+        <h1 class="text-xl font-bold tracking-tight">CompraHogar Design Lab <span class="text-accent text-sm ml-2 px-2 py-1 bg-accent/10 rounded-full">Modern Luxe Iteration</span></h1>
+        <div class="flex gap-4">
+            <button onclick="switchTab('dir3')" class="px-5 py-2.5 bg-foreground text-background text-sm font-medium rounded-md shadow-soft hover:bg-gray-800 transition-all">Hybrid Luxe (PDP + Drawer)</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-8 pt-12">
+
+        <!-- Tab 3: Hybrid Luxe (Curated) -->
+        <div id="dir3" class="tab-content active">
+            <div class="mb-12 border-b border-gray-200 pb-8 flex justify-between items-end">
+                <div>
+                    <h2 class="text-4xl font-bold tracking-tight mb-4 text-gray-900">Hybrid Luxe (Curated UI)</h2>
+                    <p class="text-gray-500 max-w-2xl text-lg leading-relaxed">A softer, more balanced approach. Uses subtle shadows to separate components, gentle rounded corners (4-8px) for approachability, and structured layout for B2B scanning.</p>
+                </div>
+            </div>
+
+            <div class="flex gap-8 relative overflow-hidden h-[650px] bg-background">
+                
+                <!-- PDP Split Left -->
+                <div class="w-1/2 bg-surface rounded-2xl shadow-soft p-8 flex flex-col relative overflow-hidden group">
+                    <div class="flex gap-2 mb-8 z-10">
+                        <span class="text-sm font-medium text-gray-400 hover:text-foreground cursor-pointer transition-colors">Home</span>
+                        <span class="text-sm font-medium text-gray-300">/</span>
+                        <span class="text-sm font-medium text-gray-400 hover:text-foreground cursor-pointer transition-colors">Porcelanatos</span>
+                        <span class="text-sm font-medium text-gray-300">/</span>
+                        <span class="text-sm font-medium text-foreground">Portobello</span>
+                    </div>
+                    
+                    <div class="flex-grow flex items-center justify-center">
+                        <div class="w-[80%] aspect-square bg-muted rounded-xl relative flex items-center justify-center transition-transform duration-700 group-hover:scale-[1.02]">
+                            <!-- Simulated realistic environment shadow inside the product box -->
+                            <div class="absolute bottom-10 w-3/4 h-8 bg-black/10 blur-xl rounded-full"></div>
+                            <div class="w-64 h-64 bg-white shadow-float rounded-sm flex items-center justify-center text-gray-400 font-medium z-10">
+                                Product Render
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PDP Split Right -->
+                <div class="w-1/2 flex flex-col py-6 pr-6">
+                    <div class="mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-accent bg-accent/10 px-3 py-1 rounded-full">Top Seller B2B</span>
+                    </div>
+                    <h1 class="text-4xl font-bold tracking-tight leading-tight mb-4 text-gray-900">Porcelanato Líquido Gris Cemento</h1>
+                    
+                    <div class="flex items-baseline gap-3 mb-6">
+                        <p class="font-mono text-4xl font-bold text-gray-900">$1,250</p>
+                        <span class="text-sm text-gray-500 font-medium">/ Caja (1.44 m²)</span>
+                    </div>
+
+                    <p class="text-gray-600 mb-8 leading-relaxed text-lg">Porcelanato rectificado de primera calidad. Textura mate ideal para ambientes modernos e industriales. Alta resistencia al tránsito.</p>
+
+                    <!-- Curated Specs Grid -->
+                    <div class="grid grid-cols-2 gap-4 mb-10">
+                        <div class="bg-surface p-4 rounded-xl shadow-soft border border-gray-100 flex items-center justify-between">
+                            <span class="text-gray-500 text-sm font-medium">Dimensiones</span>
+                            <span class="font-mono text-sm font-bold">60x60 cm</span>
+                        </div>
+                        <div class="bg-surface p-4 rounded-xl shadow-soft border border-gray-100 flex items-center justify-between">
+                            <span class="text-gray-500 text-sm font-medium">Borde</span>
+                            <span class="font-mono text-sm font-bold">Rectificado</span>
+                        </div>
+                        <div class="bg-surface p-4 rounded-xl shadow-soft border border-gray-100 flex items-center justify-between">
+                            <span class="text-gray-500 text-sm font-medium">Peso</span>
+                            <span class="font-mono text-sm font-bold">22 kg/Caja</span>
+                        </div>
+                        <div class="bg-surface p-4 rounded-xl shadow-soft border border-green-100 flex items-center justify-between">
+                            <span class="text-green-600 text-sm font-medium">Disponibilidad</span>
+                            <span class="font-mono text-sm font-bold text-green-700">Inmediata</span>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 mt-auto">
+                        <!-- Quantity Selector -->
+                        <div class="bg-surface border border-gray-200 rounded-xl flex items-center justify-between px-2 w-36 shadow-sm">
+                            <button class="w-10 h-12 flex items-center justify-center text-gray-500 hover:text-foreground hover:bg-muted rounded-lg transition-colors">-</button> 
+                            <span class="font-mono font-bold text-lg">10</span> 
+                            <button class="w-10 h-12 flex items-center justify-center text-gray-500 hover:text-foreground hover:bg-muted rounded-lg transition-colors">+</button>
+                        </div>
+                        <!-- Primary CTA -->
+                        <button onclick="document.getElementById('cartDrawer').classList.remove('translate-x-full'); document.getElementById('drawerOverlay').classList.remove('opacity-0', 'pointer-events-none');" class="flex-grow bg-foreground text-surface font-medium text-lg rounded-xl shadow-float hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
+                            Añadir al Carrito
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Overlay -->
+                <div id="drawerOverlay" onclick="document.getElementById('cartDrawer').classList.add('translate-x-full'); this.classList.add('opacity-0', 'pointer-events-none');" class="absolute inset-0 bg-gray-900/20 backdrop-blur-sm z-20 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+                <!-- Slide-over Cart Drawer (Softened) -->
+                <div id="cartDrawer" class="absolute top-0 right-0 w-[480px] h-full bg-surface shadow-[-20px_0_40px_-15px_rgba(0,0,0,0.1)] transform translate-x-full transition-transform duration-500 cubic-bezier(0.4, 0, 0.2, 1) flex flex-col z-30 rounded-l-2xl border-l border-gray-100">
+                    <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-surface rounded-tl-2xl">
+                        <h3 class="font-bold text-lg text-gray-900">Tu Carrito <span class="text-gray-400 font-normal ml-1">(1 ítem)</span></h3>
+                        <button onclick="document.getElementById('cartDrawer').classList.add('translate-x-full'); document.getElementById('drawerOverlay').classList.add('opacity-0', 'pointer-events-none');" class="w-8 h-8 flex items-center justify-center rounded-full bg-muted text-gray-500 hover:bg-gray-200 hover:text-gray-900 transition-colors">
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M13 1L1 13M1 1L13 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="flex-grow p-6 overflow-y-auto bg-background/50">
+                        <!-- Cart Item -->
+                        <div class="flex gap-4 mb-8 bg-surface p-4 rounded-xl shadow-sm border border-gray-100">
+                            <div class="w-20 h-20 bg-muted rounded-lg flex-shrink-0 flex items-center justify-center">
+                                <span class="text-xs text-gray-400">IMG</span>
+                            </div>
+                            <div class="flex-grow flex flex-col justify-between">
+                                <div>
+                                    <h4 class="font-bold text-sm text-gray-900 leading-tight mb-1">Porcelanato Líquido Gris Cemento 60x60</h4>
+                                    <p class="text-gray-500 text-xs">Cant: 10 Cajas</p>
+                                </div>
+                                <p class="font-mono font-bold text-gray-900 mt-2">$12,500</p>
+                            </div>
+                        </div>
+
+                        <!-- THE TACTICAL DISCOUNT REVEAL UI (Modern) -->
+                        <div class="bg-surface p-5 rounded-xl border border-accent/20 shadow-soft relative overflow-hidden group hover:border-accent/40 transition-colors">
+                            <div class="absolute top-0 left-0 w-1 h-full bg-accent"></div>
+                            
+                            <div class="flex gap-3 mb-2">
+                                <div class="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center text-accent flex-shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-bold text-gray-900">Descuento B2B Aplicado</p>
+                                    <p class="text-xs text-gray-500 mt-1 leading-relaxed">Detectamos que llevas volumen de obra (>10 cajas). Te asignamos tarifa mayorista.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center">
+                                <span class="text-xs font-medium text-gray-500">Cupón: <span class="font-mono text-gray-900 border border-gray-200 px-1.5 py-0.5 rounded bg-gray-50">VOL20</span></span>
+                                <span class="text-accent font-bold text-sm">-20% Ahorro</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cart Footer -->
+                    <div class="p-6 border-t border-gray-100 bg-surface rounded-bl-2xl">
+                        <div class="space-y-3 mb-6">
+                            <div class="flex justify-between text-sm text-gray-500">
+                                <span>Subtotal</span>
+                                <span class="font-mono">$12,500</span>
+                            </div>
+                            <div class="flex justify-between text-sm text-accent font-medium">
+                                <span>Ahorro (Volumen B2B)</span>
+                                <span class="font-mono">-$2,500</span>
+                            </div>
+                            <div class="flex justify-between text-sm text-gray-500">
+                                <span>Envío</span>
+                                <span>Calculado en el checkout</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between items-end mb-6 pt-4 border-t border-gray-100">
+                            <span class="font-medium text-gray-900">Total Estimado</span>
+                            <span class="font-mono font-bold text-2xl text-gray-900">$10,000</span>
+                        </div>
+                        
+                        <button class="w-full bg-accent text-white py-4 font-medium text-lg rounded-xl shadow-soft hover:shadow-float hover:-translate-y-0.5 hover:bg-[#e64500] transition-all duration-300 flex items-center justify-center gap-2">
+                            Ir a Pagar
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+        }
+    </script>
+</body>
+</html>

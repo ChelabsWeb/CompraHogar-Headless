@@ -64,49 +64,50 @@
 
 @layer base {
   :root {
-    --background: #fcfbf7;
-    --foreground: #121212;
-    --card: #ffffff;
-    --card-foreground: #121212;
-    --popover: #ffffff;
-    --popover-foreground: #121212;
-    --primary: #000000;
-    --primary-foreground: #ffffff;
-    --secondary: #f3f3f3;
-    --secondary-foreground: #121212;
-    --muted: #f2efe7;
-    --muted-foreground: #444444;
-    --accent: #f2efe7;
-    --accent-foreground: #121212;
-    --destructive: #ef4444;
-    --destructive-foreground: #fafafa;
-    --border: #e4e4e7;
-    --input: #e4e4e7;
-    --ring: #000000;
-    --radius: 0.25rem;
+    --background: #FCFBF7;
+    --foreground: #0A0F1E;
+    --card: #FFFFFF;
+    --card-foreground: #0A0F1E;
+    --popover: #FFFFFF;
+    --popover-foreground: #0A0F1E;
+    --primary: #FF4D00;
+    --primary-foreground: #FFFFFF;
+    --secondary: #EBEBEB;
+    --secondary-foreground: #0A0F1E;
+    --muted: #EBEBEB;
+    --muted-foreground: #8B8B8B;
+    --accent: #FF4D00;
+    --accent-foreground: #FFFFFF;
+    --destructive: #EF4444;
+    --destructive-foreground: #FAFAFA;
+    --border: #DCDCDC;
+    --input: #DCDCDC;
+    --ring: #FF4D00;
+    --radius: 0rem;
+    --shadow-none: 0 0 transparent; /* Force shadow removal globally in components */
   }
   .dark {
-    /* Forcing light mode metrics for Kickgame aesthetic */
-    --background: #fcfbf7;
-    --foreground: #121212;
-    --card: #ffffff;
-    --card-foreground: #121212;
-    --popover: #ffffff;
-    --popover-foreground: #121212;
-    --primary: #000000;
-    --primary-foreground: #ffffff;
-    --secondary: #f3f3f3;
-    --secondary-foreground: #121212;
-    --muted: #f2efe7;
-    --muted-foreground: #444444;
-    --accent: #f2efe7;
-    --accent-foreground: #121212;
-    --destructive: #ef4444;
-    --destructive-foreground: #fafafa;
-    --border: #e4e4e7;
-    --input: #e4e4e7;
-    --ring: #000000;
-    --radius: 0.25rem;
+    /* Forcing light mode metrics for Kickgame aesthetic as indicated in Architecture */
+    --background: #FCFBF7;
+    --foreground: #0A0F1E;
+    --card: #FFFFFF;
+    --card-foreground: #0A0F1E;
+    --popover: #FFFFFF;
+    --popover-foreground: #0A0F1E;
+    --primary: #FF4D00;
+    --primary-foreground: #FFFFFF;
+    --secondary: #EBEBEB;
+    --secondary-foreground: #0A0F1E;
+    --muted: #EBEBEB;
+    --muted-foreground: #8B8B8B;
+    --accent: #FF4D00;
+    --accent-foreground: #FFFFFF;
+    --destructive: #EF4444;
+    --destructive-foreground: #FAFAFA;
+    --border: #DCDCDC;
+    --input: #DCDCDC;
+    --ring: #FF4D00;
+    --radius: 0rem;
   }
 }
 

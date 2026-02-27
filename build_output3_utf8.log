@@ -1,0 +1,99 @@
+﻿
+> comprahogar-headless@0.1.0 build
+> next build
+
+▲ Next.js 16.1.6 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+node.exe : 
+En C:\Program 
+Files\nodejs\npm.ps1: 
+29 Carácter: 3
++   & $NODE_EXE 
+$NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: (:String) [],    
+ RemoteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+> Build error occurred
+Error: Turbopack build 
+failed with 3 errors:
+./src/components/layout
+/Footer.tsx
+Reading source code 
+for parsing failed
+An unexpected error 
+happened while trying 
+to read the source 
+code to parse: failed 
+to convert rope into 
+string
+
+Caused by:
+- invalid utf-8 
+sequence of 1 bytes 
+from index 0
+
+Import trace:
+  Server Component:
+    ./src/components/la
+yout/Footer.tsx
+    
+./src/app/layout.tsx
+
+
+./src/components/layout
+/Header.tsx
+Reading source code 
+for parsing failed
+An unexpected error 
+happened while trying 
+to read the source 
+code to parse: failed 
+to convert rope into 
+string
+
+Caused by:
+- invalid utf-8 
+sequence of 1 bytes 
+from index 0
+
+Import trace:
+  Server Component:
+    ./src/components/la
+yout/Header.tsx
+    
+./src/app/layout.tsx
+
+
+./src/lib/queries.ts
+Reading source code 
+for parsing failed
+An unexpected error 
+happened while trying 
+to read the source 
+code to parse: failed 
+to convert rope into 
+string
+
+Caused by:
+- invalid utf-8 
+sequence of 1 bytes 
+from index 0
+
+Import trace:
+  Server Component:
+    
+./src/lib/queries.ts
+    ./src/app/page.tsx
+
+
+    at ignore-listed 
+frames

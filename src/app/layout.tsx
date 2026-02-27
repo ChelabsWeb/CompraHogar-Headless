@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { MSWProvider } from "@/components/MSWProvider";
 import { shopifyFetch } from "@/lib/shopify";
 import { getCollectionsQuery } from "@/lib/queries";
 
@@ -32,7 +33,7 @@ export default async function RootLayout({
       <body className={`${inter.variable} font-sans min-h-screen bg-background text-foreground antialiased selection:bg-black/10 selection:text-black`}>
         <Header collections={collections} />
         <main className="relative z-10 w-full min-h-screen">
-          {children}
+          <MSWProvider>{children}</MSWProvider>
         </main>
         <Footer />
       </body>

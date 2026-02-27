@@ -1,0 +1,60 @@
+# generated: 2026-02-27 01:09
+# project: CompraHogar-Headless
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: {project-root}/_bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created, ready for development
+#   - in-progress: Developer actively working on implementation
+#   - review: Implementation complete, ready for review
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Mark epic as 'in-progress' when starting work on its first story
+# - SM typically creates next story ONLY after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then Dev runs code-review (fresh context, ideally different LLM)
+
+generated: 2026-02-27 01:09
+project: CompraHogar-Headless
+project_key: NOKEY
+tracking_system: file-system
+story_location: "{project-root}/_bmad-output/implementation-artifacts"
+
+development_status:
+  epic-1: in-progress
+  1-1-inicializacion-de-infraestructura-core-y-msw: done
+  1-2-conexion-base-con-shopify-storefront-api: ready-for-dev
+  1-3-navegacion-de-categorias-y-landing-plp: backlog
+  1-4-ficha-de-producto-pdp-galeria-inmersiva: backlog
+  1-5-ficha-de-producto-pdp-datos-tecnicos-b2b: backlog
+  1-6-buscador-predictivo-autocompletado: backlog
+  epic-1-retrospective: optional
+
+  epic-2: backlog
+  2-1-gestion-global-del-carrito-con-zustand: backlog
+  2-2-anadir-al-carrito-asincrono-shopify-mutation: backlog
+  2-3-visualizacion-del-slide-over-cart-drawer: backlog
+  2-4-modificacion-y-resumen-de-items-en-carrito: backlog
+  2-5-indicador-de-stock-en-tiempo-real-b2b: backlog
+  epic-2-retrospective: optional
+
+  epic-3: backlog
+  3-1-active-coupon-ledger-deteccion-de-beneficios: backlog
+  3-2-active-coupon-ledger-recompensa-visual: backlog
+  3-3-preparacion-y-validacion-asincrona-de-checkout: backlog
+  3-4-handoff-seguro-hacia-shopify-checkout: backlog
+  epic-3-retrospective: optional
