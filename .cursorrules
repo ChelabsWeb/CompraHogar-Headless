@@ -1,0 +1,17 @@
+# UI Component Guidelines - CompraHogar Headless
+
+## Regla de Oro / Golden Rule
+NUNCA utilices elementos HTML base (`<button>`, `<input>`) si existe un componente equivalente en `src/components/ui/`. El diseño de esta aplicación es premium y estricto.
+
+## Mapa de Referencia de Componentes (Import Actions)
+- En lugar de usar `<button>` -> Usa `<Button>` (`import { Button } from '@/components/ui/button'`)
+- En lugar de usar `<input>` -> Usa `<Input>` (`import { Input } from '@/components/ui/input'`)
+- Para ventanas emergentes/modales -> Usa `<Modal>` (`import { Modal } from '@/components/ui/modal'`)
+- Para paneles laterales (ej. carrito) -> Usa `<Drawer>` (`import { Drawer } from '@/components/ui/drawer'`)
+- Para etiquetas de estado o highlights -> Usa `<Badge>` (`import { Badge } from '@/components/ui/badge'`)
+- Para notificaciones emergentes -> Usa `useToast()` del ToastProvider (`import { useToast } from '@/components/ui/toast'`)
+
+## Styling
+- Mantener siempre el uso de `rounded-lg` a `rounded-xl` para bordes consistentes.
+- Las animaciones base deben usar `transition-all duration-300 ease-in-out`.
+- Minimizar el uso de Tailwind inline algebráico en la capa de la vista de negocio (View layer); preferir la extensión de los componentes base si requerimos una variante repetida.

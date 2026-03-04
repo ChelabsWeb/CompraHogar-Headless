@@ -7,7 +7,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ShoppingBag, Search, Menu, ChevronDown, MapPin, User, ChevronRight } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetClose } from "@/components/ui/sheet";
-import { CartSheet } from "@/components/cart/CartSheet";
+import { CartDrawer } from "@/components/cart/CartSheet";
+import { useCart } from "@/components/cart/CartProvider";
 
 const CATEGORIES = [
     { name: "Obra Gruesa", handle: "obra-gruesa" },
@@ -23,6 +24,8 @@ export function Header({ collections = [] }: { collections?: any[] }) {
     const { scrollY } = useScroll();
     const pathname = usePathname();
     const [isScrolled, setIsScrolled] = useState(false);
+    const [isCartOpen, setIsCartOpen] = useState(false);
+    const { totalQuantity } = useCart();
 
     useMotionValueEvent(scrollY, "change", (latest: number) => {
         setIsScrolled(latest > 50);
@@ -130,12 +133,18 @@ export function Header({ collections = [] }: { collections?: any[] }) {
                                     Mis compras
                                 </Link>
 
-                                <CartSheet>
-                                    <button className="relative flex items-center justify-center p-2 mx-2 hover:bg-black/10 rounded-full transition-colors">
-                                        <ShoppingBag className="w-[18px] h-[18px]" />
-                                        <span className="absolute top-0 right-0 w-3.5 h-3.5 bg-white text-[#21645d] text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm">2</span>
-                                    </button>
-                                </CartSheet>
+                                <button 
+                                    className="relative flex items-center justify-center p-2 mx-2 hover:bg-black/10 rounded-full transition-colors"
+                                    onClick={() => setIsCartOpen(true)}
+                                >
+                                    <ShoppingBag className="w-[18px] h-[18px]" />
+                                    {totalQuantity > 0 && (
+                                        <span className="absolute top-0 right-0 w-3.5 h-3.5 bg-white text-[#21645d] text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm">
+                                            {totalQuantity}
+                                        </span>
+                                    )}
+                                </button>
+                                <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
                             </div>
                         </div>
                     </div>

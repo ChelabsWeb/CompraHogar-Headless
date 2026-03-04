@@ -3,17 +3,79 @@ import { getCollectionWithProductsQuery } from "@/lib/queries";
 import { ProductGrid } from "@/components/shop/ProductGrid";
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
+import { FilterSection, FilterItem, PriceRangeFilter } from "@/components/shop/SidebarFilter";
+import { ChevronDown } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationNext,
+    PaginationPrevious,
+} from "@/components/ui/pagination";
 
-export default async function CollectionPage({ params }: { params: Promise<{ handle: string }> }) {
-    const resolvedParams = await params;
+export default async function CollectionPage(props: {
+    params: Promise<{ handle: string }>;
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+    const resolvedParams = await props.params;
+    const resolvedSearchParams = await props.searchParams;
 
     if (!resolvedParams?.handle) {
         return notFound();
     }
 
+    // 1. Construimos los filtros para Shopify
+    const filters: any[] = [];
+    
+    const minPriceStr = Array.isArray(resolvedSearchParams.minPrice) ? resolvedSearchParams.minPrice[0] : resolvedSearchParams.minPrice;
+    const maxPriceStr = Array.isArray(resolvedSearchParams.maxPrice) ? resolvedSearchParams.maxPrice[0] : resolvedSearchParams.maxPrice;
+    
+    const minPrice = Number(minPriceStr);
+    const maxPrice = Number(maxPriceStr);
+
+    if (!isNaN(minPrice) || !isNaN(maxPrice)) {
+        const priceFilter: { min?: number; max?: number } = {};
+        if (!isNaN(minPrice)) priceFilter.min = minPrice;
+        if (!isNaN(maxPrice)) priceFilter.max = maxPrice;
+        filters.push({ price: priceFilter });
+    }
+
+    // 2. Construimos las variables de ordenamiento
+    let sortKey = "RELEVANCE";
+    let reverse = false;
+
+    const sortVal = Array.isArray(resolvedSearchParams.sort) ? resolvedSearchParams.sort[0] : resolvedSearchParams.sort;
+
+    if (sortVal === "price-asc") {
+        sortKey = "PRICE";
+        reverse = false;
+    } else if (sortVal === "price-desc") {
+        sortKey = "PRICE";
+        reverse = true;
+    } else if (sortVal === "newest") {
+        sortKey = "CREATED";
+        reverse = true;
+    }
+
+    // 3. Paginación (opcional si sumas botones "siguiente página")
+    const cursor = Array.isArray(resolvedSearchParams.cursor) ? resolvedSearchParams.cursor[0] : resolvedSearchParams.cursor;
+    const direction = Array.isArray(resolvedSearchParams.direction) ? resolvedSearchParams.direction[0] : resolvedSearchParams.direction;
+
+    // Llamada con variables dinámicas
     const { body } = await shopifyFetch({
         query: getCollectionWithProductsQuery,
-        variables: { handle: resolvedParams.handle, first: 24 },
+        variables: { 
+            handle: resolvedParams.handle, 
+            first: 24,
+            filters: filters.length > 0 ? filters : undefined,
+            sortKey,
+            reverse,
+            cursor: direction === 'next' ? cursor : undefined
+            // Note: Para ir hacia atrás (direction === 'prev'), requieres actualizar el Query 
+            // de GraphQL para soportar `last: 24` y `before: cursor`.
+        },
     });
 
     let collection = body?.data?.collection;
@@ -23,24 +85,40 @@ export default async function CollectionPage({ params }: { params: Promise<{ han
         collection = {
             title: resolvedParams.handle.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
             description: "Explora nuestra gama de productos. Nuestro catálogo de Shopify se actualizará pronto para esta categoría.",
-            products: { edges: [] },
+            products: { edges: [], pageInfo: { hasNextPage: false, hasPreviousPage: false } },
             image: null
         };
     }
 
     const products = collection.products?.edges || [];
+    const pageInfo = collection.products?.pageInfo;
+
+    // Helper para generar URLs de paginación manteniendo los filtros actuales
+    const buildPaginationUrl = (newCursor: string, newDirection: 'next' | 'prev') => {
+        const params = new URLSearchParams();
+        Object.entries(resolvedSearchParams).forEach(([key, value]) => {
+            if (value !== undefined) {
+                params.set(key, String(value));
+            }
+        });
+        params.set("cursor", newCursor);
+        params.set("direction", newDirection);
+        return `?${params.toString()}`;
+    };
 
     return (
         <div className="flex flex-col w-full bg-[#ebebeb] min-h-screen pt-4 pb-16">
             <div className="container mx-auto max-w-[1200px] px-4 md:px-0">
 
                 {/* Breadcrumbs */}
-                <div className="flex items-center gap-2 text-[13px] text-slate-500 mb-4">
-                    <span className="cursor-pointer hover:text-blue-500 transition-colors">Volver al listado</span>
-                    <span className="mx-1">|</span>
-                    <span className="cursor-pointer hover:text-blue-500 transition-colors">Hogar y Construcción</span>
-                    <span className="mx-1">{'>'}</span>
-                    <span className="font-medium text-slate-700 capitalize">{collection.title}</span>
+                <div className="mb-4">
+                    <Breadcrumbs 
+                        items={[
+                            { label: "Volver al listado", href: "/collections" },
+                            { label: "Hogar y Construcción", href: "/collections/hogar" },
+                            { label: collection.title, isLast: true }
+                        ]} 
+                    />
                 </div>
 
                 <div className="flex flex-col lg:flex-row gap-6">
@@ -55,53 +133,25 @@ export default async function CollectionPage({ params }: { params: Promise<{ han
                         </p>
 
                         {/* Filtro: Ubicación */}
-                        <div className="mb-6">
-                            <h3 className="text-[16px] font-semibold text-slate-900 mb-3">Ubicación</h3>
-                            <ul className="space-y-2 flex flex-col items-start">
-                                <button className="text-[14px] text-slate-600 hover:text-blue-500 transition-colors w-full text-left flex justify-between items-center group">
-                                    <span>Montevideo</span> <span className="text-slate-400 text-[12px] group-hover:text-blue-400">(24)</span>
-                                </button>
-                                <button className="text-[14px] text-slate-600 hover:text-blue-500 transition-colors w-full text-left flex justify-between items-center group">
-                                    <span>Canelones</span> <span className="text-slate-400 text-[12px] group-hover:text-blue-400">(8)</span>
-                                </button>
-                                <button className="text-[14px] text-slate-600 hover:text-blue-500 transition-colors w-full text-left flex justify-between items-center group">
-                                    <span>Maldonado</span> <span className="text-slate-400 text-[12px] group-hover:text-blue-400">(3)</span>
-                                </button>
-                            </ul>
-                        </div>
+                        <FilterSection title="Ubicación">
+                            <FilterItem label="Montevideo" count={24} />
+                            <FilterItem label="Canelones" count={8} />
+                            <FilterItem label="Maldonado" count={3} />
+                        </FilterSection>
 
                         {/* Filtro: Precio */}
-                        <div className="mb-6">
-                            <h3 className="text-[16px] font-semibold text-slate-900 mb-3">Precio</h3>
-                            <ul className="space-y-2 flex flex-col items-start mb-4">
-                                <button className="text-[14px] text-slate-600 hover:text-blue-500 transition-colors">Hasta $ 2.500</button>
-                                <button className="text-[14px] text-slate-600 hover:text-blue-500 transition-colors">$ 2.500 a $ 10.000</button>
-                                <button className="text-[14px] text-slate-600 hover:text-blue-500 transition-colors">Más de $ 10.000</button>
-                            </ul>
-                            <div className="flex items-center gap-2">
-                                <input type="number" placeholder="Mínimo" className="w-[70px] h-8 px-2 border border-slate-300 rounded-sm text-[13px] text-slate-700 bg-white shadow-sm focus:outline-none focus:border-blue-500" />
-                                <span className="text-slate-400">-</span>
-                                <input type="number" placeholder="Máximo" className="w-[70px] h-8 px-2 border border-slate-300 rounded-sm text-[13px] text-slate-700 bg-white shadow-sm focus:outline-none focus:border-blue-500" />
-                                <button className="h-8 w-8 bg-white border border-slate-300 rounded-full flex items-center justify-center text-slate-500 shadow-sm hover:bg-slate-50 transition-colors">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
+                        <FilterSection title="Precio">
+                            <FilterItem label="Hasta $ 2.500" />
+                            <FilterItem label="$ 2.500 a $ 10.000" />
+                            <FilterItem label="Más de $ 10.000" />
+                            <PriceRangeFilter />
+                        </FilterSection>
 
                         {/* Filtro: Condición */}
-                        <div className="mb-6">
-                            <h3 className="text-[16px] font-semibold text-slate-900 mb-3">Condición</h3>
-                            <ul className="space-y-2 flex flex-col items-start">
-                                <button className="text-[14px] text-slate-600 hover:text-blue-500 transition-colors w-full text-left flex justify-between items-center group">
-                                    <span>Nuevo</span> <span className="text-slate-400 text-[12px] group-hover:text-blue-400">({products.length})</span>
-                                </button>
-                                <button className="text-[14px] text-slate-600 hover:text-blue-500 transition-colors w-full text-left flex justify-between items-center group">
-                                    <span>Reacondicionado</span> <span className="text-slate-400 text-[12px] group-hover:text-blue-400">(2)</span>
-                                </button>
-                            </ul>
-                        </div>
+                        <FilterSection title="Condición">
+                            <FilterItem label="Nuevo" count={products.length} isActive />
+                            <FilterItem label="Reacondicionado" count={2} />
+                        </FilterSection>
                     </aside>
 
                     {/* LADO DERECHO: Product Grid Area */}
@@ -119,17 +169,51 @@ export default async function CollectionPage({ params }: { params: Promise<{ han
 
                             <div className="hidden lg:block" /> {/* Spacer */}
 
-                            <div className="flex items-center gap-2 border bg-white rounded-md shadow-sm px-3 py-1.5 cursor-pointer hover:bg-slate-50 transition-colors ml-auto lg:ml-0">
-                                <span className="text-[14px] font-semibold text-slate-900">Ordenar por:</span>
-                                <span className="text-[14px] text-blue-500">Más relevantes</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-blue-500">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                                </svg>
+                            <div className="flex items-center gap-2 ml-auto lg:ml-0">
+                                <span className="text-[14px] font-semibold text-slate-900 hidden sm:inline">Ordenar por:</span>
+                                {/* Aquí el defaultValue debería hidratarse con el sortParams actual si corresponde */}
+                                <Select defaultValue={sortVal || "relevance"}>
+                                    <SelectTrigger className="w-[180px] bg-white h-9 border-slate-200">
+                                        <SelectValue placeholder="Ordenar por" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="relevance">Más relevantes</SelectItem>
+                                        <SelectItem value="price-asc">Menor precio</SelectItem>
+                                        <SelectItem value="price-desc">Mayor precio</SelectItem>
+                                        <SelectItem value="newest">Más recientes</SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
                         </div>
 
                         {products.length > 0 ? (
-                            <ProductGrid products={products} />
+                            <>
+                                <ProductGrid products={products} />
+
+                                {/* Navegación / Paginación */}
+                                {pageInfo && (pageInfo.hasNextPage || pageInfo.hasPreviousPage) && (
+                                    <div className="mt-12 mb-8 flex w-full">
+                                        <Pagination>
+                                            <PaginationContent>
+                                                <PaginationItem>
+                                                    <PaginationPrevious 
+                                                        href={pageInfo.hasPreviousPage && pageInfo.startCursor ? buildPaginationUrl(pageInfo.startCursor, 'prev') : '#'}
+                                                        className={!pageInfo.hasPreviousPage ? 'pointer-events-none opacity-50' : ''}
+                                                        aria-disabled={!pageInfo.hasPreviousPage}
+                                                    />
+                                                </PaginationItem>
+                                                <PaginationItem>
+                                                    <PaginationNext 
+                                                        href={pageInfo.hasNextPage && pageInfo.endCursor ? buildPaginationUrl(pageInfo.endCursor, 'next') : '#'}
+                                                        className={!pageInfo.hasNextPage ? 'pointer-events-none opacity-50' : ''}
+                                                        aria-disabled={!pageInfo.hasNextPage}
+                                                    />
+                                                </PaginationItem>
+                                            </PaginationContent>
+                                        </Pagination>
+                                    </div>
+                                )}
+                            </>
                         ) : (
                             <div className="py-24 text-center bg-white border rounded-md shadow-sm text-slate-600">
                                 <p className="text-xl font-medium text-slate-800 mb-2">No hay publicaciones que coincidan con tu búsqueda.</p>

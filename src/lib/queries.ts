@@ -97,7 +97,14 @@ export const getCollectionsQuery = `
 `;
 
 export const getCollectionWithProductsQuery = `
-  query getCollectionWithProducts($handle: String!, $first: Int!) {
+  query getCollectionWithProducts(
+    $handle: String!
+    $first: Int!
+    $filters: [ProductFilter!]
+    $sortKey: ProductCollectionSortKeys
+    $reverse: Boolean
+    $cursor: String
+  ) {
     collection(handle: $handle) {
       id
       title
@@ -107,7 +114,19 @@ export const getCollectionWithProductsQuery = `
         url
         altText
       }
-      products(first: $first) {
+      products(
+        first: $first
+        filters: $filters
+        sortKey: $sortKey
+        reverse: $reverse
+        after: $cursor
+      ) {
+        pageInfo {
+          hasNextPage
+          hasPreviousPage
+          startCursor
+          endCursor
+        }
         edges {
           node {
             id
@@ -128,4 +147,112 @@ export const getCollectionWithProductsQuery = `
       }
     }
   }
+`;
+
+// ==========================================
+// CART OPERATIONS
+// ==========================================
+
+const cartFragment = `
+  fragment cartDetails on Cart {
+    id
+    checkoutUrl
+    totalQuantity
+    cost {
+      subtotalAmount {
+        amount
+        currencyCode
+      }
+      totalAmount {
+        amount
+        currencyCode
+      }
+    }
+    lines(first: 100) {
+      edges {
+        node {
+          id
+          quantity
+          cost {
+            totalAmount {
+              amount
+              currencyCode
+            }
+          }
+          merchandise {
+            ... on ProductVariant {
+              id
+              title
+              price {
+                amount
+                currencyCode
+              }
+              image {
+                url
+                altText
+              }
+              product {
+                title
+                handle
+                productType
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const getCartQuery = `
+  query getCart($cartId: ID!) {
+    cart(id: $cartId) {
+      ...cartDetails
+    }
+  }
+  ${cartFragment}
+`;
+
+export const createCartMutation = `
+  mutation createCart($lines: [CartLineInput!]) {
+    cartCreate(input: {lines: $lines}) {
+      cart {
+        ...cartDetails
+      }
+    }
+  }
+  ${cartFragment}
+`;
+
+export const addToCartMutation = `
+  mutation addToCart($cartId: ID!, $lines: [CartLineInput!]!) {
+    cartLinesAdd(cartId: $cartId, lines: $lines) {
+      cart {
+        ...cartDetails
+      }
+    }
+  }
+  ${cartFragment}
+`;
+
+export const updateCartMutation = `
+  mutation updateCart($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
+    cartLinesUpdate(cartId: $cartId, lines: $lines) {
+      cart {
+        ...cartDetails
+      }
+    }
+  }
+  ${cartFragment}
+`;
+
+export const removeFromCartMutation = `
+  mutation removeFromCart($cartId: ID!, $lineIds: [ID!]!) {
+    cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
+      cart {
+        ...cartDetails
+      }
+    }
+  }
+  ${cartFragment}
 `;

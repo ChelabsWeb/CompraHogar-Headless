@@ -6,6 +6,31 @@ import { ArrowRight, ShoppingBag, Star, Zap } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ProductQuickView } from "@/components/shop/ProductQuickView";
+import { useState } from "react";
+
+function FavoriteButton() {
+    const [isFavorite, setIsFavorite] = useState(false);
+
+    return (
+        <Button
+            variant="ghost"
+            size="icon"
+            onClick={(e) => {
+                e.preventDefault();
+                setIsFavorite(!isFavorite);
+            }}
+            className={`absolute top-1 right-1 rounded-full h-8 w-8 bg-white/80 backdrop-blur-sm z-10 shadow-sm border border-slate-100/50 transition-colors ${
+                isFavorite 
+                    ? 'text-orange-500 hover:text-orange-600 bg-orange-50' 
+                    : 'text-slate-400 hover:text-orange-500 hover:bg-orange-50'
+            }`}
+        >
+            <Star className={`w-4 h-4 transition-all ${isFavorite ? 'fill-orange-500 text-orange-500 scale-110' : ''}`} />
+        </Button>
+    );
+}
+
 
 export function ProductGrid({ products }: { products: any[] }) {
     if (!products || products.length === 0) return null;
@@ -41,12 +66,10 @@ export function ProductGrid({ products }: { products: any[] }) {
                                     </div>
                                 )}
 
-                                {/* Favorite Heart Icon placeholder (ML style) */}
-                                <button className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-slate-400 hover:text-blue-500 transition-colors z-10 shadow-sm">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                                    </svg>
-                                </button>
+                                {/* Favorite Star Icon placeholder (ML style) */}
+                                <FavoriteButton />
+
+                                <ProductQuickView product={node} />
                             </div>
 
                             {/* Information Container - ML Styling */}
@@ -73,13 +96,14 @@ export function ProductGrid({ products }: { products: any[] }) {
 
                                 {/* Free Shipping Trust Signal */}
                                 {priceAmount > 2000 && (
-                                    <span className="text-[13px] font-semibold text-green-500 mb-2 flex items-center gap-1">
-                                        Llega gratis mañana <Zap className="w-3 h-3 fill-green-500" />
-                                    </span>
+                                    <div className="inline-flex items-center gap-1 bg-[#e6f5f0] text-[#008b6a] px-2 py-0.5 rounded-md text-[12px] font-semibold border border-[#b2e1d0] w-fit mb-2 mt-1">
+                                        Llega gratis mañana
+                                        <Zap className="w-3.5 h-3.5 fill-current" />
+                                    </div>
                                 )}
 
                                 {/* Title */}
-                                <h3 className="text-[14px] text-slate-500 font-normal leading-tight line-clamp-2 mt-auto group-hover:text-blue-500 transition-colors">
+                                <h3 className="text-[14px] text-slate-500 font-normal leading-tight line-clamp-2 mt-auto group-hover:text-orange-500 transition-colors">
                                     {node.title}
                                 </h3>
                             </div>
