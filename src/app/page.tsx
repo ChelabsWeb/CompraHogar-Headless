@@ -2,9 +2,10 @@ import { shopifyFetch } from "@/lib/shopify";
 import { getProductsQuery } from "@/lib/queries";
 import { ProductGrid } from "@/components/shop/ProductGrid";
 import Link from "next/link";
-import { ArrowRight, Drill, Zap, Droplet, Paintbrush, Home as HomeIcon, Settings } from "lucide-react";
+import { ArrowRight, Drill, Zap, Droplet, Paintbrush, Home as HomeIcon, Settings, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 export default async function Home() {
   const { body } = await shopifyFetch({
@@ -15,171 +16,144 @@ export default async function Home() {
   const products = body?.data?.products?.edges || [];
 
   return (
-    <div className="flex flex-col w-full bg-background -mt-[72px]">
+    <div className="flex flex-col w-full min-h-screen bg-background text-foreground">
+      {/* SECTION: Hero Slider & Payment Bar */}
+      <section className="relative w-full bg-[#ebebeb] pb-8 pt-6">
+        {/* ML Style Yellow/Teal Background Extension */}
+        <div className="absolute top-0 left-0 w-full h-[300px] bg-[#21645d] -z-10 hidden md:block" />
 
-      {/* 
-        HERO SECTION - CINEMATIC IMMERSION
-        Apple/Tesla inspired full-bleed video.
-      */}
-      <section className="relative w-full h-[100svh] min-h-[600px] flex items-center justify-center overflow-hidden bg-black -mt-[72px]">
+        <div className="container mx-auto max-w-[1200px] px-4 md:px-0">
 
-        {/* Full Bleed Background Video */}
-        <div className="absolute inset-0 z-0">
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="w-full h-full object-cover scale-[1.02] transform-gpu"
-          >
-            <source src="/hero-video.mp4" type="video/mp4" />
-          </video>
-          {/* Pure flat dark overlay for perfect contrast */}
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
-        </div>
+          {/* Main Hero Slider Area */}
+          <div className="w-full h-[200px] md:h-[340px] rounded-lg bg-gradient-to-r from-slate-800 to-slate-900 relative overflow-hidden shadow-md group cursor-pointer border border-slate-200">
+            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&q=80')] opacity-50 mix-blend-overlay bg-cover bg-center transition-transform duration-700 group-hover:scale-105" />
 
-        {/* Centered Cinematic Text */}
-        <div className="relative z-10 max-w-[1000px] mx-auto w-full px-6 flex flex-col items-center text-center mt-12">
-
-          <div className="inline-flex items-center justify-center gap-3 px-4 py-1.5 rounded-full border border-white/10 bg-black/20 backdrop-blur-md mb-8">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-orange animate-pulse shadow-[0_0_8px_rgba(243,132,62,0.8)]" />
-            <span className="text-white text-xs font-bold tracking-[0.2em] uppercase opacity-90">Colección Premium 2026</span>
+            <div className="relative z-10 h-full flex flex-col justify-center px-8 md:px-16 w-full md:w-2/3">
+              <Badge className="w-fit bg-[#f3843e] hover:bg-[#d97435] text-white border-none mb-3 md:mb-5 text-[10px] uppercase font-bold tracking-wider px-3 py-1">Temporada de Obra</Badge>
+              <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-2 md:mb-3">
+                Hasta 40% OFF <br />en Refacciones
+              </h1>
+              <p className="text-white/80 text-sm md:text-lg mb-6 max-w-md hidden md:block">
+                Equipamiento profesional de alto rendimiento con envío gratis a todo el país.
+              </p>
+              <Button className="w-fit bg-white text-[#21645d] hover:bg-slate-100 font-bold rounded-md px-8 py-6 h-auto">
+                Ver Ofertas
+              </Button>
+            </div>
           </div>
 
-          <h1 className="text-5xl md:text-7xl lg:text-[6.5rem] font-semibold tracking-tight text-white leading-[0.95] mb-6 drop-shadow-lg">
-            Construye con <br className="hidden md:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-teal via-brand-teal/80 to-brand-teal drop-shadow-sm">precisión absoluta.</span>
-          </h1>
+          {/* Payment Methods Bar (Classic ML trust bar) */}
+          <div className="w-full bg-white rounded-md shadow-sm mt-4 p-4 flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-slate-100 mb-8 border border-slate-100">
 
-          <p className="text-lg md:text-xl text-white/80 font-medium max-w-2xl mb-12 leading-relaxed drop-shadow-sm">
-            Herramientas e insumos de vanguardia para proyectos que no aceptan concesiones. Conecta directamente con las mejores marcas del mundo.
-          </p>
+            {/* Payment Method 1 */}
+            <div className="flex-1 flex items-center gap-4 p-2 md:px-6 cursor-pointer group">
+              <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
+                <ShieldCheck className="w-6 h-6 text-blue-500" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[15px] font-medium text-slate-800 leading-tight">Compra Garantizada</span>
+                <Link href="#" className="text-[13px] text-blue-500 hover:text-blue-600">Ver detalles</Link>
+              </div>
+            </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full mt-4">
-            <Button asChild size="lg" className="h-14 px-10 rounded-full font-semibold [&_svg]:size-4">
-              <Link href="/collections/all">
-                Explorar Catálogo
-              </Link>
-            </Button>
-            <Button asChild variant="outline" size="lg" className="h-14 px-10 rounded-full font-semibold border-white/20 bg-black/10 backdrop-blur-sm text-white hover:bg-white hover:text-black hover:border-white transition-all [&_svg]:size-4 gap-3">
-              <Link href="/collections/herramientas">
-                Herramientas Pro
-                <ArrowRight className="text-secondary" />
-              </Link>
-            </Button>
+            {/* Payment Method 2 */}
+            <div className="flex-1 flex items-center gap-4 p-2 md:px-6 pt-4 md:pt-2 cursor-pointer group">
+              <div className="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center shrink-0 group-hover:bg-green-100 transition-colors">
+                <ArrowRight className="w-6 h-6 text-green-500" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[15px] font-medium text-slate-800 leading-tight">Mismo precio en cuotas</span>
+                <Link href="#" className="text-[13px] text-blue-500 hover:text-blue-600">Ver tarjetas</Link>
+              </div>
+            </div>
+
+            {/* Payment Method 3 */}
+            <div className="flex-1 flex items-center gap-4 p-2 md:px-6 pt-4 md:pt-2 cursor-pointer group">
+              <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center shrink-0 group-hover:bg-slate-100 transition-colors">
+                <Zap className="w-6 h-6 text-slate-500" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[15px] font-medium text-slate-800 leading-tight">Más medios de pago</span>
+                <Link href="#" className="text-[13px] text-blue-500 hover:text-blue-600">Ver todos</Link>
+              </div>
+            </div>
+
           </div>
-        </div>
 
-        {/* Minimal Scroll indicator */}
-        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center z-10">
-          <span className="text-[10px] text-white/50 uppercase tracking-[0.2em] mb-4 font-bold">Descubrir</span>
-          <div className="w-[1px] h-12 bg-white/20 relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-[50%] bg-white animate-[slideDown_2s_infinite]" />
+          {/* SECTION: Category Bubbles (ML Style) */}
+          <div className="hidden md:block mb-8">
+            <div className="flex items-center justify-between gap-4 overflow-x-auto pb-4 no-scrollbar">
+
+              <Link href="/collections/herramientas" className="flex flex-col items-center gap-3 group min-w-[120px]">
+                <div className="w-[84px] h-[84px] bg-white rounded-full shadow-sm flex items-center justify-center group-hover:shadow-md transition-all border border-slate-100">
+                  <Drill className="w-8 h-8 text-[#21645d] group-hover:scale-110 transition-transform" />
+                </div>
+                <span className="text-[13px] text-slate-600 text-center font-medium group-hover:text-[#21645d]">Herramientas</span>
+              </Link>
+
+              <Link href="/collections/obra-gruesa" className="flex flex-col items-center gap-3 group min-w-[120px]">
+                <div className="w-[84px] h-[84px] bg-white rounded-full shadow-sm flex items-center justify-center group-hover:shadow-md transition-all border border-slate-100">
+                  <HomeIcon className="w-8 h-8 text-[#21645d] group-hover:scale-110 transition-transform" />
+                </div>
+                <span className="text-[13px] text-slate-600 text-center font-medium group-hover:text-[#21645d]">Obra Gruesa</span>
+              </Link>
+
+              <Link href="/collections/iluminacion" className="flex flex-col items-center gap-3 group min-w-[120px]">
+                <div className="w-[84px] h-[84px] bg-white rounded-full shadow-sm flex items-center justify-center group-hover:shadow-md transition-all border border-slate-100">
+                  <Zap className="w-8 h-8 text-[#21645d] group-hover:scale-110 transition-transform" />
+                </div>
+                <span className="text-[13px] text-slate-600 text-center font-medium group-hover:text-[#21645d]">Iluminación</span>
+              </Link>
+
+              <Link href="/collections/sanitaria-y-griferia" className="flex flex-col items-center gap-3 group min-w-[120px]">
+                <div className="w-[84px] h-[84px] bg-white rounded-full shadow-sm flex items-center justify-center group-hover:shadow-md transition-all border border-slate-100">
+                  <Droplet className="w-8 h-8 text-[#21645d] group-hover:scale-110 transition-transform" />
+                </div>
+                <span className="text-[13px] text-slate-600 text-center font-medium group-hover:text-[#21645d]">Sanitaria</span>
+              </Link>
+
+              <Link href="/collections/servicios" className="flex flex-col items-center gap-3 group min-w-[120px]">
+                <div className="w-[84px] h-[84px] bg-white rounded-full shadow-sm flex items-center justify-center group-hover:shadow-md transition-all border border-slate-100">
+                  <Paintbrush className="w-8 h-8 text-[#21645d] group-hover:scale-110 transition-transform" />
+                </div>
+                <span className="text-[13px] text-slate-600 text-center font-medium group-hover:text-[#21645d]">Servicios B2B</span>
+              </Link>
+
+              {/* 'Ver Todas' Bubble */}
+              <Link href="/collections/all" className="flex flex-col items-center gap-3 group min-w-[120px]">
+                <div className="w-[84px] h-[84px] bg-white rounded-full shadow-sm flex items-center justify-center group-hover:shadow-md transition-all border border-slate-100">
+                  <div className="text-xl text-[#21645d] font-bold group-hover:scale-110 transition-transform">+</div>
+                </div>
+                <span className="text-[13px] text-slate-600 text-center font-medium group-hover:text-[#21645d]">Ver Todas</span>
+              </Link>
+
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 
-        SHADCN BENTO GRID - MAIN COLLECTIONS
-      */}
-      <section className="relative w-full px-6 md:px-12 py-24 bg-muted/30 z-20">
-        <div className="max-w-[1400px] mx-auto">
+      {/* SECTION: Featured Products */}
+      {products.length > 0 && (
+        <section className="w-full py-24 border-t border-border bg-slate-50">
+          <div className="container mx-auto px-4 md:px-6">
+            <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+              <div className="space-y-3">
+                <span className="text-[#21645d] text-xs font-bold uppercase tracking-widest block">Productos Populares</span>
+                <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-slate-900">Equipamiento Destacado</h2>
+                <p className="text-slate-500 text-lg">
+                  Nuestra selección de alto rendimiento para esta semana.
+                </p>
+              </div>
+              <Button asChild variant="outline" className="border-slate-200 text-slate-700">
+                <Link href="/collections/all">Ver catálogo completo</Link>
+              </Button>
+            </div>
 
-          <div className="text-center mb-16">
-            <h2 className="text-sm font-bold tracking-[0.2em] text-secondary uppercase mb-4">Descubre</h2>
-            <h3 className="font-['Syne'] text-4xl md:text-5xl font-black text-primary tracking-tighter">
-              Categorías Principales
-            </h3>
+            <ProductGrid products={products} />
           </div>
+        </section>
+      )}
 
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-[280px]">
-
-            {/* LARGE FEATURED ITEM */}
-            <Card className="col-span-1 md:col-span-2 lg:col-span-2 row-span-2 flex flex-col justify-end relative overflow-hidden group hover:border-primary/50 transition-colors">
-              <div className="absolute inset-0 bg-primary/5 flex items-center justify-center z-0">
-                <Drill className="w-48 h-48 text-primary/10 rotate-[-15deg] group-hover:scale-110 group-hover:text-primary/20 transition-all duration-700" />
-              </div>
-              <CardHeader className="relative z-10 pb-0 shrink-0 mt-auto">
-                <span className="inline-block px-3 py-1 rounded-full bg-secondary text-secondary-foreground text-[10px] font-bold tracking-widest uppercase mb-2 w-fit">Destacado</span>
-                <CardTitle className="text-3xl font-bold">Herramientas Eléctricas</CardTitle>
-                <CardDescription className="text-base max-w-sm mt-2">
-                  Potencia y rendimiento para proyectos que exigen lo mejor de la industria.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="relative z-10 pt-6">
-                <Button asChild>
-                  <Link href="/collections/herramientas-electricas">
-                    Explorar Colección <ArrowRight />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* MEDIUM ITEM */}
-            <Card className="col-span-1 md:col-span-1 lg:col-span-2 relative overflow-hidden group hover:border-primary/50 transition-colors bg-primary/5">
-              <CardHeader>
-                <HomeIcon className="w-8 h-8 text-primary mb-2" />
-                <CardTitle className="text-2xl font-bold">Obra Gruesa</CardTitle>
-                <CardDescription>Cimientos, cemento y materiales pesados para tu proyecto.</CardDescription>
-              </CardHeader>
-              <CardContent className="absolute bottom-0 left-0">
-                <Button asChild variant="outline" className="bg-background/80 backdrop-blur-sm">
-                  <Link href="/collections/obra-gruesa">Ver Más</Link>
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* SMALL ITEM 1 */}
-            <Card className="col-span-1 relative overflow-hidden group hover:border-secondary/50 transition-colors">
-              <CardHeader>
-                <Zap className="w-8 h-8 text-secondary mb-2" />
-                <CardTitle className="text-lg">Iluminación</CardTitle>
-                <CardDescription className="text-sm">Paneles LED, focos y exteriores.</CardDescription>
-              </CardHeader>
-              <CardContent className="absolute bottom-6 left-6 p-0">
-                <Button asChild variant="ghost" size="icon" className="rounded-full bg-secondary/10 text-secondary hover:bg-secondary hover:text-white transition-colors">
-                  <Link href="/collections/iluminacion"><ArrowRight /></Link>
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* SMALL ITEM 2 */}
-            <Card className="col-span-1 relative overflow-hidden group hover:border-primary/50 transition-colors">
-              <CardHeader>
-                <Droplet className="w-8 h-8 text-primary mb-2" />
-                <CardTitle className="text-lg">Sanitaria</CardTitle>
-                <CardDescription className="text-sm">Caños, grifería y loza.</CardDescription>
-              </CardHeader>
-              <CardContent className="absolute bottom-6 left-6 p-0">
-                <Button asChild variant="ghost" size="icon" className="rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors">
-                  <Link href="/collections/sanitaria-y-griferia"><ArrowRight /></Link>
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* MEDIUM HORIZONTAL BOTTOM */}
-            <Card className="col-span-1 md:col-span-3 lg:col-span-4 h-full relative overflow-hidden bg-secondary/10 border-secondary/20 group hover:border-secondary/50 transition-colors">
-              <div className="absolute inset-y-0 right-12 flex items-center justify-center z-0 opacity-10">
-                <Paintbrush className="w-48 h-48 text-secondary" />
-              </div>
-              <div className="relative z-10 w-full h-full flex flex-col justify-center">
-                <CardHeader>
-                  <CardTitle className="text-3xl md:text-4xl font-bold text-foreground">Pinturas y Acabados</CardTitle>
-                  <CardDescription className="text-lg max-w-lg mt-2 text-foreground/70">
-                    Acabados perfectos para interior y exterior. Todo lo que necesitas para el último toque.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button asChild variant="default" className="bg-secondary text-secondary-foreground hover:bg-secondary/90">
-                    <Link href="/collections/pinturas">Ver Colección Completa</Link>
-                  </Button>
-                </CardContent>
-              </div>
-            </Card>
-
-          </div>
-        </div>
-      </section>
     </div>
   );
 }

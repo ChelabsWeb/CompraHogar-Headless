@@ -20,7 +20,7 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
     if (!product) return notFound();
 
     return (
-        <div className="min-h-screen bg-[#808080] p-4 md:p-8 flex items-center justify-center pt-24">
+        <div className="min-h-screen bg-[#f8fafc] p-2 md:p-6 lg:p-10 pb-0 flex items-start justify-center pt-24 lg:pt-[84px]">
             <ProductView product={product} />
         </div>
     );

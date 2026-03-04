@@ -1,232 +1,159 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useScroll, useMotionValueEvent } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ShoppingBag, Search, Menu, ChevronRight, ChevronDown, ChevronUp, Home } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { ShoppingBag, Search, Menu, ChevronDown, MapPin, User, ChevronRight } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetClose } from "@/components/ui/sheet";
+import { CartSheet } from "@/components/cart/CartSheet";
 
 const CATEGORIES = [
-    {
-        name: "Construcción y Materiales",
-        handle: "construccion-y-materiales",
-        subcategories: [
-            { name: "Obra Gruesa", handle: "obra-gruesa" },
-            { name: "Hierros y Aceros", handle: "hierros-y-aceros" },
-            { name: "Maderas y Placas", handle: "maderas-y-placas" },
-            { name: "Aislantes y Membranas", handle: "aislantes-y-membranas" },
-            { name: "Construcción en Seco", handle: "construccion-en-seco" },
-        ]
-    },
-    {
-        name: "Herramientas y Maquinaria",
-        handle: "herramientas-y-maquinaria",
-        subcategories: [
-            { name: "Herramientas Eléctricas", handle: "herramientas-electricas" },
-            { name: "Herramientas Inalámbricas", handle: "herramientas-inalambricas" },
-            { name: "Herramientas Manuales", handle: "herramientas-manuales" },
-            { name: "Maquinaria Pesada", handle: "maquinaria-pesada" },
-            { name: "Accesorios", handle: "accesorios-herramientas" },
-        ]
-    },
-    {
-        name: "Electricidad e Iluminación",
-        handle: "electricidad-e-iluminacion",
-        subcategories: [
-            { name: "Cables y Conductores", handle: "cables-y-conductores" },
-            { name: "Tubos y Caños Eléctricos", handle: "tubos-y-canos-electricos" },
-            { name: "Módulos y Llaves", handle: "modulos-y-llaves" },
-            { name: "Tableros y Protecciones", handle: "tableros-y-protecciones" },
-            { name: "Iluminación", handle: "iluminacion" },
-        ]
-    },
-    {
-        name: "Sanitaria y Grifería",
-        handle: "sanitaria-y-griferia",
-        subcategories: [
-            { name: "Caños y Conexiones", handle: "canos-y-conexiones-sanitaria" },
-            { name: "Grifería", handle: "griferia" },
-            { name: "Loza Sanitaria", handle: "loza-sanitaria" },
-            { name: "Bombas y Tanques", handle: "bombas-y-tanques" },
-        ]
-    },
-    {
-        name: "Pinturas y Acabados",
-        handle: "pinturas-y-acabados",
-        subcategories: [
-            { name: "Pinturas", handle: "pinturas" },
-            { name: "Impermeabilizantes", handle: "impermeabilizantes" },
-            { name: "Preparación de Superficies", handle: "preparacion-de-superficies" },
-            { name: "Accesorios para Pintar", handle: "accesorios-para-pintar" },
-        ]
-    },
-    {
-        name: "Hogar y Decoración",
-        handle: "hogar-y-decoracion",
-        subcategories: [
-            { name: "Revestimientos", handle: "revestimientos" },
-            { name: "Baño y Cocina", handle: "bano-y-cocina" },
-        ]
-    },
-    {
-        name: "Jardín y Exteriores",
-        handle: "jardin-y-exteriores",
-        subcategories: [
-            { name: "Herramientas de Jardín", handle: "herramientas-de-jardin" },
-            { name: "Mobiliario de Exterior", handle: "mobiliario-de-exterior" },
-            { name: "Riego", handle: "riego" },
-        ]
-    },
-    {
-        name: "Servicios y Alquileres",
-        handle: "servicios-y-alquileres",
-        subcategories: []
-    }
+    { name: "Obra Gruesa", handle: "obra-gruesa" },
+    { name: "Herramientas", handle: "herramientas-y-maquinaria" },
+    { name: "Electricidad", handle: "electricidad-e-iluminacion" },
+    { name: "Sanitaria", handle: "sanitaria-y-griferia" },
+    { name: "Pinturas", handle: "pinturas-y-acabados" },
+    { name: "Decoración", handle: "hogar-y-decoracion" },
+    { name: "Servicios", handle: "servicios-y-alquileres" }
 ];
 
 export function Header({ collections = [] }: { collections?: any[] }) {
     const { scrollY } = useScroll();
     const pathname = usePathname();
     const [isScrolled, setIsScrolled] = useState(false);
-    const [openCategory, setOpenCategory] = useState<string | null>(null);
-
-    const toggleCategory = (handle: string) => {
-        setOpenCategory((prev) => (prev === handle ? null : handle));
-    };
 
     useMotionValueEvent(scrollY, "change", (latest: number) => {
-        setIsScrolled(latest > 10);
+        setIsScrolled(latest > 50);
     });
 
     const isHome = pathname === "/";
-    const isTransparent = isHome && !isScrolled;
-
-    // Dynamic text colors based on whether we are floating over the dark video on home, or standard layout
-    const textColor = isTransparent ? "text-white" : "text-foreground";
-    const textMutedColor = isTransparent ? "text-white/80" : "text-foreground/80";
-    const borderMuted = isTransparent ? "border-white/20" : "border-border";
+    const headerBg = "bg-white"; // Top row white, bottom row Teal
 
     return (
-        <header
-            className={`fixed top-0 inset-x-0 z-50 flex items-center h-[72px] transition-all duration-300 ${isScrolled ? "glass-nav" : "bg-transparent border-transparent"
-                }`}
-        >
-            <div className="w-full max-w-[1600px] mx-auto px-6 md:px-12 flex justify-between items-center">
+        <div className={`fixed top-0 inset-x-0 z-50 flex flex-col pointer-events-auto transition-transform duration-300 ${isScrolled ? "-translate-y-[72px]" : "translate-y-0"}`}>
 
-                {/* Left Drawer Menu */}
-                <div className="flex items-center">
-                    <Sheet>
-                        <SheetTrigger asChild>
-                            <button className={`flex items-center gap-2 group p-2 -ml-2 rounded-md hover:bg-muted/20 transition-colors ${textMutedColor} hover:${textColor}`}>
-                                <Menu className="w-5 h-5" />
-                                <span className="hidden md:inline-block text-sm font-medium">Menú</span>
-                            </button>
-                        </SheetTrigger>
-                        <SheetContent side="left" className="w-full sm:w-[400px] bg-background border-r border-border p-0">
-                            <SheetTitle className="sr-only">Navegación</SheetTitle>
-                            <SheetDescription className="sr-only">Explorar departamentos</SheetDescription>
+            <header className={`w-full ${headerBg} shadow-sm border-b border-slate-200`}>
+                <div className="container mx-auto max-w-[1200px] px-4">
 
-                            <div className="flex flex-col h-full bg-muted/30">
-                                <div className="p-8 pb-4">
-                                    <Link href="/" className="flex items-center gap-3">
-                                        <div className="relative flex items-center justify-center w-8 h-8">
-                                            <Home className="w-8 h-8 text-brand-teal fill-brand-teal" />
-                                            <Search className="absolute bottom-[-2px] right-[-2px] w-4 h-4 text-brand-orange bg-background rounded-full p-[2px]" strokeWidth={4} />
-                                        </div>
-                                        <div className="flex flex-col leading-[0.9] font-black tracking-tight text-[17px]">
-                                            <span className="text-brand-orange">COMPRA</span>
-                                            <span className="text-brand-teal">HOGAR</span>
-                                        </div>
-                                    </Link>
-                                    <h2 className="text-[11px] font-bold tracking-widest text-muted-foreground uppercase mt-8 mb-4">
-                                        Departamentos
-                                    </h2>
+                    {/* TOP ROW: Logo, Search, Ad */}
+                    <div className="h-[72px] flex items-center justify-between gap-8 pt-2">
+                        {/* Logo */}
+                        <Link href="/" className="shrink-0 flex items-center">
+                            <div className="relative w-[210px] h-[56px]">
+                                <Image
+                                    src="/logo.png"
+                                    alt="CompraHogar"
+                                    fill
+                                    className="object-contain object-left"
+                                    priority
+                                    sizes="210px"
+                                />
+                            </div>
+                        </Link>
+
+                        {/* Huge Central Search */}
+                        <div className="flex-1 max-w-[600px] relative shadow-sm">
+                            <input
+                                type="text"
+                                placeholder="Buscar productos, marcas y más..."
+                                className="w-full h-10 pl-4 pr-12 rounded-sm border border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-[15px] shadow-sm"
+                            />
+                            <div className="absolute right-0 top-0 h-10 w-12 flex items-center justify-center border-l border-slate-200 cursor-pointer bg-white rounded-r-sm">
+                                <Search className="w-5 h-5 text-slate-500" />
+                            </div>
+                        </div>
+
+                        {/* Right Promo Box */}
+                        <div className="hidden lg:flex shrink-0 items-center justify-end w-[180px]">
+                            <Link href="/collections/servicios" className="flex items-center gap-2 group">
+                                <div className="text-right flex flex-col justify-center">
+                                    <p className="text-[13px] text-slate-800 font-bold leading-tight group-hover:text-blue-600 transition-colors">Servicios Premium</p>
+                                    <p className="text-[12px] text-[#21645d] font-semibold">Instalación Pyme</p>
                                 </div>
+                            </Link>
+                        </div>
+                    </div>
 
-                                <nav className="flex-1 overflow-y-auto px-6 pb-6 scrollbar-hide">
-                                    <ul className="flex flex-col gap-1">
-                                        {CATEGORIES.map((category) => (
-                                            <li key={category.handle} className="flex flex-col">
-                                                {category.subcategories.length === 0 ? (
-                                                    <Link
-                                                        href={`/collections/${category.handle}`}
-                                                        className="group flex items-center justify-between px-3 py-3 rounded-lg hover:bg-muted/50 border border-transparent transition-all w-full text-left"
-                                                    >
-                                                        <span className="text-foreground font-semibold text-[15px]">{category.name}</span>
-                                                        <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-brand-orange transition-colors" />
-                                                    </Link>
-                                                ) : (
-                                                    <button
-                                                        onClick={() => toggleCategory(category.handle)}
-                                                        className="group flex items-center justify-between px-3 py-3 rounded-lg hover:bg-muted/50 border border-transparent transition-all w-full text-left"
-                                                    >
-                                                        <span className="text-foreground font-semibold text-[15px]">{category.name}</span>
-                                                        {openCategory === category.handle ? (
-                                                            <ChevronUp className="w-4 h-4 text-brand-orange" />
-                                                        ) : (
-                                                            <ChevronDown className="w-4 h-4 text-muted-foreground group-hover:text-brand-teal transition-colors" />
-                                                        )}
-                                                    </button>
-                                                )}
+                </div>
 
-                                                {openCategory === category.handle && category.subcategories.length > 0 && (
-                                                    <ul className="flex flex-col pl-4 pr-2 py-2 space-y-1 mb-2 border-l-[1.5px] border-muted ml-5">
-                                                        {category.subcategories.map((sub) => (
-                                                            <li key={sub.handle}>
-                                                                <Link
-                                                                    href={`/collections/${sub.handle}`}
-                                                                    className="block px-3 py-2 text-[14px] text-muted-foreground font-medium hover:text-brand-teal hover:bg-brand-teal/5 rounded-md transition-all"
-                                                                >
-                                                                    {sub.name}
-                                                                </Link>
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                )}
-                                            </li>
+                {/* BOTTOM ROW (Full width teal background) */}
+                <div className="w-full bg-[#21645d] border-b border-[#1c554f]">
+                    <div className="container mx-auto max-w-[1200px] px-4">
+                        <div className="h-[44px] flex items-center justify-between text-white/95 text-[13px]">
+
+                            {/* Location Pin */}
+                            <button className="flex items-center gap-1.5 hover:bg-black/10 px-2 py-1 rounded-sm transition-colors group">
+                                <MapPin className="w-4 h-4 opacity-80 group-hover:opacity-100" />
+                                <div className="flex items-center gap-1 leading-none">
+                                    <span className="opacity-80">Enviar a</span>
+                                    <span className="font-semibold hidden sm:block">Montevideo 11000</span>
+                                </div>
+                            </button>
+
+                            {/* Category & Quick Links */}
+                            <nav className="hidden lg:flex items-center gap-1 flex-1 px-8">
+                                <div className="relative group/menu h-[44px] flex items-center">
+                                    <button className="flex items-center gap-1.5 px-3 h-full font-medium hover:bg-black/10 transition-colors cursor-pointer rounded-sm">
+                                        Categorías <ChevronDown className="w-3.5 h-3.5 opacity-70" />
+                                    </button>
+
+                                    {/* Simple Dropdown Menu */}
+                                    <div className="absolute top-full left-0 w-[240px] bg-white rounded-sm shadow-xl py-2 opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all duration-200 z-50">
+                                        {CATEGORIES.map(cat => (
+                                            <Link key={cat.handle} href={`/collections/${cat.handle}`} className="flex items-center justify-between px-5 py-2.5 text-[14px] text-slate-700 hover:bg-slate-50 hover:text-blue-600 cursor-pointer">
+                                                {cat.name}
+                                                <ChevronRight className="w-3.5 h-3.5 opacity-40" />
+                                            </Link>
                                         ))}
-                                    </ul>
-                                </nav>
-
-                                <div className="p-8 border-t border-border bg-background">
-                                    <div className="grid grid-cols-2 gap-y-4 gap-x-8 text-[13px] font-medium text-muted-foreground">
-                                        <Link href="/about" className="hover:text-brand-teal transition-colors">Nosotros</Link>
-                                        <Link href="/contact" className="hover:text-brand-teal transition-colors">Contacto</Link>
-                                        <Link href="/shipping" className="hover:text-brand-teal transition-colors">Envíos</Link>
-                                        <Link href="/empresas" className="hover:text-brand-teal transition-colors">Para Empresas</Link>
+                                        <div className="h-[1px] w-full bg-slate-100 my-1"></div>
+                                        <Link href="/collections/all" className="block px-5 py-2.5 text-[14px] text-blue-600 font-semibold hover:bg-slate-50">
+                                            Explorar todo el catálogo
+                                        </Link>
                                     </div>
                                 </div>
+
+                                <Link href="/collections/ofertas" className="px-3 py-2 font-medium hover:bg-black/10 rounded-sm transition-colors">Ofertas</Link>
+                                <Link href="/institucional/historial" className="px-3 py-2 font-medium hover:bg-black/10 rounded-sm transition-colors">Historial</Link>
+                                <Link href="/institucional/vender" className="px-3 py-2 font-medium hover:bg-black/10 rounded-sm transition-colors">Corporativo</Link>
+                                <Link href="/ayuda" className="px-3 py-2 font-medium hover:bg-black/10 rounded-sm transition-colors">Ayuda</Link>
+                            </nav>
+
+                            {/* User & Cart Actions */}
+                            <div className="flex items-center gap-2">
+                                <Link href="/account" className="hidden sm:flex items-center gap-1.5 font-medium hover:bg-black/10 px-3 py-1.5 rounded-sm transition-colors">
+                                    <User className="w-4 h-4 opacity-80" />
+                                    <span className="hidden lg:block">Ingresa</span>
+                                </Link>
+                                <Link href="/account/orders" className="hidden lg:block font-medium hover:bg-black/10 px-3 py-1.5 rounded-sm transition-colors">
+                                    Mis compras
+                                </Link>
+
+                                <CartSheet>
+                                    <button className="relative flex items-center justify-center p-2 mx-2 hover:bg-black/10 rounded-full transition-colors">
+                                        <ShoppingBag className="w-[18px] h-[18px]" />
+                                        <span className="absolute top-0 right-0 w-3.5 h-3.5 bg-white text-[#21645d] text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm">2</span>
+                                    </button>
+                                </CartSheet>
                             </div>
-                        </SheetContent>
-                    </Sheet>
+                        </div>
+                    </div>
                 </div>
+            </header>
 
-                {/* LOGO */}
-                <Link href="/" className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 group">
-                    <div className="relative flex items-center justify-center w-6 h-6">
-                        <Home className="w-6 h-6 text-brand-teal fill-brand-teal" />
-                        <Search className={`absolute bottom-[-2px] right-[-2px] w-3 h-3 text-brand-orange rounded-full p-[1px] ${isTransparent ? 'bg-black/50 backdrop-blur-md' : 'bg-background'}`} strokeWidth={4} />
-                    </div>
-                    <div className="flex flex-col leading-[0.9] font-black tracking-tight text-[14px] ml-1">
-                        <span className="text-brand-orange">COMPRA</span>
-                        <span className={`transition-colors ${isTransparent ? 'text-white' : 'text-brand-teal'}`}>HOGAR</span>
-                    </div>
-                </Link>
-
-                {/* Right Actions */}
-                <div className="flex items-center gap-2">
-                    <button className={`p-2.5 rounded-full hover:bg-muted/20 transition-colors ${textMutedColor} hover:${textColor}`}>
-                        <Search className="w-5 h-5" />
-                    </button>
-                    <button className={`p-2.5 rounded-full hover:bg-muted/20 transition-colors ${textMutedColor} hover:${textColor} relative`}>
-                        <ShoppingBag className="w-5 h-5" />
-                        <span className={`absolute top-1.5 right-1.5 bg-brand-orange text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center ring-2 ${isTransparent ? 'ring-transparent' : 'ring-background'}`}>
-                            0
-                        </span>
-                    </button>
+            {/* MOBILE ONLY SEARCH BAR (Appears on scroll) */}
+            <div className={`lg:hidden w-full bg-[#21645d] py-2 px-4 shadow-sm transition-all duration-300 origin-top overflow-hidden ${isScrolled ? "h-[56px] opacity-100 border-t border-[#1c554f]" : "h-0 opacity-0 p-0"}`}>
+                <div className="relative w-full shadow-sm">
+                    <input
+                        type="text"
+                        placeholder="Buscar en CompraHogar..."
+                        className="w-full h-10 pl-10 pr-4 rounded-full border-0 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none text-[14px] shadow-sm"
+                    />
+                    <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
                 </div>
             </div>
-        </header>
+
+        </div>
     );
 }

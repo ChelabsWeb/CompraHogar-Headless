@@ -49,12 +49,21 @@ export const getProductByHandleQuery = `
           }
         }
       }
-      variants(first: 10) {
+      options {
+        id
+        name
+        values
+      }
+      variants(first: 100) {
         edges {
           node {
             id
             title
             availableForSale
+            selectedOptions {
+              name
+              value
+            }
             price {
               amount
               currencyCode
