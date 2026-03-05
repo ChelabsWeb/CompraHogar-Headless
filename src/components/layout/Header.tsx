@@ -54,16 +54,18 @@ export function Header({ collections = [] }: { collections?: any[] }) {
                         </Link>
 
                         {/* Huge Central Search */}
-                        <div className="flex-1 max-w-[600px] relative shadow-sm">
+                        <form action="/search" method="GET" className="flex-1 max-w-[600px] relative shadow-sm">
                             <input
                                 type="text"
+                                name="q"
                                 placeholder="Buscar productos, marcas y más..."
                                 className="w-full h-10 pl-4 pr-12 rounded-sm border border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-[15px] shadow-sm"
+                                required
                             />
-                            <div className="absolute right-0 top-0 h-10 w-12 flex items-center justify-center border-l border-slate-200 cursor-pointer bg-white rounded-r-sm">
+                            <button type="submit" className="absolute right-0 top-0 h-10 w-12 flex items-center justify-center border-l border-slate-200 cursor-pointer bg-white rounded-r-sm hover:bg-slate-50 transition-colors">
                                 <Search className="w-5 h-5 text-slate-500" />
-                            </div>
-                        </div>
+                            </button>
+                        </form>
 
                         {/* Right Promo Box */}
                         <div className="hidden lg:flex shrink-0 items-center justify-end w-[180px]">
