@@ -50,8 +50,8 @@ export async function POST(req: NextRequest) {
       case 'products/create':
       case 'products/delete':
         // Invalidar caché de productos e indirectamente colecciones si están vinculadas
-        revalidateTag('products');
-        revalidateTag('collections');
+        revalidateTag('products', {});
+        revalidateTag('collections', {});
         console.log('[Webhook] Caché revalidada para tags: "products", "collections"');
         break;
 
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
       case 'collections/create':
       case 'collections/delete':
         // Invalidar caché de las colecciones específicamente
-        revalidateTag('collections');
+        revalidateTag('collections', {});
         console.log('[Webhook] Caché revalidada para tag: "collections"');
         break;
 

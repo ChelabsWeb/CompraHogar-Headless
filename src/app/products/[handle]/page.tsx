@@ -1,7 +1,8 @@
 import { shopifyFetch } from "@/lib/shopify";
-import { getProductByHandleQuery } from "@/lib/queries";
+import { getProductByHandleQuery, getProductRecommendationsQuery } from "@/lib/queries";
 import { notFound } from "next/navigation";
 import { ProductView } from "@/components/shop/ProductView";
+import { ProductCarousel } from "@/components/shop/ProductCarousel";
 import VendorReviews from "@/components/shop/VendorReviews";
 import { ProductPageTracker } from "@/components/analytics/ProductPageTracker";
 import { Container } from "@/components/ui/container";
@@ -64,6 +65,13 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
 
     if (!product) return notFound();
 
+    const { body: recBody } = await shopifyFetch({
+        query: getProductRecommendationsQuery,
+        variables: { productId: product.id },
+    });
+
+    const recommendations = recBody?.data?.productRecommendations || [];
+
     return (
         <div className="min-h-screen bg-[#f8fafc] w-full pt-20 lg:pt-28 pb-12">
             <Container>
@@ -84,6 +92,13 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
                     quantity: 1
                 }} />
                 <ProductView product={product} />
+                
+                {recommendations.length > 0 && (
+                    <div className="mt-8 lg:mt-12">
+                        <ProductCarousel title="Quienes vieron esto también compraron" products={recommendations} />
+                    </div>
+                )}
+                
                 <VendorReviews productId={product.id} />
             </Container>
         </div>

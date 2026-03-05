@@ -10,6 +10,7 @@ import { useCart } from "@/components/cart/CartProvider";
 import { pushDatalayerEvent } from "@/lib/analytics";
 import { QuantitySelector } from "@/components/ui/quantity-selector";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Info } from "lucide-react";
 
 
@@ -209,36 +210,72 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
                     </div>
                 </div>
 
-                {/* Especificaciones y Cuidado */}
-                {(product?.material?.value || product?.instruccionesLavado?.value) && (
-                    <div className="mb-5 bg-slate-50 border border-slate-100 rounded-xl p-4">
-                        <h3 className="text-sm font-semibold text-slate-900 mb-3">
-                            Especificaciones
-                        </h3>
-                        <dl className="space-y-2 text-sm">
-                            {product?.material?.value && (
-                                <div className="flex justify-between pb-2 border-b border-slate-200/60 last:border-0 last:pb-0">
-                                    <dt className="text-slate-500">Material</dt>
-                                    <dd className="font-medium text-slate-900 text-right">
-                                        {product.material.value.trim().startsWith('[') 
-                                            ? (() => { try { return JSON.parse(product.material.value).join(', '); } catch { return product.material.value; } })() 
-                                            : product.material.value}
-                                    </dd>
-                                </div>
+                {/* Tabs: Description, Specs, Warranty */}
+                <div className="mb-6">
+                    <Tabs defaultValue="description">
+                        <TabsList className="flex w-full overflow-x-auto no-scrollbar justify-start border-b border-slate-200 rounded-none bg-transparent p-0 h-auto">
+                            <TabsTrigger value="description" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-2.5 px-4">Descripción</TabsTrigger>
+                            <TabsTrigger value="specs" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-2.5 px-4">Ficha Técnica</TabsTrigger>
+                            <TabsTrigger value="warranty" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-2.5 px-4">Garantía</TabsTrigger>
+                        </TabsList>
+                        
+                        <TabsContent value="description" className="p-4 bg-slate-50 rounded-b-xl border border-t-0 border-slate-100 text-sm text-slate-700 leading-relaxed mt-0">
+                            {product.descriptionHtml ? (
+                                <div dangerouslySetInnerHTML={{ __html: product.descriptionHtml }} className="prose prose-sm max-w-none prose-slate" />
+                            ) : (
+                                <p>{product.description || "No hay descripción disponible para este producto."}</p>
                             )}
-                            {product?.instruccionesLavado?.value && (
-                                <div className="flex justify-between pb-2 border-b border-slate-200/60 last:border-0 last:pb-0">
-                                    <dt className="text-slate-500">Cuidado</dt>
-                                    <dd className="font-medium text-slate-900 text-right">
-                                        {product.instruccionesLavado.value.trim().startsWith('[') 
-                                            ? (() => { try { return JSON.parse(product.instruccionesLavado.value).join(', '); } catch { return product.instruccionesLavado.value; } })() 
-                                            : product.instruccionesLavado.value}
-                                    </dd>
-                                </div>
+                        </TabsContent>
+
+                        <TabsContent value="specs" className="p-4 bg-slate-50 rounded-b-xl border border-t-0 border-slate-100 mt-0 text-sm">
+                            {(product?.material?.value || product?.instruccionesLavado?.value) ? (
+                                <dl className="space-y-2">
+                                    {product?.material?.value && (
+                                        <div className="flex justify-between pb-2 border-b border-slate-200/60 last:border-0 last:pb-0">
+                                            <dt className="text-slate-500 font-medium">Material</dt>
+                                            <dd className="text-slate-900 text-right">
+                                                {product.material.value.trim().startsWith('[') 
+                                                    ? (() => { try { return JSON.parse(product.material.value).join(', '); } catch { return product.material.value; } })() 
+                                                    : product.material.value}
+                                            </dd>
+                                        </div>
+                                    )}
+                                    {product?.instruccionesLavado?.value && (
+                                        <div className="flex justify-between pb-2 border-b border-slate-200/60 last:border-0 last:pb-0">
+                                            <dt className="text-slate-500 font-medium">Cuidado</dt>
+                                            <dd className="text-slate-900 text-right">
+                                                {product.instruccionesLavado.value.trim().startsWith('[') 
+                                                    ? (() => { try { return JSON.parse(product.instruccionesLavado.value).join(', '); } catch { return product.instruccionesLavado.value; } })() 
+                                                    : product.instruccionesLavado.value}
+                                            </dd>
+                                        </div>
+                                    )}
+                                </dl>
+                            ) : (
+                                <p className="text-sm text-slate-500 text-center py-4">No hay especificaciones técnicas adicionales.</p>
                             )}
-                        </dl>
-                    </div>
-                )}
+                        </TabsContent>
+
+                        <TabsContent value="warranty" className="p-4 bg-slate-50 rounded-b-xl border border-t-0 border-slate-100 mt-0 text-sm text-slate-700 space-y-4">
+                            <div className="flex items-start gap-3">
+                                <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                                <div>
+                                    <p className="font-medium text-slate-900 leading-none mb-1">Compra Protegida</p>
+                                    <p className="text-slate-600 text-[13px]">Recibe el producto que esperabas o te devolvemos tu dinero.</p>
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-slate-400 shrink-0 mt-0.5">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                                </svg>
+                                <div>
+                                    <p className="font-medium text-slate-900 leading-none mb-1">Garantía del vendedor</p>
+                                    <p className="text-slate-600 text-[13px]">6 meses de garantía de fábrica frente a defectos de manufactura.</p>
+                                </div>
+                            </div>
+                        </TabsContent>
+                    </Tabs>
+                </div>
 
                 {/* Options / Selectors */}
                 <div className="flex flex-col gap-4 mb-5">

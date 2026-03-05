@@ -83,6 +83,28 @@ export const getProductByHandleQuery = `
   }
 `;
 
+export const getProductRecommendationsQuery = `
+  query productRecommendations($productId: ID!) {
+    productRecommendations(productId: $productId) {
+      id
+      title
+      handle
+      priceRange {
+        minVariantPrice {
+          amount
+          currencyCode
+        }
+      }
+      featuredImage {
+        url
+        altText
+        width
+        height
+      }
+    }
+  }
+`;
+
 export const getCollectionsQuery = `
   query getCollections($first: Int!) {
     collections(first: $first) {
