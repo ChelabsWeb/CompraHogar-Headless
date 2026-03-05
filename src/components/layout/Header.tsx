@@ -10,7 +10,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetClose } from "@/com
 import { CartDrawer } from "@/components/cart/CartSheet";
 import { useCart } from "@/components/cart/CartProvider";
 
-import { Input } from "@/components/ui/input";
+import { PredictiveSearch } from "@/components/shared/PredictiveSearch";
 
 const CATEGORIES = [
     { name: "Obra Gruesa", handle: "obra-gruesa" },
@@ -59,15 +59,8 @@ export function Header({ collections = [] }: { collections?: any[] }) {
                         </Link>
 
                         {/* Huge Central Search */}
-                        <div className="flex-1 max-w-[600px] relative shadow-sm">
-                            <Input
-                                type="text"
-                                placeholder="Buscar productos, marcas y más..."
-                                className="w-full h-10 pl-4 pr-12 rounded-sm border-slate-200 bg-white text-slate-900 border"
-                            />
-                            <div className="absolute right-0 top-0 h-10 w-12 flex items-center justify-center border-l border-slate-200 cursor-pointer bg-white rounded-r-sm">
-                                <Search className="w-5 h-5 text-slate-500" />
-                            </div>
+                        <div className="flex-1 max-w-[600px]">
+                            <PredictiveSearch />
                         </div>
 
                         {/* Right Promo Box */}
@@ -155,14 +148,7 @@ export function Header({ collections = [] }: { collections?: any[] }) {
 
             {/* MOBILE ONLY SEARCH BAR (Appears on scroll) */}
             <div className={`lg:hidden w-full bg-[#21645d] py-2 px-4 shadow-sm transition-all duration-300 origin-top overflow-hidden ${isScrolled ? "h-[56px] opacity-100 border-t border-[#1c554f]" : "h-0 opacity-0 p-0"}`}>
-                <div className="relative w-full shadow-sm">
-                    <Input
-                        type="text"
-                        placeholder="Buscar en CompraHogar..."
-                        className="w-full h-10 pl-10 pr-4 rounded-full border-0 bg-white text-slate-900 shadow-sm"
-                    />
-                    <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
-                </div>
+                <PredictiveSearch placeholder="Buscar en CompraHogar..." />
             </div>
 
         </div>

@@ -2,12 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ShoppingBag, Star, Zap } from "lucide-react";
+import { ArrowRight, ShoppingBag, Star, Zap, Loader2 } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ProductQuickView } from "@/components/shop/ProductQuickView";
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { loadMoreCollectionProducts } from "@/app/actions/collection";
 
 function FavoriteButton() {
     const [isFavorite, setIsFavorite] = useState(false);
@@ -32,12 +33,62 @@ function FavoriteButton() {
 }
 
 
-export function ProductGrid({ products }: { products: any[] }) {
+interface PageInfo {
+    hasNextPage: boolean;
+    endCursor: string;
+}
+
+interface ProductGridProps {
+    products: any[];
+    pageInfo?: PageInfo;
+    collectionHandle?: string;
+    filters?: any[];
+    sortKey?: string;
+    reverse?: boolean;
+}
+
+export function ProductGrid({ 
+    products: initialProducts, 
+    pageInfo: initialPageInfo, 
+    collectionHandle, 
+    filters, 
+    sortKey, 
+    reverse 
+}: ProductGridProps) {
+    const [products, setProducts] = useState(initialProducts);
+    const [pageInfo, setPageInfo] = useState(initialPageInfo);
+    const [isPending, startTransition] = useTransition();
+
     if (!products || products.length === 0) return null;
 
+    const handleLoadMore = () => {
+        if (!pageInfo?.hasNextPage || !pageInfo?.endCursor || !collectionHandle) return;
+
+        startTransition(async () => {
+            try {
+                const nextData = await loadMoreCollectionProducts(
+                    collectionHandle,
+                    pageInfo.endCursor,
+                    24,
+                    filters,
+                    sortKey,
+                    reverse
+                );
+                
+                if (nextData?.edges) {
+                    setProducts(prev => [...prev, ...nextData.edges]);
+                    setPageInfo(nextData.pageInfo);
+                }
+            } catch (error) {
+                console.error("Failed to load more products:", error);
+            }
+        });
+    };
+
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {products.map(({ node }: any, i: number) => {
+        <div className="flex flex-col w-full">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {products.map(({ node }: any, i: number) => {
                 const currency = node.priceRange?.minVariantPrice?.currencyCode || "USD";
                 const priceAmount = Number(node.priceRange?.minVariantPrice?.amount || 0);
                 const price = priceAmount.toLocaleString("es-UY");
@@ -111,6 +162,29 @@ export function ProductGrid({ products }: { products: any[] }) {
                     </Card>
                 );
             })}
+            </div>
+
+            {/* Load More Button */}
+            {pageInfo?.hasNextPage && (
+                <div className="flex justify-center mt-12 mb-4 w-full">
+                    <Button 
+                        variant="outline" 
+                        size="lg" 
+                        onClick={handleLoadMore} 
+                        disabled={isPending}
+                        className="w-full sm:w-auto px-8 py-6 rounded-md border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors shadow-sm bg-white font-medium disabled:opacity-70"
+                    >
+                        {isPending ? (
+                            <>
+                                <Loader2 className="w-5 h-5 mr-3 animate-spin text-slate-400" />
+                                Cargando más productos...
+                            </>
+                        ) : (
+                            "Cargar más productos"
+                        )}
+                    </Button>
+                </div>
+            )}
         </div>
     );
 }

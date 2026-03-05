@@ -7,13 +7,7 @@ import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { FilterSection, FilterItem, PriceRangeFilter } from "@/components/shop/SidebarFilter";
 import { ChevronDown } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationNext,
-    PaginationPrevious,
-} from "@/components/ui/pagination";
+
 
 export default async function CollectionPage(props: {
     params: Promise<{ handle: string }>;
@@ -93,18 +87,6 @@ export default async function CollectionPage(props: {
     const products = collection.products?.edges || [];
     const pageInfo = collection.products?.pageInfo;
 
-    // Helper para generar URLs de paginación manteniendo los filtros actuales
-    const buildPaginationUrl = (newCursor: string, newDirection: 'next' | 'prev') => {
-        const params = new URLSearchParams();
-        Object.entries(resolvedSearchParams).forEach(([key, value]) => {
-            if (value !== undefined) {
-                params.set(key, String(value));
-            }
-        });
-        params.set("cursor", newCursor);
-        params.set("direction", newDirection);
-        return `?${params.toString()}`;
-    };
 
     return (
         <div className="flex flex-col w-full bg-[#ebebeb] min-h-screen pt-4 pb-16">
@@ -187,33 +169,14 @@ export default async function CollectionPage(props: {
                         </div>
 
                         {products.length > 0 ? (
-                            <>
-                                <ProductGrid products={products} />
-
-                                {/* Navegación / Paginación */}
-                                {pageInfo && (pageInfo.hasNextPage || pageInfo.hasPreviousPage) && (
-                                    <div className="mt-12 mb-8 flex w-full">
-                                        <Pagination>
-                                            <PaginationContent>
-                                                <PaginationItem>
-                                                    <PaginationPrevious 
-                                                        href={pageInfo.hasPreviousPage && pageInfo.startCursor ? buildPaginationUrl(pageInfo.startCursor, 'prev') : '#'}
-                                                        className={!pageInfo.hasPreviousPage ? 'pointer-events-none opacity-50' : ''}
-                                                        aria-disabled={!pageInfo.hasPreviousPage}
-                                                    />
-                                                </PaginationItem>
-                                                <PaginationItem>
-                                                    <PaginationNext 
-                                                        href={pageInfo.hasNextPage && pageInfo.endCursor ? buildPaginationUrl(pageInfo.endCursor, 'next') : '#'}
-                                                        className={!pageInfo.hasNextPage ? 'pointer-events-none opacity-50' : ''}
-                                                        aria-disabled={!pageInfo.hasNextPage}
-                                                    />
-                                                </PaginationItem>
-                                            </PaginationContent>
-                                        </Pagination>
-                                    </div>
-                                )}
-                            </>
+                            <ProductGrid 
+                                products={products}
+                                pageInfo={pageInfo}
+                                collectionHandle={resolvedParams.handle}
+                                filters={filters.length > 0 ? filters : undefined}
+                                sortKey={sortKey}
+                                reverse={reverse}
+                            />
                         ) : (
                             <div className="py-24 text-center bg-white border rounded-md shadow-sm text-slate-600">
                                 <p className="text-xl font-medium text-slate-800 mb-2">No hay publicaciones que coincidan con tu búsqueda.</p>

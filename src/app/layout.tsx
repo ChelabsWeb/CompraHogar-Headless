@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/Footer";
 import { CartProvider } from "@/components/cart/CartProvider";
 import { shopifyFetch } from "@/lib/shopify";
 import { getCollectionsQuery } from "@/lib/queries";
+import { cookies } from "next/headers";
 
 // Pure clean geometry: Single highly readable sans-serif
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
@@ -27,10 +28,13 @@ export default async function RootLayout({
 
   const collections = body?.data?.collections?.edges?.map((edge: any) => edge.node) || [];
 
+  const cookieStore = await cookies();
+  const customerAccessToken = cookieStore.get("customerAccessToken")?.value;
+
   return (
     <html lang="es" className="scroll-smooth">
       <body className={`${inter.variable} font-sans min-h-screen bg-background text-foreground antialiased selection:bg-brand-teal/20 selection:text-brand-teal flex flex-col`}>
-        <CartProvider>
+        <CartProvider customerAccessToken={customerAccessToken}>
           <Header collections={collections} />
           <main className="flex-1 w-full pt-[116px]">
             {children}

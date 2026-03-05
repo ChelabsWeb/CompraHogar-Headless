@@ -54,6 +54,14 @@ export const getProductByHandleQuery = `
         name
         values
       }
+      material: metafield(namespace: "custom", key: "material") {
+        value
+        type
+      }
+      instruccionesLavado: metafield(namespace: "custom", key: "instrucciones_de_cuidado") {
+        value
+        type
+      }
       variants(first: 100) {
         edges {
           node {
@@ -214,8 +222,8 @@ export const getCartQuery = `
 `;
 
 export const createCartMutation = `
-  mutation createCart($lines: [CartLineInput!]) {
-    cartCreate(input: {lines: $lines}) {
+  mutation createCart($input: CartInput!) {
+    cartCreate(input: $input) {
       cart {
         ...cartDetails
       }
@@ -251,6 +259,59 @@ export const removeFromCartMutation = `
     cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
       cart {
         ...cartDetails
+      }
+    }
+  }
+  ${cartFragment}
+`;
+
+// ==========================================
+// SEARCH OPERATIONS
+// ==========================================
+
+export const predictiveSearchQuery = `
+  query predictiveSearch($query: String!, $limit: Int!) {
+    predictiveSearch(query: $query, limit: $limit) {
+      products {
+        id
+        title
+        handle
+        featuredImage {
+          url
+          altText
+          width
+          height
+        }
+        priceRange {
+          minVariantPrice {
+            amount
+            currencyCode
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const updateCartBuyerIdentityMutation = `
+  mutation cartBuyerIdentityUpdate($cartId: ID!, $buyerIdentity: CartBuyerIdentityInput!) {
+    cartBuyerIdentityUpdate(cartId: $cartId, buyerIdentity: $buyerIdentity) {
+      cart {
+        ...cartDetails
+        buyerIdentity {
+          email
+          phone
+          customer {
+            id
+            firstName
+            lastName
+            email
+          }
+        }
+      }
+      userErrors {
+        field
+        message
       }
     }
   }

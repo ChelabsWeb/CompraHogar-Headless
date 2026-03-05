@@ -7,7 +7,8 @@ import {
     addToCartMutation, 
     updateCartMutation, 
     removeFromCartMutation,
-    getCartQuery 
+    getCartQuery,
+    updateCartBuyerIdentityMutation
 } from "@/lib/queries";
 
 export type CartItem = {
@@ -37,7 +38,7 @@ export type CartContextType = {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-export function CartProvider({ children }: { children: ReactNode }) {
+export function CartProvider({ children, customerAccessToken }: { children: ReactNode, customerAccessToken?: string }) {
     const [cartId, setCartId] = useState<string | null>(null);
     const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
     const [items, setItems] = useState<CartItem[]>([]);
@@ -50,11 +51,30 @@ export function CartProvider({ children }: { children: ReactNode }) {
         const storedCartId = localStorage.getItem("shopify_cart_id");
         if (storedCartId) {
             setCartId(storedCartId);
-            fetchCart(storedCartId);
+            fetchCart(storedCartId).then((cartData) => {
+                // If we have a token and the cart isn't associated with this user, update identity
+                if (customerAccessToken && cartData?.buyerIdentity?.customer?.email === undefined) {
+                    associateCustomer(storedCartId, customerAccessToken);
+                }
+            });
         } else {
             setIsCartLoading(false);
         }
-    }, []);
+    }, [customerAccessToken]);
+
+    const associateCustomer = async (id: string, token: string) => {
+        try {
+            await shopifyFetch({
+                query: updateCartBuyerIdentityMutation,
+                variables: {
+                    cartId: id,
+                    buyerIdentity: { customerAccessToken: token }
+                }
+            });
+        } catch (error) {
+            console.error("Error associating cart to customer", error);
+        }
+    };
 
     const parseCartData = (cart: any) => {
         if (!cart) return;
@@ -88,13 +108,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
             });
             if (body?.data?.cart) {
                 parseCartData(body.data.cart);
+                return body.data.cart;
             } else {
                 // Cart might be invalid or expired
                 localStorage.removeItem("shopify_cart_id");
                 setCartId(null);
+                return null;
             }
         } catch (error) {
             console.error("Error fetching cart", error);
+            return null;
         } finally {
             setIsCartLoading(false);
         }
@@ -118,7 +141,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 // Create new cart
                 const { body } = await shopifyFetch({
                     query: createCartMutation,
-                    variables: { lines },
+                    variables: { 
+                        input: {
+                            lines,
+                            buyerIdentity: customerAccessToken ? { customerAccessToken } : undefined
+                        } 
+                    },
                 });
                 const newCart = body?.data?.cartCreate?.cart;
                 if (newCart) {
