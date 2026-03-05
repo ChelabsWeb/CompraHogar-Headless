@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, Suspense } from "react"
 import { ShoppingCart, Mail, AlertCircle, Trash2, Send, Check, Drill, Home, Zap, Droplet, Paintbrush, Plus, HelpCircle } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -48,7 +48,9 @@ export default function UITestPage() {
   return (
     <TooltipProvider>
       <ToastProvider>
-        <UITestContent />
+        <Suspense fallback={<div>Cargando UI...</div>}>
+          <UITestContent />
+        </Suspense>
       </ToastProvider>
     </TooltipProvider>
   )
@@ -60,12 +62,12 @@ function UITestContent() {
   const { toast } = useToast()
 
   const sampleCategories = [
-    { label: "Herramientas", href: "#", icon: Drill },
-    { label: "Obra Gruesa", href: "#", icon: Home },
-    { label: "Iluminación", href: "#", icon: Zap },
-    { label: "Sanitaria", href: "#", icon: Droplet },
-    { label: "Servicios B2B", href: "#", icon: Paintbrush },
-    { label: "Ver Todas", href: "#", icon: Plus },
+    { label: "Herramientas", href: "#", icon: "🛠️" },
+    { label: "Obra Gruesa", href: "#", icon: "🧱" },
+    { label: "Iluminación", href: "#", icon: "💡" },
+    { label: "Sanitaria", href: "#", icon: "🚿" },
+    { label: "Servicios B2B", href: "#", icon: "👷" },
+    { label: "Ver Todas", href: "#", icon: "✨" },
   ]
 
   return (
@@ -288,7 +290,7 @@ function UITestContent() {
           <div className="flex-1 flex flex-col items-center justify-center text-center opacity-60">
             <ShoppingCart className="w-12 h-12 mb-4 text-muted-foreground" />
             <p className="text-lg font-medium">Your cart is empty</p>
-            <p className="text-sm">Looks like you haven't added anything yet.</p>
+            <p className="text-sm">Looks like you haven&apos;t added anything yet.</p>
           </div>
           <div className="mt-auto pt-6 border-t font-medium">
             <Button className="w-full" size="lg" onClick={() => setIsDrawerOpen(false)}>

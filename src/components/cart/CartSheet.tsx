@@ -136,12 +136,12 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                         </div>
 
                         <div className="grid gap-3">
-                            <Button asChild size="lg" className="w-full font-bold" onClick={onClose} disabled={isCartLoading || !checkoutUrl}>
+                            <Button size="lg" className="w-full font-bold" onClick={() => { if (checkoutUrl) window.location.href = checkoutUrl; }} disabled={isCartLoading || !checkoutUrl}>
                                 {checkoutUrl ? (
-                                    <a href={checkoutUrl}>
+                                    <>
                                         <ShieldCheck className="w-4 h-4 mr-2" />
                                         Proceder al Checkout
-                                    </a>
+                                    </>
                                 ) : (
                                     <span>Calculando...</span>
                                 )}
@@ -157,7 +157,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                     <div className="flex-1 flex flex-col items-center justify-center text-center opacity-60">
                         <ShoppingCart className="w-12 h-12 mb-4 text-muted-foreground" />
                         <p className="text-lg font-medium">Your cart is empty</p>
-                        <p className="text-sm">Looks like you haven't added anything yet.</p>
+                        <p className="text-sm">Looks like you haven&apos;t added anything yet.</p>
                     </div>
                     <div className="mt-auto pt-6 border-t font-medium">
                         <Button className="w-full" size="lg" onClick={onClose}>

@@ -10,7 +10,7 @@ import { useCart } from "@/components/cart/CartProvider";
 
 
 export function ProductView({ product, isQuickView = false, onClose }: { product: any, isQuickView?: boolean, onClose?: () => void }) {
-    const { addToCart, isCartLoading } = useCart();
+    const { addToCart, isCartLoading, checkoutUrl } = useCart();
     const images = product.images?.edges || [];
     const price = product.priceRange?.minVariantPrice;
     const [isFavorite, setIsFavorite] = useState(false);
@@ -250,7 +250,23 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
 
                 {/* Botones de Acción */}
                 <div className="flex flex-col gap-3 mt-auto">
-                    <Button size={isQuickView ? "default" : "lg"} className="w-full text-base">
+                    <Button 
+                        size={isQuickView ? "default" : "lg"} 
+                        className="w-full text-base"
+                        onClick={async () => {
+                            if (currentVariant?.id) {
+                                const url = await addToCart(currentVariant.id, 1);
+                                if (url) {
+                                    window.location.href = url;
+                                } else if (checkoutUrl) {
+                                    window.location.href = checkoutUrl;
+                                } else {
+                                    setIsCartOpen(true);
+                                }
+                            }
+                        }}
+                        disabled={isCartLoading || !currentVariant?.id}
+                    >
                         Comprar ahora
                     </Button>
                     <Button 

@@ -26,6 +26,8 @@ export function FilterSection({ title, children, className }: FilterSectionProps
   )
 }
 
+import { Checkbox } from "@/components/ui/checkbox"
+
 export interface FilterItemProps {
   label: string
   count?: number
@@ -48,7 +50,12 @@ export function FilterItem({ label, count, isActive, paramKey, paramValue, onCli
     ? isActive 
     : (paramKey && paramValue ? searchParams.getAll(paramKey).includes(paramValue) : false)
 
-  const handleClick = () => {
+  const handleClick = (e?: React.MouseEvent | React.ChangeEvent) => {
+    if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
     if (onClick) {
       onClick()
       return
@@ -60,10 +67,6 @@ export function FilterItem({ label, count, isActive, paramKey, paramValue, onCli
       if (current.getAll(paramKey).includes(paramValue)) {
         // Toggle off: elimina este valor específico si soporta múltiples, o simplemente bórralo
         current.delete(paramKey, paramValue) // .delete() con 2 argumentos funciona en navegadores modernos y Next.js
-        // Fallback por si acaso:
-        if (!current.has(paramKey)) {
-          // Si delete con 2 args no es exacto, podemos filtrar manualmente, pero URLSearchParams en Next soporta bien
-        }
       } else {
         // Toggle on: agrega el valor
         current.append(paramKey, paramValue)
@@ -76,16 +79,28 @@ export function FilterItem({ label, count, isActive, paramKey, paramValue, onCli
   }
 
   return (
-    <button
-      onClick={handleClick}
+    <label
+      onClick={(e) => {
+        // Evitamos el doble trigger del label + checkbox
+        if ((e.target as HTMLElement).tagName !== 'INPUT') {
+            handleClick(e);
+        }
+      }}
       className={cn(
-        "flex items-center justify-between text-left group w-full transition-all duration-200 border rounded-lg px-3 py-2",
+        "flex items-center justify-between text-left group w-full transition-all duration-200 border rounded-lg px-3 py-2 cursor-pointer",
         isFilterActive 
           ? "border-primary bg-primary/5 font-medium text-primary shadow-sm" 
           : "border-transparent hover:border-slate-200 hover:bg-slate-50 text-slate-600 hover:text-slate-900"
       )}
     >
-      <span className="text-[14px]">{label}</span>
+      <div className="flex items-center gap-3">
+        <Checkbox 
+           checked={isFilterActive} 
+           onChange={handleClick} 
+           className="w-4 h-4 rounded-sm data-[state=checked]:bg-primary data-[state=checked]:text-white data-[state=checked]:border-primary border-slate-300"
+        />
+        <span className="text-[14px]">{label}</span>
+      </div>
       {count !== undefined && (
         <span className={cn(
           "text-[13px] transition-colors",
@@ -94,7 +109,7 @@ export function FilterItem({ label, count, isActive, paramKey, paramValue, onCli
           ({count})
         </span>
       )}
-    </button>
+    </label>
   )
 }
 

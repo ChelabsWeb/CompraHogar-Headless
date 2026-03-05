@@ -38,7 +38,7 @@ export default function DevolucionesYGarantias() {
           <section>
             <h2 className="text-2xl font-bold mb-4 text-primary">2. Casos Especiales y Restricciones</h2>
             <p className="text-muted-foreground leading-relaxed">
-              No se aceptarán devoluciones por "arrepentimiento de compra" una vez pasados los 5 días hábiles, ni sobre artículos hechos a medida (por ejemplo: cortes de cables, materiales fraccionados, pinturas preparadas a color), productos higiénicos que hayan sido desprecintados (asientos de sanitario) o artículos expuestos a liquidación y exhibidos como repuestos y/o saldos (informados previamente en su descripción).
+              No se aceptarán devoluciones por &quot;arrepentimiento de compra&quot; una vez pasados los 5 días hábiles, ni sobre artículos hechos a medida (por ejemplo: cortes de cables, materiales fraccionados, pinturas preparadas a color), productos higiénicos que hayan sido desprecintados (asientos de sanitario) o artículos expuestos a liquidación y exhibidos como repuestos y/o saldos (informados previamente en su descripción).
             </p>
           </section>
 

@@ -30,7 +30,7 @@ export type CartContextType = {
     totalQuantity: number;
     subtotal: number;
     isCartLoading: boolean;
-    addToCart: (variantId: string, quantity: number) => Promise<void>;
+    addToCart: (variantId: string, quantity: number) => Promise<string | undefined>;
     updateQuantity: (lineId: string, quantity: number) => Promise<void>;
     removeFromCart: (lineId: string) => Promise<void>;
 };
@@ -111,7 +111,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
                     query: addToCartMutation,
                     variables: { cartId, lines },
                 });
+                const newCheckoutUrl = body?.data?.cartLinesAdd?.cart?.checkoutUrl;
                 parseCartData(body?.data?.cartLinesAdd?.cart);
+                return newCheckoutUrl;
             } else {
                 // Create new cart
                 const { body } = await shopifyFetch({
@@ -123,6 +125,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
                     setCartId(newCart.id);
                     localStorage.setItem("shopify_cart_id", newCart.id);
                     parseCartData(newCart);
+                    return newCart.checkoutUrl;
                 }
             }
         } catch (error) {
@@ -130,6 +133,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         } finally {
             setIsCartLoading(false);
         }
+        return undefined;
     };
 
     const updateQuantity = async (lineId: string, quantity: number) => {

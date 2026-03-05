@@ -24,16 +24,22 @@ export interface CategoryShortcutProps {
 }
 
 export function CategoryShortcutItem({ label, href, icon: iconName }: CategoryShortcutProps) {
-  const Icon = iconMap[iconName] || Home;
+  const Icon = iconMap[iconName]
+  const isEmoji = !Icon
+
   return (
     <Link 
       href={href} 
-      className="group flex flex-col items-center gap-3 transition-opacity hover:opacity-80"
+      className="group flex flex-col items-center gap-4 transition-opacity hover:opacity-80"
     >
-      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm ring-1 ring-slate-100 transition-transform duration-300 ease-in-out group-hover:scale-105 group-hover:shadow-md">
-        <Icon className="h-7 w-7 text-[#21645d]" strokeWidth={1.5} />
+      <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-white shadow-sm ring-1 ring-slate-100 transition-transform duration-300 ease-in-out group-hover:scale-105 group-hover:shadow-md">
+        {isEmoji ? (
+          <span className="text-4xl drop-shadow-sm">{iconName}</span>
+        ) : (
+          <Icon className="h-8 w-8 text-[#21645d]" strokeWidth={1.5} />
+        )}
       </div>
-      <span className="text-center text-[13px] font-medium text-slate-600 transition-colors group-hover:text-[#21645d]">
+      <span className="text-center text-[14px] font-semibold text-slate-700 transition-colors group-hover:text-[#21645d]">
         {label}
       </span>
     </Link>
