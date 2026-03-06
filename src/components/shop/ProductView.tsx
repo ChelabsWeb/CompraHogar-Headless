@@ -61,10 +61,10 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
     };
 
     return (
-        <div className="w-full flex flex-col lg:flex-row h-full lg:min-h-[60vh] bg-white text-slate-900 overflow-hidden lg:rounded-3xl lg:border border-slate-200 shadow-sm">
+        <div className="w-full flex flex-col lg:flex-row bg-transparent text-slate-900">
 
             {/* LADO IZQUIERDO: Galería de Fotos Inmersiva */}
-            <div className="w-full lg:w-[55%] relative flex flex-col bg-slate-50 border-r border-slate-200 pb-6 lg:pb-0">
+            <div className="w-full lg:w-[55%] relative flex flex-col bg-transparent pb-6 lg:pb-0">
                 {/* Badge Superior */}
                 <div className="absolute top-6 lg:top-10 left-6 lg:left-10 z-20 flex flex-col gap-2 pointer-events-none">
                     <Badge variant="default" className="shadow-lg backdrop-blur-md px-4 py-1.5 uppercase tracking-widest text-[10px]">
@@ -72,63 +72,37 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
                     </Badge>
                 </div>
 
-                {/* Imagen Principal Masiva */}
-                <div className="relative flex-1 flex items-center justify-center overflow-hidden min-h-[50vh] lg:min-h-full w-full group">
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-200/50 z-10" />
-
+                {/* Imagen Principal Pura */}
+                <div className="relative flex items-center justify-center w-full aspect-square lg:aspect-[4/3] mx-auto mb-8 group bg-white rounded-3xl overflow-hidden">
                     {activeImage ? (
                         <Image
                             src={activeImage.url}
                             alt={activeImage.altText || product.title}
                             fill
                             priority
-                            className="object-contain p-12 lg:p-24 transition-transform duration-700 ease-out group-hover:scale-105 z-0 pointer-events-none"
+                            className="object-contain transition-transform duration-700 ease-out z-0 pointer-events-none"
                             sizes="(max-width: 1024px) 100vw, 55vw"
                         />
                     ) : (
                         <div className="text-slate-400 text-sm font-bold uppercase tracking-widest">Sin Imagen</div>
                     )}
-
-                    {/* Controles de navefación superpuestos estilo cámara */}
-                    {!isQuickView && images.length > 1 && (
-                        <div className="absolute right-6 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-20">
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                onClick={() => setActiveImageIndex(prev => Math.max(0, prev - 1))}
-                                className="rounded-full bg-white/80 backdrop-blur-md shadow-sm border-slate-200"
-                                disabled={activeImageIndex === 0}
-                            >
-                                <ChevronLeft className="w-5 h-5" />
-                            </Button>
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                onClick={() => setActiveImageIndex(prev => Math.min(images.length - 1, prev + 1))}
-                                className="rounded-full bg-white/80 backdrop-blur-md shadow-sm border-slate-200"
-                                disabled={activeImageIndex === images.length - 1}
-                            >
-                                <ChevronRight className="w-5 h-5" />
-                            </Button>
-                        </div>
-                    )}
                 </div>
 
                 {/* Miniaturas Inferiores (Film Strip) */}
                 {!isQuickView && (
-                    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 lg:left-10 lg:translate-x-0 flex gap-3 px-6 overflow-x-auto no-scrollbar max-w-full z-20">
+                    <div className="flex flex-wrap gap-3 px-2 z-20 mb-8 lg:mb-0 justify-center max-w-xl mx-auto">
                         {images.map(({ node }: any, i: number) => (
                             <button
                                 key={i}
                                 onClick={() => setActiveImageIndex(i)}
-                                className={`relative w-16 h-16 rounded-xl overflow-hidden shrink-0 transition-all duration-300 ${activeImageIndex === i ? "ring-2 ring-primary ring-offset-2 scale-110 shadow-lg" : "border border-slate-200 opacity-60 hover:opacity-100"} bg-white`}
+                                className={`relative w-20 h-20 rounded-xl overflow-hidden shrink-0 transition-all duration-300 ${activeImageIndex === i ? "ring-2 ring-primary ring-offset-2 scale-105 shadow-md" : "border border-slate-200 opacity-60 hover:opacity-100 hover:scale-105"} bg-white`}
                             >
                                 <Image
                                     src={node.url}
                                     alt={node.altText || `Vista ${i + 1}`}
                                     fill
                                     className="object-cover transition-transform"
-                                    sizes="64px"
+                                    sizes="80px"
                                 />
                             </button>
                         ))}
@@ -137,7 +111,7 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
             </div>
 
             {/* LADO DERECHO: Especificaciones & Compra (Buy Box ML Style) */}
-            <div className="w-full lg:w-[45%] flex flex-col h-full lg:max-h-[85vh] overflow-y-auto bg-white p-5 lg:p-6 custom-scrollbar">
+            <div className="w-full lg:w-[45%] flex flex-col bg-transparent p-5 lg:px-12 lg:py-6">
 
                 {/* Meta info & Title */}
                 <div className="mb-2 text-[13px] text-slate-500 flex items-center justify-between">
@@ -183,98 +157,6 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
                         Mismo precio en <span className="text-green-500">12 cuotas de ${(Number(displayPrice?.amount || 0) / 12).toLocaleString("es-UY", { maximumFractionDigits: 0 })}</span>
                     </span>
                     <a href="#" className="text-[13px] text-orange-500 mt-1 hover:text-orange-600">Ver los medios de pago</a>
-                </div>
-
-                {/* Free Shipping Highlight using Alert component */}
-                <div className="mb-6">
-                    <Alert variant="success" className="bg-emerald-50 border-emerald-100 text-emerald-800">
-                        {/* <Truck className="h-4 w-4" /> SVG fallback since Truck isn't imported from lucide initially unless we add it, Using original SVG */}
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
-                        </svg>
-                        <AlertTitle className="text-[15px] font-medium text-emerald-700">Llega gratis mañana</AlertTitle>
-                        <AlertDescription className="text-[13px] text-emerald-600/80 mt-0.5">
-                            Comprando dentro de las próximas 5 hs. <a href="#" className="font-medium underline hover:text-emerald-700">Ver opciones de envío</a>
-                        </AlertDescription>
-                    </Alert>
-                </div>
-
-                {/* Returns Highlight */}
-                <div className="mb-5 flex items-start gap-3 border-b border-slate-100 pb-5">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-slate-400 mt-0.5 ml-0.5">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
-                    </svg>
-                    <div className="flex flex-col">
-                        <span className="text-[15px] font-normal text-slate-900"><span className="text-green-500 font-medium">Devolución gratis.</span> Tenés 30 días desde que lo recibís.</span>
-                        <a href="#" className="text-[13px] text-orange-500 mt-0.5 hover:text-orange-600">Conocer más</a>
-                    </div>
-                </div>
-
-                {/* Tabs: Description, Specs, Warranty */}
-                <div className="mb-6">
-                    <Tabs defaultValue="description">
-                        <TabsList className="flex w-full overflow-x-auto no-scrollbar justify-start border-b border-slate-200 rounded-none bg-transparent p-0 h-auto">
-                            <TabsTrigger value="description" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-2.5 px-4">Descripción</TabsTrigger>
-                            <TabsTrigger value="specs" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-2.5 px-4">Ficha Técnica</TabsTrigger>
-                            <TabsTrigger value="warranty" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-2.5 px-4">Garantía</TabsTrigger>
-                        </TabsList>
-                        
-                        <TabsContent value="description" className="p-4 bg-slate-50 rounded-b-xl border border-t-0 border-slate-100 text-sm text-slate-700 leading-relaxed mt-0">
-                            {product.descriptionHtml ? (
-                                <div dangerouslySetInnerHTML={{ __html: product.descriptionHtml }} className="prose prose-sm max-w-none prose-slate" />
-                            ) : (
-                                <p>{product.description || "No hay descripción disponible para este producto."}</p>
-                            )}
-                        </TabsContent>
-
-                        <TabsContent value="specs" className="p-4 bg-slate-50 rounded-b-xl border border-t-0 border-slate-100 mt-0 text-sm">
-                            {(product?.material?.value || product?.instruccionesLavado?.value) ? (
-                                <dl className="space-y-2">
-                                    {product?.material?.value && (
-                                        <div className="flex justify-between pb-2 border-b border-slate-200/60 last:border-0 last:pb-0">
-                                            <dt className="text-slate-500 font-medium">Material</dt>
-                                            <dd className="text-slate-900 text-right">
-                                                {product.material.value.trim().startsWith('[') 
-                                                    ? (() => { try { return JSON.parse(product.material.value).join(', '); } catch { return product.material.value; } })() 
-                                                    : product.material.value}
-                                            </dd>
-                                        </div>
-                                    )}
-                                    {product?.instruccionesLavado?.value && (
-                                        <div className="flex justify-between pb-2 border-b border-slate-200/60 last:border-0 last:pb-0">
-                                            <dt className="text-slate-500 font-medium">Cuidado</dt>
-                                            <dd className="text-slate-900 text-right">
-                                                {product.instruccionesLavado.value.trim().startsWith('[') 
-                                                    ? (() => { try { return JSON.parse(product.instruccionesLavado.value).join(', '); } catch { return product.instruccionesLavado.value; } })() 
-                                                    : product.instruccionesLavado.value}
-                                            </dd>
-                                        </div>
-                                    )}
-                                </dl>
-                            ) : (
-                                <p className="text-sm text-slate-500 text-center py-4">No hay especificaciones técnicas adicionales.</p>
-                            )}
-                        </TabsContent>
-
-                        <TabsContent value="warranty" className="p-4 bg-slate-50 rounded-b-xl border border-t-0 border-slate-100 mt-0 text-sm text-slate-700 space-y-4">
-                            <div className="flex items-start gap-3">
-                                <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                                <div>
-                                    <p className="font-medium text-slate-900 leading-none mb-1">Compra Protegida</p>
-                                    <p className="text-slate-600 text-[13px]">Recibe el producto que esperabas o te devolvemos tu dinero.</p>
-                                </div>
-                            </div>
-                            <div className="flex items-start gap-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-slate-400 shrink-0 mt-0.5">
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-                                </svg>
-                                <div>
-                                    <p className="font-medium text-slate-900 leading-none mb-1">Garantía del vendedor</p>
-                                    <p className="text-slate-600 text-[13px]">6 meses de garantía de fábrica frente a defectos de manufactura.</p>
-                                </div>
-                            </div>
-                        </TabsContent>
-                    </Tabs>
                 </div>
 
                 {/* Options / Selectors */}
@@ -395,6 +277,98 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
                     </Button>
                     <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
                 </div>
+                {/* Free Shipping Highlight using Alert component */}
+                <div className="mb-6">
+                    <Alert variant="success" className="bg-emerald-50 border-emerald-100 text-emerald-800">
+                        {/* <Truck className="h-4 w-4" /> SVG fallback since Truck isn't imported from lucide initially unless we add it, Using original SVG */}
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+                        </svg>
+                        <AlertTitle className="text-[15px] font-medium text-emerald-700">Llega gratis mañana</AlertTitle>
+                        <AlertDescription className="text-[13px] text-emerald-600/80 mt-0.5">
+                            Comprando dentro de las próximas 5 hs. <a href="#" className="font-medium underline hover:text-emerald-700">Ver opciones de envío</a>
+                        </AlertDescription>
+                    </Alert>
+                </div>
+
+                {/* Returns Highlight */}
+                <div className="mb-5 flex items-start gap-3 border-b border-slate-100 pb-5">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-slate-400 mt-0.5 ml-0.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+                    </svg>
+                    <div className="flex flex-col">
+                        <span className="text-[15px] font-normal text-slate-900"><span className="text-green-500 font-medium">Devolución gratis.</span> Tenés 30 días desde que lo recibís.</span>
+                        <a href="#" className="text-[13px] text-orange-500 mt-0.5 hover:text-orange-600">Conocer más</a>
+                    </div>
+                </div>
+
+                {/* Tabs: Description, Specs, Warranty */}
+                <div className="mb-6">
+                    <Tabs defaultValue="description">
+                        <TabsList className="flex w-full overflow-x-auto no-scrollbar justify-start border-b border-slate-200 rounded-none bg-transparent p-0 h-auto">
+                            <TabsTrigger value="description" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-2.5 px-4">Descripción</TabsTrigger>
+                            <TabsTrigger value="specs" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-2.5 px-4">Ficha Técnica</TabsTrigger>
+                            <TabsTrigger value="warranty" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-2.5 px-4">Garantía</TabsTrigger>
+                        </TabsList>
+                        
+                        <TabsContent value="description" className="p-4 bg-slate-50 rounded-b-xl border border-t-0 border-slate-100 text-sm text-slate-700 leading-relaxed mt-0">
+                            {product.descriptionHtml ? (
+                                <div dangerouslySetInnerHTML={{ __html: product.descriptionHtml }} className="prose prose-sm max-w-none prose-slate" />
+                            ) : (
+                                <p>{product.description || "No hay descripción disponible para este producto."}</p>
+                            )}
+                        </TabsContent>
+
+                        <TabsContent value="specs" className="p-4 bg-slate-50 rounded-b-xl border border-t-0 border-slate-100 mt-0 text-sm">
+                            {(product?.material?.value || product?.instruccionesLavado?.value) ? (
+                                <dl className="space-y-2">
+                                    {product?.material?.value && (
+                                        <div className="flex justify-between pb-2 border-b border-slate-200/60 last:border-0 last:pb-0">
+                                            <dt className="text-slate-500 font-medium">Material</dt>
+                                            <dd className="text-slate-900 text-right">
+                                                {product.material.value.trim().startsWith('[') 
+                                                    ? (() => { try { return JSON.parse(product.material.value).join(', '); } catch { return product.material.value; } })() 
+                                                    : product.material.value}
+                                            </dd>
+                                        </div>
+                                    )}
+                                    {product?.instruccionesLavado?.value && (
+                                        <div className="flex justify-between pb-2 border-b border-slate-200/60 last:border-0 last:pb-0">
+                                            <dt className="text-slate-500 font-medium">Cuidado</dt>
+                                            <dd className="text-slate-900 text-right">
+                                                {product.instruccionesLavado.value.trim().startsWith('[') 
+                                                    ? (() => { try { return JSON.parse(product.instruccionesLavado.value).join(', '); } catch { return product.instruccionesLavado.value; } })() 
+                                                    : product.instruccionesLavado.value}
+                                            </dd>
+                                        </div>
+                                    )}
+                                </dl>
+                            ) : (
+                                <p className="text-sm text-slate-500 text-center py-4">No hay especificaciones técnicas adicionales.</p>
+                            )}
+                        </TabsContent>
+
+                        <TabsContent value="warranty" className="p-4 bg-slate-50 rounded-b-xl border border-t-0 border-slate-100 mt-0 text-sm text-slate-700 space-y-4">
+                            <div className="flex items-start gap-3">
+                                <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                                <div>
+                                    <p className="font-medium text-slate-900 leading-none mb-1">Compra Protegida</p>
+                                    <p className="text-slate-600 text-[13px]">Recibe el producto que esperabas o te devolvemos tu dinero.</p>
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-slate-400 shrink-0 mt-0.5">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                                </svg>
+                                <div>
+                                    <p className="font-medium text-slate-900 leading-none mb-1">Garantía del vendedor</p>
+                                    <p className="text-slate-600 text-[13px]">6 meses de garantía de fábrica frente a defectos de manufactura.</p>
+                                </div>
+                            </div>
+                        </TabsContent>
+                    </Tabs>
+                </div>
+
                 </div>
 
             </div>

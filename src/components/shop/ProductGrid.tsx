@@ -7,8 +7,10 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ProductQuickView } from "@/components/shop/ProductQuickView";
+import ActiveFilters from "@/components/shop/ActiveFilters";
 import { useState, useTransition } from "react";
 import { loadMoreCollectionProducts } from "@/app/actions/collection";
+import { EmptyState } from "@/components/shop/EmptyState";
 
 function FavoriteButton() {
     const [isFavorite, setIsFavorite] = useState(false);
@@ -59,7 +61,9 @@ export function ProductGrid({
     const [pageInfo, setPageInfo] = useState(initialPageInfo);
     const [isPending, startTransition] = useTransition();
 
-    if (!products || products.length === 0) return null;
+    if (!products || products.length === 0) {
+        return <EmptyState />;
+    }
 
     const handleLoadMore = () => {
         if (!pageInfo?.hasNextPage || !pageInfo?.endCursor || !collectionHandle) return;
@@ -87,6 +91,7 @@ export function ProductGrid({
 
     return (
         <div className="flex flex-col w-full">
+            <ActiveFilters />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {products.map(({ node }: any, i: number) => {
                 const currency = node.priceRange?.minVariantPrice?.currencyCode || "USD";

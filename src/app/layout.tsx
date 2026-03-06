@@ -30,12 +30,13 @@ export default async function RootLayout({
 
   const cookieStore = await cookies();
   const customerAccessToken = cookieStore.get("customerAccessToken")?.value;
+  const isLoggedIn = !!customerAccessToken;
 
   return (
     <html lang="es" className="scroll-smooth">
       <body className={`${inter.variable} font-sans min-h-screen bg-background text-foreground antialiased selection:bg-brand-teal/20 selection:text-brand-teal flex flex-col`}>
         <CartProvider customerAccessToken={customerAccessToken}>
-          <Header collections={collections} />
+          <Header collections={collections} isLoggedIn={isLoggedIn} />
           <main className="flex-1 w-full pt-[116px]">
             {children}
           </main>

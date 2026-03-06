@@ -73,7 +73,7 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
     const recommendations = recBody?.data?.productRecommendations || [];
 
     return (
-        <div className="min-h-screen bg-[#f8fafc] w-full pt-20 lg:pt-28 pb-12">
+        <div className="min-h-screen bg-[#f8fafc] w-full pt-8 lg:pt-12 pb-12">
             <Container>
                 <div className="mb-6 hidden md:block">
                     <Breadcrumbs 

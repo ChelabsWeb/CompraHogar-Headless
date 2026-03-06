@@ -151,6 +151,17 @@ export const getCollectionWithProductsQuery = `
         reverse: $reverse
         after: $cursor
       ) {
+        filters {
+          id
+          label
+          type
+          values {
+            id
+            label
+            count
+            input
+          }
+        }
         pageInfo {
           hasNextPage
           hasPreviousPage

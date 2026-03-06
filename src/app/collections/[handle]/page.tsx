@@ -5,8 +5,9 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { FilterSection, FilterItem, PriceRangeFilter } from "@/components/shop/SidebarFilter";
+import { StoreFilters } from "@/components/shop/StoreFilters";
 import { ChevronDown } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SortDropdown } from "@/components/shop/SortDropdown";
 
 
 export default async function CollectionPage(props: {
@@ -20,8 +21,20 @@ export default async function CollectionPage(props: {
         return notFound();
     }
 
-    // 1. Construimos los filtros para Shopify
+    // 1. Extraemos e hidratamos los filtros directamente desde la URL
+    const activeFiltersUrl = resolvedSearchParams.filter;
     const filters: any[] = [];
+
+    if (activeFiltersUrl) {
+        const filtersArray = Array.isArray(activeFiltersUrl) ? activeFiltersUrl : [activeFiltersUrl];
+        filtersArray.forEach(f => {
+            try {
+                filters.push(JSON.parse(f));
+            } catch (e) {
+                console.error("Error parseando filtro de URL", e);
+            }
+        });
+    }
     
     const minPriceStr = Array.isArray(resolvedSearchParams.minPrice) ? resolvedSearchParams.minPrice[0] : resolvedSearchParams.minPrice;
     const maxPriceStr = Array.isArray(resolvedSearchParams.maxPrice) ? resolvedSearchParams.maxPrice[0] : resolvedSearchParams.maxPrice;
@@ -86,6 +99,7 @@ export default async function CollectionPage(props: {
 
     const products = collection.products?.edges || [];
     const pageInfo = collection.products?.pageInfo;
+    const shopifyFilters = collection.products?.filters || [];
 
 
     return (
@@ -114,26 +128,12 @@ export default async function CollectionPage(props: {
                             {products.length} resultados
                         </p>
 
-                        {/* Filtro: Ubicación */}
-                        <FilterSection title="Ubicación">
-                            <FilterItem label="Montevideo" count={24} />
-                            <FilterItem label="Canelones" count={8} />
-                            <FilterItem label="Maldonado" count={3} />
-                        </FilterSection>
-
-                        {/* Filtro: Precio */}
-                        <FilterSection title="Precio">
-                            <FilterItem label="Hasta $ 2.500" />
-                            <FilterItem label="$ 2.500 a $ 10.000" />
-                            <FilterItem label="Más de $ 10.000" />
-                            <PriceRangeFilter />
-                        </FilterSection>
-
-                        {/* Filtro: Condición */}
-                        <FilterSection title="Condición">
-                            <FilterItem label="Nuevo" count={products.length} isActive />
-                            <FilterItem label="Reacondicionado" count={2} />
-                        </FilterSection>
+                        {/* Renderizamos el componente Cliente inyectando los filtros provistos por Shopify */}
+                        {shopifyFilters.length > 0 ? (
+                            <StoreFilters filters={shopifyFilters} />
+                        ) : (
+                            <p className="text-sm text-slate-500">No hay filtros disponibles.</p>
+                        )}
                     </aside>
 
                     {/* LADO DERECHO: Product Grid Area */}
@@ -153,18 +153,8 @@ export default async function CollectionPage(props: {
 
                             <div className="flex items-center gap-2 ml-auto lg:ml-0">
                                 <span className="text-[14px] font-semibold text-slate-900 hidden sm:inline">Ordenar por:</span>
-                                {/* Aquí el defaultValue debería hidratarse con el sortParams actual si corresponde */}
-                                <Select defaultValue={sortVal || "relevance"}>
-                                    <SelectTrigger className="w-[180px] bg-white h-9 border-slate-200">
-                                        <SelectValue placeholder="Ordenar por" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="relevance">Más relevantes</SelectItem>
-                                        <SelectItem value="price-asc">Menor precio</SelectItem>
-                                        <SelectItem value="price-desc">Mayor precio</SelectItem>
-                                        <SelectItem value="newest">Más recientes</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                                {/* Client Component hidratado con el currentSort desde la URL */}
+                                <SortDropdown currentSort={sortVal || "relevance"} />
                             </div>
                         </div>
 

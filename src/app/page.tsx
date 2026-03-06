@@ -1,20 +1,41 @@
+import { Suspense } from "react";
 import { shopifyFetch } from "@/lib/shopify";
 import { getProductsQuery } from "@/lib/queries";
 import { ProductGrid } from "@/components/shop/ProductGrid";
+import { ProductGridSkeleton } from "@/components/shop/ProductCardSkeleton";
 import Link from "next/link";
-import { ShieldCheck, Truck, CreditCard } from "lucide-react";
+import { ShieldCheck, Truck, CreditCard, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Container } from "@/components/ui/container";
 import { CategoryShortcutsList } from "@/components/shop/CategoryShortcuts";
 
-export default async function Home() {
-  const { body } = await shopifyFetch({
-    query: getProductsQuery,
-    variables: { first: 8 },
-  });
+async function FeaturedProducts() {
+  try {
+    const { body } = await shopifyFetch({
+      query: getProductsQuery,
+      variables: { first: 8 },
+    });
 
-  const products = body?.data?.products?.edges || [];
+    const products = body?.data?.products?.edges || [];
+
+    if (!products.length) return null;
+
+    return <ProductGrid products={products} />;
+  } catch (error) {
+    return (
+      <div className="w-full flex-col py-12 px-4 border border-red-100 bg-red-50/50 rounded-xl flex items-center justify-center text-center">
+        <AlertCircle className="w-8 h-8 text-red-500 mb-3 opacity-80" />
+        <h3 className="text-red-700 font-semibold mb-1">Error al conectar con el catálogo</h3>
+        <p className="text-red-600/80 text-sm max-w-sm">
+          No pudimos cargar los productos destacados en este momento. Por favor, recarga la página.
+        </p>
+      </div>
+    );
+  }
+}
+
+export default function Home() {
 
   const categories = [
     { label: "Herramientas", href: "/collections/herramientas", icon: "🛠️" },
@@ -144,26 +165,26 @@ export default async function Home() {
       </section>
 
       {/* SECTION: Featured Products */}
-      {products.length > 0 && (
-        <section className="w-full py-20 mt-8 border-t border-slate-100 bg-slate-50/50">
-          <Container>
-            <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-6">
-              <div className="space-y-3">
-                <span className="text-primary text-xs font-bold uppercase tracking-widest block">Productos Populares</span>
-                <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-slate-800">Equipamiento Destacado</h2>
-                <p className="text-muted-foreground text-lg">
-                  Nuestra selección de alto rendimiento para esta semana.
-                </p>
-              </div>
-              <Button asChild variant="outline" className="border-slate-200 text-slate-700 hover:bg-slate-100 rounded-xl">
-                <Link href="/collections/all">Ver catálogo completo</Link>
-              </Button>
+      <section className="w-full py-20 mt-8 border-t border-slate-100 bg-slate-50/50">
+        <Container>
+          <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-6">
+            <div className="space-y-3">
+              <span className="text-primary text-xs font-bold uppercase tracking-widest block">Productos Populares</span>
+              <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-slate-800">Equipamiento Destacado</h2>
+              <p className="text-muted-foreground text-lg">
+                Nuestra selección de alto rendimiento para esta semana.
+              </p>
             </div>
+            <Button asChild variant="outline" className="border-slate-200 text-slate-700 hover:bg-slate-100 rounded-xl">
+              <Link href="/collections/all">Ver catálogo completo</Link>
+            </Button>
+          </div>
 
-            <ProductGrid products={products} />
-          </Container>
-        </section>
-      )}
+          <Suspense fallback={<ProductGridSkeleton count={8} />}>
+            <FeaturedProducts />
+          </Suspense>
+        </Container>
+      </section>
     </div>
   );
 }

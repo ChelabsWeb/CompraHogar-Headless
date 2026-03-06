@@ -58,7 +58,7 @@ export default function LoginForm() {
               Contraseña
             </label>
             <Link 
-              href="/login/recuperar" 
+              href="/olvide-password" 
               className="text-xs text-primary font-medium hover:underline"
               tabIndex={-1}
             >

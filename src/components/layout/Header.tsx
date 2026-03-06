@@ -5,12 +5,16 @@ import Image from "next/image";
 import { useScroll, useMotionValueEvent } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ShoppingBag, Search, Menu, ChevronDown, MapPin, User, ChevronRight } from "lucide-react";
+import { ShoppingBag, Search, Menu, ChevronDown, User, ChevronRight } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetClose } from "@/components/ui/sheet";
 import { CartDrawer } from "@/components/cart/CartSheet";
 import { useCart } from "@/components/cart/CartProvider";
 
 import { PredictiveSearch } from "@/components/shared/PredictiveSearch";
+import { LocationSelector } from "@/components/shop/LocationSelector";
+import { MegaMenu } from "./MegaMenu";
+import { LocaleSwitcher } from "./LocaleSwitcher";
+import MobileMenu from "./MobileMenu";
 
 const CATEGORIES = [
     { name: "Obra Gruesa", handle: "obra-gruesa" },
@@ -22,7 +26,7 @@ const CATEGORIES = [
     { name: "Servicios", handle: "servicios-y-alquileres" }
 ];
 
-export function Header({ collections = [] }: { collections?: any[] }) {
+export function Header({ collections = [], isLoggedIn }: { collections?: any[], isLoggedIn?: boolean }) {
     const { scrollY } = useScroll();
     const pathname = usePathname();
     const [isScrolled, setIsScrolled] = useState(false);
@@ -43,20 +47,25 @@ export function Header({ collections = [] }: { collections?: any[] }) {
                 <div className="container mx-auto max-w-[1200px] px-4">
 
                     {/* TOP ROW: Logo, Search, Ad */}
-                    <div className="h-[72px] flex items-center justify-between gap-8 pt-2">
-                        {/* Logo */}
-                        <Link href="/" className="shrink-0 flex items-center">
-                            <div className="relative w-[210px] h-[56px]">
-                                <Image
-                                    src="/logo.png"
-                                    alt="CompraHogar"
-                                    fill
-                                    className="object-contain object-left"
-                                    priority
-                                    sizes="210px"
-                                />
+                    <div className="h-[72px] flex items-center justify-between gap-4 lg:gap-8 pt-2">
+                        {/* Logo and Mobile Menu */}
+                        <div className="flex items-center gap-2 lg:gap-0 shrink-0">
+                            <div className="lg:hidden flex items-center -ml-2">
+                                <MobileMenu />
                             </div>
-                        </Link>
+                            <Link href="/" className="flex items-center">
+                                <div className="relative w-[150px] sm:w-[210px] h-[40px] sm:h-[56px]">
+                                    <Image
+                                        src="/logo.png"
+                                        alt="CompraHogar"
+                                        fill
+                                        className="object-contain object-left"
+                                        priority
+                                        sizes="(max-width: 640px) 150px, 210px"
+                                    />
+                                </div>
+                            </Link>
+                        </div>
 
                         {/* Huge Central Search */}
                         <div className="flex-1 max-w-[600px]">
@@ -65,12 +74,7 @@ export function Header({ collections = [] }: { collections?: any[] }) {
 
                         {/* Right Promo Box */}
                         <div className="hidden lg:flex shrink-0 items-center justify-end w-[180px]">
-                            <Link href="/collections/servicios" className="flex items-center gap-2 group">
-                                <div className="text-right flex flex-col justify-center">
-                                    <p className="text-[13px] text-slate-800 font-bold leading-tight group-hover:text-blue-600 transition-colors">Servicios Premium</p>
-                                    <p className="text-[12px] text-[#21645d] font-semibold">Instalación Pyme</p>
-                                </div>
-                            </Link>
+                            <LocaleSwitcher className="h-9 px-3 py-2 border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground rounded-md text-foreground transition-colors" />
                         </div>
                     </div>
 
@@ -82,35 +86,11 @@ export function Header({ collections = [] }: { collections?: any[] }) {
                         <div className="h-[44px] flex items-center justify-between text-white/95 text-[13px]">
 
                             {/* Location Pin */}
-                            <button className="flex items-center gap-1.5 hover:bg-black/10 px-2 py-1 rounded-sm transition-colors group">
-                                <MapPin className="w-4 h-4 opacity-80 group-hover:opacity-100" />
-                                <div className="flex items-center gap-1 leading-none">
-                                    <span className="opacity-80">Enviar a</span>
-                                    <span className="font-semibold hidden sm:block">Montevideo 11000</span>
-                                </div>
-                            </button>
+                            <LocationSelector />
 
                             {/* Category & Quick Links */}
                             <nav className="hidden lg:flex items-center gap-1 flex-1 px-8">
-                                <div className="relative group/menu h-[44px] flex items-center">
-                                    <button className="flex items-center gap-1.5 px-3 h-full font-medium hover:bg-black/10 transition-colors cursor-pointer rounded-sm">
-                                        Categorías <ChevronDown className="w-3.5 h-3.5 opacity-70" />
-                                    </button>
-
-                                    {/* Simple Dropdown Menu */}
-                                    <div className="absolute top-full left-0 w-[240px] bg-white rounded-sm shadow-xl py-2 opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all duration-200 z-50">
-                                        {CATEGORIES.map(cat => (
-                                            <Link key={cat.handle} href={`/collections/${cat.handle}`} className="flex items-center justify-between px-5 py-2.5 text-[14px] text-slate-700 hover:bg-slate-50 hover:text-blue-600 cursor-pointer">
-                                                {cat.name}
-                                                <ChevronRight className="w-3.5 h-3.5 opacity-40" />
-                                            </Link>
-                                        ))}
-                                        <div className="h-[1px] w-full bg-slate-100 my-1"></div>
-                                        <Link href="/collections/all" className="block px-5 py-2.5 text-[14px] text-blue-600 font-semibold hover:bg-slate-50">
-                                            Explorar todo el catálogo
-                                        </Link>
-                                    </div>
-                                </div>
+                                <MegaMenu collections={collections} />
 
                                 <Link href="/collections/ofertas" className="px-3 py-2 font-medium hover:bg-black/10 rounded-sm transition-colors">Ofertas</Link>
                                 <Link href="/institucional/historial" className="px-3 py-2 font-medium hover:bg-black/10 rounded-sm transition-colors">Historial</Link>
@@ -120,6 +100,7 @@ export function Header({ collections = [] }: { collections?: any[] }) {
 
                             {/* User & Cart Actions */}
                             <div className="flex items-center gap-2">
+                                
                                 <Link href="/cuenta" className="hidden sm:flex items-center gap-1.5 font-medium hover:bg-black/10 px-3 py-1.5 rounded-sm transition-colors">
                                     <User className="w-4 h-4 opacity-80" />
                                     <span className="hidden lg:block">Mi cuenta</span>
