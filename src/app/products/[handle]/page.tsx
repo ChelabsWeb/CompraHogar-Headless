@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
 
     const title = product.title;
     const description = product.description;
-    const coverImage = product.images?.edges?.[0]?.node?.url;
+    const coverImage = product.media?.edges?.[0]?.node?.previewImage?.url;
 
     return {
         title,
@@ -99,7 +99,7 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
                     </div>
                 )}
                 
-                <VendorReviews productId={product.id} />
+                <VendorReviews productHandle={resolvedParams.handle} />
             </Container>
         </div>
     );

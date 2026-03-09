@@ -72,8 +72,9 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
                             <PredictiveSearch />
                         </div>
 
-                        {/* Right Promo Box */}
-                        <div className="hidden lg:flex shrink-0 items-center justify-end w-[180px]">
+                        {/* Right Actions */}
+                        <div className="hidden lg:flex shrink-0 items-center justify-end gap-4 min-w-[180px] text-sm text-slate-700">
+                            <LocationSelector />
                             <LocaleSwitcher className="h-9 px-3 py-2 border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground rounded-md text-foreground transition-colors" />
                         </div>
                     </div>
@@ -85,11 +86,8 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
                     <div className="container mx-auto max-w-[1200px] px-4">
                         <div className="h-[44px] flex items-center justify-between text-white/95 text-[13px]">
 
-                            {/* Location Pin */}
-                            <LocationSelector />
-
                             {/* Category & Quick Links */}
-                            <nav className="hidden lg:flex items-center gap-1 flex-1 px-8">
+                            <nav className="hidden lg:flex items-center gap-1 flex-1">
                                 <MegaMenu collections={collections} />
 
                                 <Link href="/collections/ofertas" className="px-3 py-2 font-medium hover:bg-black/10 rounded-sm transition-colors">Ofertas</Link>

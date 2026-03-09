@@ -55,9 +55,32 @@ export const getCustomerQuery = `
             processedAt
             financialStatus
             fulfillmentStatus
+            statusUrl
             totalPrice {
               amount
               currencyCode
+            }
+            lineItems(first: 50) {
+              edges {
+                node {
+                  title
+                  quantity
+                  variant {
+                    id
+                    title
+                    image {
+                      url
+                      altText
+                    }
+                  }
+                }
+              }
+            }
+            successfulFulfillments {
+              trackingInfo {
+                number
+                url
+              }
             }
           }
         }
@@ -77,6 +100,47 @@ export const getCustomerQuery = `
 // ==========================================
 // CUSTOMER TYPES
 // ==========================================
+
+export interface OrderLineItem {
+  title: string;
+  quantity: number;
+  variant: {
+    id: string;
+    title: string;
+    image?: {
+      url: string;
+      altText?: string;
+    } | null;
+  } | null;
+}
+
+export interface FulfillmentTrackingInfo {
+  number?: string;
+  url?: string;
+}
+
+export interface Fulfillment {
+  trackingInfo: FulfillmentTrackingInfo[];
+}
+
+export interface Order {
+  id: string;
+  orderNumber: number;
+  processedAt: string;
+  financialStatus: string;
+  fulfillmentStatus: string;
+  statusUrl: string;
+  totalPrice: {
+    amount: string;
+    currencyCode: string;
+  };
+  lineItems: {
+    edges: {
+      node: OrderLineItem;
+    }[];
+  };
+  successfulFulfillments: Fulfillment[];
+}
 
 export interface CustomerUserError {
   code: string;

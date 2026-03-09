@@ -8,7 +8,9 @@ import {
     updateCartMutation, 
     removeFromCartMutation,
     getCartQuery,
-    updateCartBuyerIdentityMutation
+    updateCartBuyerIdentityMutation,
+    cartDiscountCodesUpdateMutation,
+    cartGiftCardCodesUpdateMutation
 } from "@/lib/queries";
 
 export type CartItem = {
@@ -30,10 +32,13 @@ export type CartContextType = {
     items: CartItem[];
     totalQuantity: number;
     subtotal: number;
+    estimatedShipping: number | null;
     isCartLoading: boolean;
     addToCart: (variantId: string, quantity: number) => Promise<string | undefined>;
     updateQuantity: (lineId: string, quantity: number) => Promise<void>;
     removeFromCart: (lineId: string) => Promise<void>;
+    applyDiscountCode: (code: string) => Promise<{ success: boolean; error?: string }>;
+    applyGiftCard: (code: string) => Promise<{ success: boolean; error?: string }>;
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -44,6 +49,7 @@ export function CartProvider({ children, customerAccessToken }: { children: Reac
     const [items, setItems] = useState<CartItem[]>([]);
     const [totalQuantity, setTotalQuantity] = useState(0);
     const [subtotal, setSubtotal] = useState(0);
+    const [estimatedShipping, setEstimatedShipping] = useState<number | null>(null);
     const [isCartLoading, setIsCartLoading] = useState(true);
 
     // Load Cart ID from local storage on mount
@@ -82,6 +88,16 @@ export function CartProvider({ children, customerAccessToken }: { children: Reac
         setCheckoutUrl(cart.checkoutUrl);
         setTotalQuantity(cart.totalQuantity || 0);
         setSubtotal(parseFloat(cart.cost?.subtotalAmount?.amount || "0"));
+
+        let shipping: number | null = null;
+        if (cart.deliveryGroups?.edges?.length > 0) {
+            const options = cart.deliveryGroups.edges[0].node.deliveryOptions;
+            if (options && options.length > 0) {
+                const costs = options.map((opt: any) => parseFloat(opt.estimatedCost.amount));
+                shipping = Math.min(...costs);
+            }
+        }
+        setEstimatedShipping(shipping);
 
         const parsedItems: CartItem[] = cart.lines?.edges?.map(({ node }: any) => ({
             id: node.id,
@@ -202,6 +218,54 @@ export function CartProvider({ children, customerAccessToken }: { children: Reac
         }
     };
 
+    const applyDiscountCode = async (code: string) => {
+        if (!cartId) return { success: false, error: "No hay carrito activo." };
+        setIsCartLoading(true);
+        try {
+            const { body } = await shopifyFetch({
+                query: cartDiscountCodesUpdateMutation,
+                variables: { cartId, discountCodes: [code] },
+            });
+            const errors = body?.data?.cartDiscountCodesUpdate?.userErrors;
+            if (errors && errors.length > 0) {
+                return { success: false, error: errors[0].message };
+            }
+            if (body?.data?.cartDiscountCodesUpdate?.cart) {
+                parseCartData(body.data.cartDiscountCodesUpdate.cart);
+            }
+            return { success: true };
+        } catch (error) {
+            console.error("Error applying discount code", error);
+            return { success: false, error: "Error de conexión al aplicar el descuento." };
+        } finally {
+            setIsCartLoading(false);
+        }
+    };
+
+    const applyGiftCard = async (code: string) => {
+        if (!cartId) return { success: false, error: "No hay carrito activo." };
+        setIsCartLoading(true);
+        try {
+            const { body } = await shopifyFetch({
+                query: cartGiftCardCodesUpdateMutation,
+                variables: { cartId, giftCardCodes: [code] },
+            });
+            const errors = body?.data?.cartGiftCardCodesUpdate?.userErrors;
+            if (errors && errors.length > 0) {
+                return { success: false, error: errors[0].message };
+            }
+            if (body?.data?.cartGiftCardCodesUpdate?.cart) {
+                parseCartData(body.data.cartGiftCardCodesUpdate.cart);
+            }
+            return { success: true };
+        } catch (error) {
+            console.error("Error applying gift card", error);
+            return { success: false, error: "Error de conexión al aplicar la tarjeta de regalo." };
+        } finally {
+            setIsCartLoading(false);
+        }
+    };
+
     return (
         <CartContext.Provider
             value={{
@@ -210,10 +274,13 @@ export function CartProvider({ children, customerAccessToken }: { children: Reac
                 items,
                 totalQuantity,
                 subtotal,
+                estimatedShipping,
                 isCartLoading,
                 addToCart,
                 updateQuantity,
                 removeFromCart,
+                applyDiscountCode,
+                applyGiftCard,
             }}
         >
             {children}

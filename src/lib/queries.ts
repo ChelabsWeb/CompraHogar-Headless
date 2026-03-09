@@ -39,13 +39,42 @@ export const getProductByHandleQuery = `
           currencyCode
         }
       }
-      images(first: 5) {
+      media(first: 10) {
         edges {
           node {
-            url
-            altText
-            width
-            height
+            mediaContentType
+            alt
+            previewImage {
+              url
+              altText
+              width
+              height
+            }
+            ... on MediaImage {
+              id
+              image {
+                url
+                altText
+                width
+                height
+              }
+            }
+            ... on Video {
+              id
+              sources {
+                url
+                mimeType
+                format
+              }
+            }
+            ... on Model3d {
+              id
+              sources {
+                url
+                format
+                mimeType
+              }
+            }
           }
         }
       }
@@ -59,6 +88,11 @@ export const getProductByHandleQuery = `
         type
       }
       instruccionesLavado: metafield(namespace: "custom", key: "instrucciones_de_cuidado") {
+        value
+        type
+      }
+      tags
+      rendimiento: metafield(namespace: "custom", key: "rendimiento") {
         value
         type
       }
@@ -209,6 +243,19 @@ const cartFragment = `
         currencyCode
       }
     }
+    deliveryGroups(first: 1) {
+      edges {
+        node {
+          deliveryOptions {
+            title
+            estimatedCost {
+              amount
+              currencyCode
+            }
+          }
+        }
+      }
+    }
     lines(first: 100) {
       edges {
         node {
@@ -341,6 +388,40 @@ export const updateCartBuyerIdentityMutation = `
             email
           }
         }
+      }
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+  ${cartFragment}
+`;
+
+// ==========================================
+// DISCOUNTS & GIFT CARDS
+// ==========================================
+
+export const cartDiscountCodesUpdateMutation = `
+  mutation cartDiscountCodesUpdate($cartId: ID!, $discountCodes: [String!]!) {
+    cartDiscountCodesUpdate(cartId: $cartId, discountCodes: $discountCodes) {
+      cart {
+        ...cartDetails
+      }
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+  ${cartFragment}
+`;
+
+export const cartGiftCardCodesUpdateMutation = `
+  mutation cartGiftCardCodesUpdate($cartId: ID!, $giftCardCodes: [String!]!) {
+    cartGiftCardCodesUpdate(cartId: $cartId, giftCardCodes: $giftCardCodes) {
+      cart {
+        ...cartDetails
       }
       userErrors {
         field

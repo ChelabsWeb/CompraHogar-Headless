@@ -60,7 +60,7 @@ export default function PoliticaPrivacidad() {
               Usted tiene derecho a ejercer sus derechos de Acceso, Rectificación, Cancelación u Oposición (Derechos ARCO) respecto a sus datos personales. 
             </p>
             <p className="text-muted-foreground leading-relaxed">
-              Para ello, puede comunicarse con nosotros enviando un correo a <strong>contacto@comprahogar.com.uy</strong> acompañando una copia de un documento que acredite su identidad y detallando el derecho que desea ejercer. Responderemos a su solicitud en los plazos establecidos por la Ley N° 18.331.
+              Para ello, puede comunicarse con nosotros enviando un correo a <strong>ventas@comprahogar.com.uy</strong> acompañando una copia de un documento que acredite su identidad y detallando el derecho que desea ejercer. Responderemos a su solicitud en los plazos establecidos por la Ley N° 18.331.
             </p>
           </section>
         </div>

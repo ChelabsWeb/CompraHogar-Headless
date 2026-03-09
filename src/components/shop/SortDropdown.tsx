@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useStoreFilters } from '@/hooks/useStoreFilters';
 import {
   Select,
   SelectContent,
@@ -15,25 +15,11 @@ interface SortDropdownProps {
 }
 
 export function SortDropdown({ currentSort = 'relevance' }: SortDropdownProps) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const { setSort } = useStoreFilters();
 
   const handleSortChange = (value: string) => {
-    // 1. Clonar los parámetros de búsqueda actuales para mantener filtros activos
-    const params = new URLSearchParams(searchParams.toString());
-    
-    // 2. Actualizar o eliminar la llave 'sort'
-    if (value === 'relevance') {
-      // Si vuelve por defecto, limpiamos la URL
-      params.delete('sort');
-    } else {
-      params.set('sort', value);
-    }
-
-    // 3. Empujar la nueva URL sin hacer scroll hacia arriba (App Router)
-    const newUrl = `${pathname}?${params.toString()}`;
-    router.replace(newUrl, { scroll: false });
+    // Si vuelve por defecto (relevance), limpiamos la URL
+    setSort(value === 'relevance' ? '' : value);
   };
 
   return (

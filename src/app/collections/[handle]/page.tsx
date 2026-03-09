@@ -8,7 +8,51 @@ import { FilterSection, FilterItem, PriceRangeFilter } from "@/components/shop/S
 import { StoreFilters } from "@/components/shop/StoreFilters";
 import { ChevronDown } from "lucide-react";
 import { SortDropdown } from "@/components/shop/SortDropdown";
+import { MobileFilterDrawer } from "@/components/shop/MobileFilterDrawer";
+import type { Metadata } from "next";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+
+export async function generateMetadata(props: {
+    params: Promise<{ handle: string }>;
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}): Promise<Metadata> {
+    const { handle } = await props.params;
+    const searchParams = await props.searchParams;
+    
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    const pathname = `/collections/${handle}`;
+    
+    // 1. Iniciamos un objeto URLSearchParams en blanco para asegurar una limpieza total
+    const cleanParams = new URLSearchParams();
+    
+    // 2. DECISIÓN SEO: Preservamos la paginación para garantizar el Deep Crawling de productos,
+    // pero omitimos ciegamente 'sort', 'color', 'marca', etc.
+    if (searchParams?.page) {
+      cleanParams.set('page', String(searchParams.page));
+    }
+
+    // 3. Generamos la URL canónica final blindada
+    const queryString = cleanParams.toString();
+    const canonicalUrl = `${baseUrl}${pathname}${queryString ? `?${queryString}` : ''}`;
+
+    // Formateamos el título
+    const titleFormatted = handle.charAt(0).toUpperCase() + handle.slice(1).replace(/-/g, ' ');
+
+    return {
+        title: `${titleFormatted} | CompraHogar`,
+        description: `Descubre nuestra colección de ${titleFormatted.toLowerCase()} al mejor precio.`,
+        alternates: {
+            canonical: canonicalUrl,
+        },
+        robots: {
+            // Bloqueo preventivo: Si tu e-commerce expone un orden sin resultados, evitamos indexarlo
+            index: true,
+            follow: true,
+            nocache: false,
+        }
+    };
+}
 
 export default async function CollectionPage(props: {
     params: Promise<{ handle: string }>;
@@ -180,6 +224,18 @@ export default async function CollectionPage(props: {
                     </main>
 
                 </div>
+
+                {/* Drawer Móvil (Sólo visible on < lg viewports). */}
+                <div className="lg:hidden">
+                    <MobileFilterDrawer>
+                        {shopifyFilters.length > 0 ? (
+                            <StoreFilters filters={shopifyFilters} />
+                        ) : (
+                            <p className="text-sm text-slate-500">No hay filtros disponibles.</p>
+                        )}
+                    </MobileFilterDrawer>
+                </div>
+
             </div>
         </div>
     );

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
 import { useCart } from "@/components/cart/CartProvider";
 
 interface CartDrawerProps {
@@ -14,10 +15,40 @@ interface CartDrawerProps {
 }
 
 export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
-    const { items, subtotal, updateQuantity, removeFromCart, checkoutUrl, isCartLoading } = useCart();
+    const { items, subtotal, estimatedShipping, updateQuantity, removeFromCart, checkoutUrl, isCartLoading, applyDiscountCode, applyGiftCard } = useCart();
+    const [discountCode, setDiscountCode] = useState("");
+    const [isApplyingCode, setIsApplyingCode] = useState(false);
+    const [discountStatus, setDiscountStatus] = useState<{ message: string; isError: boolean } | null>(null);
+
     const freeShippingGoal = 300000;
     const progress = Math.min((subtotal / freeShippingGoal) * 100, 100);
     const amountLeft = freeShippingGoal - subtotal;
+
+    const handleApplyCode = async () => {
+        if (!discountCode.trim()) return;
+        setIsApplyingCode(true);
+        setDiscountStatus(null);
+        
+        // Primero intentamos como código de descuento
+        let res = await applyDiscountCode(discountCode);
+        
+        if (res.success) {
+            setDiscountStatus({ message: "Descuento aplicado con éxito.", isError: false });
+            setDiscountCode("");
+        } else {
+            // Si el descuento falla, intentamos aplicarlo como tarjeta de regalo
+            const giftRes = await applyGiftCard(discountCode);
+            
+            if (giftRes.success) {
+                setDiscountStatus({ message: "Tarjeta de regalo aplicada con éxito.", isError: false });
+                setDiscountCode("");
+            } else {
+                // Mostramos el mensaje de error del primer intento porque es más probable
+                setDiscountStatus({ message: res.error || giftRes.error || "Código inválido.", isError: true });
+            }
+        }
+        setIsApplyingCode(false);
+    };
 
     return (
         <Drawer
@@ -117,6 +148,32 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
                     {/* Footer */}
                     <div className="p-6 border-t bg-background mt-auto">
+                        {/* Bloque de Código de Descuento */}
+                        <div className="mb-6 space-y-2">
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    placeholder="Descuento / Tarjeta de Regalo"
+                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 flex-1 uppercase"
+                                    value={discountCode}
+                                    onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
+                                    disabled={isApplyingCode || isCartLoading}
+                                />
+                                <Button 
+                                    variant="secondary" 
+                                    onClick={handleApplyCode}
+                                    disabled={!discountCode || isApplyingCode || isCartLoading}
+                                >
+                                    {isApplyingCode ? "..." : "Aplicar"}
+                                </Button>
+                            </div>
+                            {discountStatus && (
+                                <p className={`text-xs ${discountStatus.isError ? "text-destructive" : "text-green-600 dark:text-green-400"}`}>
+                                    {discountStatus.message}
+                                </p>
+                            )}
+                        </div>
+
                         <div className="space-y-3 mb-6">
                             <div className="flex justify-between text-sm text-muted-foreground">
                                 <span>Subtotal</span>
@@ -124,13 +181,20 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                             </div>
                             <div className="flex justify-between text-sm text-muted-foreground">
                                 <span>Logística</span>
-                                <span>Calculado en checkout</span>
+                                <span>
+                                    {estimatedShipping === null 
+                                        ? "Calculado en checkout" 
+                                        : estimatedShipping === 0 
+                                            ? <span className="text-green-600 dark:text-green-500 font-medium">Gratis</span> 
+                                            : `$${estimatedShipping.toLocaleString("es-AR")}`
+                                    }
+                                </span>
                             </div>
                             <Separator />
                             <div className="flex justify-between font-bold">
                                 <span>Total Estimado</span>
                                 <span className="text-xl text-primary">
-                                    ${subtotal.toLocaleString("es-AR")}
+                                    ${(subtotal + (estimatedShipping || 0)).toLocaleString("es-AR")}
                                 </span>
                             </div>
                         </div>

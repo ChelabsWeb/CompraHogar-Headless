@@ -4,6 +4,7 @@ import { shopifyFetch } from "@/lib/shopify";
 import { getCustomerQuery } from "@/lib/customer";
 import { LogOut, Package, MapPin, User as UserIcon } from "lucide-react";
 import { logout } from "./actions";
+import { OrderHistory } from "@/components/shop/OrderHistory";
 
 export const metadata = {
   title: "Mi Cuenta | CompraHogar",
@@ -58,33 +59,15 @@ export default async function AccountPage() {
           {/* Main Content */}
           <div className="flex-1 w-full space-y-8">
             {/* Orders Section */}
-            <div className="bg-white p-8 rounded-3xl border border-slate-200">
-              <div className="flex items-center gap-3 mb-6">
-                <Package className="w-6 h-6 text-primary" />
-                <h3 className="text-xl font-bold text-slate-900">Mis Pedidos</h3>
+            <div className="space-y-6">
+              <div className="flex items-center gap-3 px-2">
+                <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+                  <Package className="w-5 h-5 text-primary" />
+                </div>
+                <h3 className="text-2xl font-bold text-slate-900">Mis Pedidos</h3>
               </div>
               
-              {orders.length > 0 ? (
-                <div className="space-y-4">
-                  {orders.map(({ node: order }: any) => (
-                    <div key={order.id} className="flex flex-wrap md:flex-nowrap justify-between items-center p-4 border rounded-xl gap-4">
-                      <div>
-                        <p className="font-bold text-slate-900">Pedido #{order.orderNumber}</p>
-                        <p className="text-sm text-slate-500">{new Date(order.processedAt).toLocaleDateString('es-UY')}</p>
-                      </div>
-                      <div className="flex flex-col md:items-end">
-                         <p className="font-semibold text-primary">${order.totalPrice.amount} {order.totalPrice.currencyCode}</p>
-                         <p className="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded-md mt-1 capitalize inline-block">{order.fulfillmentStatus}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-10 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
-                  <Package className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-                  <p className="text-slate-500">Aún no has realizado ninguna compra.</p>
-                </div>
-              )}
+              <OrderHistory orders={orders} />
             </div>
 
             {/* Address Section */}

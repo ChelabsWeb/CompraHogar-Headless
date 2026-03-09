@@ -1,8 +1,10 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { useStoreFilters } from "../../hooks/useStoreFilters";
+import { FilterLink } from "@/components/ui/FilterLink";
 
 export type FilterValue = {
   id: string;
@@ -23,9 +25,8 @@ interface StoreFiltersProps {
 }
 
 export function StoreFilters({ filters }: StoreFiltersProps) {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const pathname = usePathname();
+  const { toggleFilter } = useStoreFilters();
 
   // Mantenemos el estado de qué grupos de filtros están expandidos
   const [expanded, setExpanded] = useState<Record<string, boolean>>(
@@ -36,36 +37,8 @@ export function StoreFilters({ filters }: StoreFiltersProps) {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  // Crea el nuevo query string combinando los filtros existentes y la nueva interacción
-  const createQueryString = useCallback(
-    (inputValue: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      const activeFilters = params.getAll("filter");
-      
-      params.delete("filter"); // Limpiamos la clave para reconstruirla
-
-      if (activeFilters.includes(inputValue)) {
-        // Desmarcar: Agregar todos menos el clickeado
-        activeFilters.filter((v) => v !== inputValue).forEach((v) => params.append("filter", v));
-      } else {
-        // Marcar: Mantener los que estaban y agregar el nuevo
-        activeFilters.forEach((v) => params.append("filter", v));
-        params.append("filter", inputValue);
-      }
-
-      // IMPORTANTE: Al filtrar, eliminamos el cursor para volver a la página 1
-      params.delete("cursor");
-      params.delete("direction");
-
-      return params.toString();
-    },
-    [searchParams]
-  );
-
   const handleFilterChange = (inputValue: string) => {
-    const queryString = createQueryString(inputValue);
-    // Utilizamos { scroll: false } para que la página no salte hacia arriba al filtrar
-    router.push(`${pathname}?${queryString}`, { scroll: false });
+    toggleFilter("filter", inputValue);
   };
 
   const isFilterActive = (inputValue: string) => {
@@ -97,23 +70,43 @@ export function StoreFilters({ filters }: StoreFiltersProps) {
             {expanded[filter.id] && (
               <div className="mt-4 flex flex-col gap-3">
                 
-                {/* Renderizado para los filtros de tipo Lista (Checkboxes) */}
+                {/* Renderizado para los filtros de tipo Lista (Checkboxes) con FilterLink */}
                 {filter.type === "LIST" &&
-                  filter.values.map((val) => (
-                    <label
-                      key={val.id}
-                      className="group flex cursor-pointer text-[14px] items-center text-slate-700 hover:text-slate-900 transition-colors"
-                    >
-                      <input
-                        type="checkbox"
-                        className="peer h-4 w-4 shrink-0 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                        checked={isFilterActive(val.input)}
-                        onChange={() => handleFilterChange(val.input)}
-                      />
-                      <span className="ml-3 flex-1 pt-[1px]">{val.label}</span>
-                      <span className="text-slate-400 text-xs">({val.count})</span>
-                    </label>
-                  ))}
+                  filter.values.map((val) => {
+                    const isActive = isFilterActive(val.input);
+                    return (
+                      <FilterLink
+                        key={val.id}
+                        filterKey="filter"
+                        filterValue={val.input}
+                        className="group flex cursor-pointer text-[14px] items-center text-slate-700 hover:text-slate-900 transition-colors"
+                        nofollow={true}
+                        prefetch={false}
+                      >
+                        <div
+                          className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors ${
+                            isActive
+                              ? "border-blue-600 bg-blue-600 text-white"
+                              : "border-slate-300 bg-white"
+                          }`}
+                        >
+                          {isActive && (
+                            <svg
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                              strokeWidth={3}
+                              className="h-3 w-3"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                          )}
+                        </div>
+                        <span className={`ml-3 flex-1 pt-[1px] ${isActive ? "font-medium" : ""}`}>{val.label}</span>
+                        <span className="text-slate-400 text-xs">({val.count})</span>
+                      </FilterLink>
+                    );
+                  })}
 
                 {/* Renderizado para PRICE_RANGE u otros tipos */}
                 {/* Puedes conectar aquí tu componente `<PriceRangeFilter />` si la iteración evalúa filter.type === 'PRICE_RANGE' */}

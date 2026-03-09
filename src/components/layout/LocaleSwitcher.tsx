@@ -55,7 +55,12 @@ export function LocaleSwitcher({ className }: LocaleSwitcherProps) {
         </span>
       </SelectTrigger>
       
-      <SelectContent align="end" className="w-[130px] rounded-xl shadow-lg border-border/50 backdrop-blur-md bg-background/95">
+      <SelectContent 
+        position="popper" 
+        sideOffset={4}
+        align="end" 
+        className="w-[130px] rounded-xl shadow-lg border-border/50 backdrop-blur-md bg-background/95"
+      >
         <SelectGroup>
           {LOCALE_OPTIONS.map((option) => (
             <SelectItem 

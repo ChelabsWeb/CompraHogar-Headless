@@ -6,6 +6,7 @@ import { ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
+import { useStoreFilters } from "@/hooks/useStoreFilters"
 
 // --- Helper Components for the Filter Sidebar ---
 
@@ -41,9 +42,8 @@ export interface FilterItemProps {
 }
 
 export function FilterItem({ label, count, isActive, paramKey, paramValue, onClick }: FilterItemProps) {
-  const router = useRouter()
-  const pathname = usePathname()
   const searchParams = useSearchParams()
+  const { toggleFilter } = useStoreFilters()
 
   // Determinar si está activo basado en la prop `isActive` o leyendo la URL si tenemos la key/value
   const isFilterActive = isActive !== undefined 
@@ -62,19 +62,7 @@ export function FilterItem({ label, count, isActive, paramKey, paramValue, onCli
     }
 
     if (paramKey && paramValue) {
-      const current = new URLSearchParams(Array.from(searchParams.entries()))
-      
-      if (current.getAll(paramKey).includes(paramValue)) {
-        // Toggle off: elimina este valor específico si soporta múltiples, o simplemente bórralo
-        current.delete(paramKey, paramValue) // .delete() con 2 argumentos funciona en navegadores modernos y Next.js
-      } else {
-        // Toggle on: agrega el valor
-        current.append(paramKey, paramValue)
-      }
-      
-      const search = current.toString()
-      const query = search ? `?${search}` : ""
-      router.push(`${pathname}${query}`, { scroll: false })
+      toggleFilter(paramKey, paramValue)
     }
   }
 
@@ -120,9 +108,8 @@ export interface PriceRangeFilterProps {
 }
 
 export function PriceRangeFilter({ onApply, minParamKey = "minPrice", maxParamKey = "maxPrice" }: PriceRangeFilterProps) {
-  const router = useRouter()
-  const pathname = usePathname()
   const searchParams = useSearchParams()
+  const { setMultipleFilters } = useStoreFilters()
 
   // Rehidratación visual inicial desde la URL
   const [min, setMin] = React.useState<string>(searchParams.get(minParamKey) || "")
@@ -142,23 +129,10 @@ export function PriceRangeFilter({ onApply, minParamKey = "minPrice", maxParamKe
       return
     }
 
-    const current = new URLSearchParams(Array.from(searchParams.entries()))
-    
-    if (min) {
-      current.set(minParamKey, min)
-    } else {
-      current.delete(minParamKey)
-    }
-
-    if (max) {
-      current.set(maxParamKey, max)
-    } else {
-      current.delete(maxParamKey)
-    }
-
-    const search = current.toString()
-    const query = search ? `?${search}` : ""
-    router.push(`${pathname}${query}`, { scroll: false })
+    setMultipleFilters({
+      [minParamKey]: min || undefined,
+      [maxParamKey]: max || undefined,
+    });
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

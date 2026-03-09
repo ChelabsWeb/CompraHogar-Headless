@@ -1,11 +1,17 @@
 const domain = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN || process.env.SHOPIFY_STORE_DOMAIN;
 const storefrontAccessToken = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN || process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
 
-export async function shopifyFetch({
+export async function shopifyFetch<T = any>({
+    cache = "force-cache",
+    headers,
     query,
+    tags,
     variables,
 }: {
+    cache?: RequestCache;
+    headers?: HeadersInit;
     query: string;
+    tags?: string[];
     variables?: object;
 }) {
     const endpoint = `https://${domain}/api/2024-04/graphql.json`;
@@ -16,13 +22,14 @@ export async function shopifyFetch({
             headers: {
                 "Content-Type": "application/json",
                 "X-Shopify-Storefront-Access-Token": storefrontAccessToken!,
+                ...headers,
             },
             body: JSON.stringify({
                 ...(query && { query }),
                 ...(variables && { variables }),
             }),
-            // Next.js caching strategy. Adjust based on needs.
-            next: { revalidate: 60 }
+            cache,
+            ...(tags && { next: { tags } })
         });
 
         const body = await result.json();

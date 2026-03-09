@@ -60,9 +60,9 @@ export function Modal({ isOpen, onClose, title, description, children, className
           >
             <button
               onClick={onClose}
-              className="absolute right-4 top-4 rounded-full p-1 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              className="absolute right-4 top-4 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
             >
-              <X className="h-5 w-5" />
+              <X className="h-4 w-4" />
               <span className="sr-only">Cerrar</span>
             </button>
 

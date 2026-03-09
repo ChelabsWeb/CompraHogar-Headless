@@ -3,11 +3,12 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import useSWR from "swr";
 import { Search, Loader2, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { predictiveSearchAction, PredictiveSearchResult } from "@/app/actions/search";
 
-// Custom hook to detect clicks outside
+// Hook para detectar clics fuera del componente
 function useOutsideAlerter(ref: React.RefObject<HTMLDivElement | null>, callback: () => void) {
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -22,6 +23,28 @@ function useOutsideAlerter(ref: React.RefObject<HTMLDivElement | null>, callback
   }, [ref, callback]);
 }
 
+// Hook de debounce riguroso
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+  
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+    
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+  
+  return debouncedValue;
+}
+
+// Fetcher para SWR envolviendo la Server Action
+const searchFetcher = async ([key, query]: [string, string]) => {
+  return await predictiveSearchAction(query, 6);
+};
+
 interface PredictiveSearchProps {
   placeholder?: string;
   className?: string;
@@ -29,9 +52,6 @@ interface PredictiveSearchProps {
 
 export function PredictiveSearch({ placeholder = "Buscar productos, marcas y más...", className = "" }: PredictiveSearchProps) {
   const [query, setQuery] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState("");
-  const [results, setResults] = useState<PredictiveSearchResult[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   
   const containerRef = useRef<HTMLDivElement>(null);
@@ -40,47 +60,37 @@ export function PredictiveSearch({ placeholder = "Buscar productos, marcas y má
     setIsOpen(false);
   });
 
-  // Debounce the query
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedQuery(query);
-    }, 300);
+  // 1. Debounce riguroso de al menos 400ms
+  const debouncedQuery = useDebounce(query, 400);
 
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [query]);
-
-  // Fetch results when debounced query changes
-  useEffect(() => {
-    async function fetchResults() {
-      if (!debouncedQuery.trim()) {
-        setResults([]);
-        setIsOpen(false);
-        setIsLoading(false);
-        return;
-      }
-
-      setIsLoading(true);
-      setIsOpen(true);
-
-      try {
-        const data = await predictiveSearchAction(debouncedQuery, 6);
-        setResults(data);
-      } catch (error) {
-        console.error("Error fetching predictive search:", error);
-      } finally {
-        setIsLoading(false);
-      }
+  // 2. Caché Local In-Memory con SWR
+  const shouldFetch = debouncedQuery.trim().length > 0;
+  
+  const { 
+    data: results = [], 
+    isValidating: isSWRValidating 
+  } = useSWR<PredictiveSearchResult[]>(
+    shouldFetch ? ['predictive-search', debouncedQuery.trim()] : null, 
+    searchFetcher,
+    {
+      keepPreviousData: true,
+      revalidateOnFocus: false,
+      dedupingInterval: 60000 * 5, // Deduplicación de 5 minutos
     }
+  );
 
-    fetchResults();
-  }, [debouncedQuery]);
+  const isTyping = query !== debouncedQuery;
+  const isLoading = (shouldFetch && isSWRValidating) || (query.trim().length > 0 && isTyping);
+
+  // Limpiar estados cuando el input queda totalmente vacío ""
+  useEffect(() => {
+    if (query.trim() === "") {
+      setIsOpen(false);
+    }
+  }, [query]);
 
   const handleClear = () => {
     setQuery("");
-    setDebouncedQuery("");
-    setResults([]);
     setIsOpen(false);
   };
 
@@ -100,7 +110,12 @@ export function PredictiveSearch({ placeholder = "Buscar productos, marcas y má
           type="text"
           placeholder={placeholder}
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            if (e.target.value.trim().length > 0) {
+              setIsOpen(true);
+            }
+          }}
           onFocus={() => {
             if (query.trim()) {
               setIsOpen(true);
@@ -110,7 +125,7 @@ export function PredictiveSearch({ placeholder = "Buscar productos, marcas y má
         />
         <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
         
-        <div className="absolute right-0 top-0 h-10 flex items-center pr-3">
+        <div className="absolute right-0 top-0 h-10 flex items-center pr-3 gap-2">
           {isLoading ? (
             <Loader2 className="w-4 h-4 text-slate-400 animate-spin" />
           ) : query.length > 0 ? (
@@ -126,14 +141,15 @@ export function PredictiveSearch({ placeholder = "Buscar productos, marcas y má
       </div>
 
       {/* Results Dropdown Modal */}
-      {isOpen && (query.trim().length > 0) && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl border border-slate-100 overflow-hidden z-[100] transition-all max-h-[400px] overflow-y-auto">
-          {isLoading && results.length === 0 ? (
-            <div className="p-4 text-center text-sm text-slate-500">
-              Buscando resultados...
+      {isOpen && query.trim().length > 0 && (
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl border border-slate-100 overflow-hidden z-[100] transition-all max-h-[400px] flex flex-col">
+          {isLoading && (!results || results.length === 0) ? (
+            <div className="p-8 flex flex-col items-center justify-center text-sm text-slate-500 gap-3">
+              <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+              <span>Buscando resultados...</span>
             </div>
-          ) : results.length > 0 ? (
-            <ul className="py-2">
+          ) : results && results.length > 0 ? (
+            <ul className="py-2 overflow-y-auto">
               {results.map((product) => (
                 <li key={product.id}>
                   <Link
@@ -161,18 +177,20 @@ export function PredictiveSearch({ placeholder = "Buscar productos, marcas y má
                         {product.title}
                       </p>
                       <p className="text-sm font-semibold text-[#21645d] mt-0.5">
-                        {formatPrice(product.priceRange.minVariantPrice.amount, product.priceRange.minVariantPrice.currencyCode)}
+                        {product.priceRange?.minVariantPrice ? 
+                          formatPrice(product.priceRange.minVariantPrice.amount, product.priceRange.minVariantPrice.currencyCode)
+                          : null}
                       </p>
                     </div>
                   </Link>
                 </li>
               ))}
             </ul>
-          ) : (
-            <div className="p-4 text-center text-sm text-slate-500">
+          ) : !isTyping && debouncedQuery === query ? (
+            <div className="p-8 text-center text-sm text-slate-500">
               No se encontraron resultados para "{query}"
             </div>
-          )}
+          ) : null}
         </div>
       )}
     </div>

@@ -2,6 +2,90 @@ import { NextRequest, NextResponse } from 'next/server';
 import { revalidateTag } from 'next/cache';
 import crypto from 'crypto';
 
+// --- Interfaces ---
+
+export interface ShopifyOrderPayload {
+  id: number;
+  email?: string;
+  total_price: string;
+  currency: string;
+  financial_status: string;
+  fulfillment_status: string | null;
+  line_items: Array<{
+    id: number;
+    title: string;
+    quantity: number;
+    sku?: string;
+    price: string;
+    product_id: number | null;
+    variant_id: number | null;
+  }>;
+  customer?: {
+    id: number;
+    email: string;
+    first_name: string;
+    last_name: string;
+  };
+  [key: string]: any;
+}
+
+export interface ShopifyInventoryLevelPayload {
+  inventory_item_id: number;
+  location_id: number;
+  available: number;
+  updated_at: string;
+  admin_graphql_api_id: string;
+  [key: string]: any;
+}
+
+// --- Handlers ---
+
+async function handleOrderWebhook(topic: string, payload: ShopifyOrderPayload, shopDomain: string) {
+  console.log(`[Webhook] Procesando orden (${topic}) para la tienda ${shopDomain}`);
+  console.log(`[Webhook] Order ID: ${payload.id}, Email: ${payload.email ?? 'N/A'}, Total: ${payload.total_price} ${payload.currency}`);
+
+  // [Placeholder] 1. ERP Externo
+  console.log(`[Webhook] Placeholder: Enviando orden de venta ${payload.id} a ERP externo...`);
+
+  // [Placeholder] 2. CRM (Klaviyo)
+  console.log(`[Webhook] Placeholder: Actualizando perfil de cliente en CRM (Klaviyo) para orden ${payload.id}...`);
+
+  // [Placeholder] 3. Email Transaccional (Resend)
+  console.log(`[Webhook] Placeholder: Disparando email transaccional local (ej. Resend) para orden confirmada/actualizada...`);
+}
+
+async function handleInventoryLevelWebhook(topic: string, payload: ShopifyInventoryLevelPayload, shopDomain: string) {
+  console.log(`[Webhook] Procesando actualización de inventario (${topic}) para la tienda ${shopDomain}`);
+  console.log(`[Webhook] Inventory Item ID: ${payload.inventory_item_id}, Nuevo stock disponible: ${payload.available}`);
+
+  if (payload.available <= 0) {
+    console.log(`[Webhook] ⚠️ Alerta de Stock: El item ${payload.inventory_item_id} de la locación ${payload.location_id} se quedó sin inventario.`);
+    
+    // Invalidamos la caché general de productos para evitar over-selling en el frontend estático
+    revalidateTag('products', {} as any);
+    console.log('[Webhook] Caché revalidada para tag: "products" (Previniendo over-selling)');
+  } else {
+    // Si hay stock, revalidamos para asegurar que el dato fresco está en la UI
+    revalidateTag('products', {} as any);
+    console.log('[Webhook] Caché revalidada para tag: "products" (Actualización de stock regular)');
+  }
+}
+
+async function handleCatalogWebhook(topic: string, shopDomain: string) {
+  console.log(`[Webhook] Procesando evento de catálogo (${topic}) para la tienda ${shopDomain}`);
+  
+  if (topic.startsWith('products/')) {
+    revalidateTag('products', {} as any);
+    revalidateTag('collections', {} as any);
+    console.log('[Webhook] Caché revalidada para tags: "products", "collections"');
+  } else if (topic.startsWith('collections/')) {
+    revalidateTag('collections', {} as any);
+    console.log('[Webhook] Caché revalidada para tag: "collections"');
+  }
+}
+
+// --- Route Handler ---
+
 export async function POST(req: NextRequest) {
   try {
     // 1. Obtener el texto en crudo del cuerpo (Requerido para validación HMAC estricta)
@@ -39,32 +123,32 @@ export async function POST(req: NextRequest) {
     }
 
     // 5. Parsear el payload (ahora es seguro)
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const payload = JSON.parse(rawBody);
 
     console.log(`[Webhook] Recibido evento: ${topic} para la tienda ${shopDomain}`);
 
-    // 6. Invocar revalidateTag pertinentemente basado en el topic del evento
+    // 6. Enrutar basado en el topic del evento
     switch (topic) {
       case 'products/update':
       case 'products/create':
       case 'products/delete':
-        // Invalidar caché de productos e indirectamente colecciones si están vinculadas
-        revalidateTag('products', {});
-        revalidateTag('collections', {});
-        console.log('[Webhook] Caché revalidada para tags: "products", "collections"');
-        break;
-
       case 'collections/update':
       case 'collections/create':
       case 'collections/delete':
-        // Invalidar caché de las colecciones específicamente
-        revalidateTag('collections', {});
-        console.log('[Webhook] Caché revalidada para tag: "collections"');
+        await handleCatalogWebhook(topic, shopDomain);
+        break;
+
+      case 'orders/create':
+      case 'orders/updated':
+        await handleOrderWebhook(topic, payload as ShopifyOrderPayload, shopDomain);
+        break;
+
+      case 'inventory_levels/update':
+        await handleInventoryLevelWebhook(topic, payload as ShopifyInventoryLevelPayload, shopDomain);
         break;
 
       default:
-        console.log(`[Webhook] Evento reportado pero no atado a revalidación de caché: ${topic}`);
+        console.log(`[Webhook] Evento reportado y verificado pero sin handler específico: ${topic}`);
     }
 
     // 7. Retornar éxito

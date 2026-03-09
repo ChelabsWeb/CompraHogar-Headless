@@ -4,6 +4,13 @@ import { useState, useTransition, useEffect } from "react";
 import { setLocation, getLocation } from "@/app/actions/location";
 import { MapPin, Loader2 } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useRouter } from "next/navigation";
 
 export function LocationSelector() {
@@ -61,12 +68,12 @@ export function LocationSelector() {
     <>
       <button 
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-1.5 hover:bg-black/10 px-2 py-1 rounded-sm transition-colors group"
+        className="flex items-center gap-2 h-9 px-3 py-2 border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground rounded-md text-foreground transition-colors group"
       >
-        <MapPin className="w-4 h-4 opacity-80 group-hover:opacity-100" />
-        <div className="flex items-center gap-1 leading-none">
-          <span className="opacity-80">Enviar a</span>
-          <span className="font-semibold hidden sm:block">
+        <MapPin className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+        <div className="flex items-center gap-1.5 leading-none">
+          <span className="text-muted-foreground">Enviar a</span>
+          <span className="font-medium hidden sm:block">
             {currentLocation ? `${currentLocation.department} ${currentLocation.cp}` : "Seleccionar ubicación"}
           </span>
         </div>
@@ -83,33 +90,35 @@ export function LocationSelector() {
           {/* Department Field */}
           <div className="flex flex-col gap-1.5">
             <label htmlFor="department" className="text-sm font-medium text-slate-700">Departamento</label>
-            <select
-              id="department"
+            <Select
               value={department}
-              onChange={(e) => setDepartment(e.target.value)}
-              className="w-full rounded-md border border-slate-300 bg-white p-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              onValueChange={setDepartment}
             >
-              <option value="">Selecciona un departamento</option>
-              <option value="Artigas">Artigas</option>
-              <option value="Canelones">Canelones</option>
-              <option value="Cerro Largo">Cerro Largo</option>
-              <option value="Colonia">Colonia</option>
-              <option value="Durazno">Durazno</option>
-              <option value="Flores">Flores</option>
-              <option value="Florida">Florida</option>
-              <option value="Lavalleja">Lavalleja</option>
-              <option value="Maldonado">Maldonado</option>
-              <option value="Montevideo">Montevideo</option>
-              <option value="Paysandú">Paysandú</option>
-              <option value="Río Negro">Río Negro</option>
-              <option value="Rivera">Rivera</option>
-              <option value="Rocha">Rocha</option>
-              <option value="Salto">Salto</option>
-              <option value="San José">San José</option>
-              <option value="Soriano">Soriano</option>
-              <option value="Tacuarembó">Tacuarembó</option>
-              <option value="Treinta y Tres">Treinta y Tres</option>
-            </select>
+              <SelectTrigger id="department" className="w-full bg-white">
+                <SelectValue placeholder="Selecciona un departamento" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Artigas">Artigas</SelectItem>
+                <SelectItem value="Canelones">Canelones</SelectItem>
+                <SelectItem value="Cerro Largo">Cerro Largo</SelectItem>
+                <SelectItem value="Colonia">Colonia</SelectItem>
+                <SelectItem value="Durazno">Durazno</SelectItem>
+                <SelectItem value="Flores">Flores</SelectItem>
+                <SelectItem value="Florida">Florida</SelectItem>
+                <SelectItem value="Lavalleja">Lavalleja</SelectItem>
+                <SelectItem value="Maldonado">Maldonado</SelectItem>
+                <SelectItem value="Montevideo">Montevideo</SelectItem>
+                <SelectItem value="Paysandú">Paysandú</SelectItem>
+                <SelectItem value="Río Negro">Río Negro</SelectItem>
+                <SelectItem value="Rivera">Rivera</SelectItem>
+                <SelectItem value="Rocha">Rocha</SelectItem>
+                <SelectItem value="Salto">Salto</SelectItem>
+                <SelectItem value="San José">San José</SelectItem>
+                <SelectItem value="Soriano">Soriano</SelectItem>
+                <SelectItem value="Tacuarembó">Tacuarembó</SelectItem>
+                <SelectItem value="Treinta y Tres">Treinta y Tres</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Zip Code Field */}

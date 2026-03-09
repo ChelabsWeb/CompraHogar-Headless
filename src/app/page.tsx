@@ -38,12 +38,13 @@ async function FeaturedProducts() {
 export default function Home() {
 
   const categories = [
-    { label: "Herramientas", href: "/collections/herramientas", icon: "🛠️" },
     { label: "Obra Gruesa", href: "/collections/obra-gruesa", icon: "🧱" },
-    { label: "Iluminación", href: "/collections/iluminacion", icon: "💡" },
+    { label: "Herramientas", href: "/collections/herramientas-y-maquinaria", icon: "🛠️" },
+    { label: "Electricidad", href: "/collections/electricidad-e-iluminacion", icon: "💡" },
     { label: "Sanitaria", href: "/collections/sanitaria-y-griferia", icon: "🚿" },
-    { label: "Servicios B2B", href: "/collections/servicios", icon: "👷" },
-    { label: "Ver Todas", href: "/collections/all", icon: "✨" },
+    { label: "Pinturas", href: "/collections/pinturas-y-acabados", icon: "🎨" },
+    { label: "Decoración", href: "/collections/hogar-y-decoracion", icon: "🛋️" },
+    { label: "Servicios", href: "/collections/servicios-y-alquileres", icon: "👷" },
   ];
 
   return (
