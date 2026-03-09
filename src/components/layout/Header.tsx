@@ -51,7 +51,7 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
                         {/* Logo and Mobile Menu */}
                         <div className="flex items-center gap-2 lg:gap-0 shrink-0">
                             <div className="lg:hidden flex items-center -ml-2">
-                                <MobileMenu />
+                                <MobileMenu collections={collections} />
                             </div>
                             <Link href="/" className="flex items-center">
                                 <div className="relative w-[150px] sm:w-[210px] h-[40px] sm:h-[56px]">
@@ -99,21 +99,21 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
                             {/* User & Cart Actions */}
                             <div className="flex items-center gap-2">
                                 
-                                <Link href="/cuenta" className="hidden sm:flex items-center gap-1.5 font-medium hover:bg-black/10 px-3 py-1.5 rounded-sm transition-colors">
+                                <Link href="/cuenta" className="hidden sm:flex items-center gap-1.5 font-medium hover:bg-black/10 px-3 h-11 rounded-sm transition-colors">
                                     <User className="w-4 h-4 opacity-80" />
                                     <span className="hidden lg:block">Mi cuenta</span>
                                 </Link>
-                                <Link href="/cuenta" className="hidden lg:block font-medium hover:bg-black/10 px-3 py-1.5 rounded-sm transition-colors">
+                                <Link href="/cuenta" className="hidden lg:flex items-center font-medium hover:bg-black/10 px-3 h-11 rounded-sm transition-colors">
                                     Mis compras
                                 </Link>
 
                                 <button 
-                                    className="relative flex items-center justify-center p-2 mx-2 hover:bg-black/10 rounded-full transition-colors"
+                                    className="relative flex items-center justify-center w-11 h-11 mx-1 hover:bg-black/10 rounded-full transition-colors"
                                     onClick={() => setIsCartOpen(true)}
                                 >
-                                    <ShoppingBag className="w-[18px] h-[18px]" />
+                                    <ShoppingBag className="w-5 h-5" />
                                     {totalQuantity > 0 && (
-                                        <span className="absolute top-0 right-0 w-3.5 h-3.5 bg-white text-[#21645d] text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm">
+                                        <span className="absolute top-0 right-0 w-4 h-4 bg-white text-[#21645d] text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm border border-[#21645d]">
                                             {totalQuantity}
                                         </span>
                                     )}

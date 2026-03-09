@@ -17,7 +17,9 @@ export async function shopifyFetch<T = any>({
     const endpoint = `https://${domain}/api/2024-04/graphql.json`;
 
     try {
-        const result = await fetch(endpoint, {
+        const isClient = typeof window !== "undefined";
+        
+        const fetchOptions: RequestInit = {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -28,14 +30,21 @@ export async function shopifyFetch<T = any>({
                 ...(query && { query }),
                 ...(variables && { variables }),
             }),
-            cache,
-            ...(tags && { next: { tags } })
-        });
+        };
+
+        if (!isClient) {
+            fetchOptions.cache = cache;
+            if (tags) {
+                (fetchOptions as any).next = { tags };
+            }
+        }
+
+        const result = await fetch(endpoint, fetchOptions);
 
         const body = await result.json();
 
         if (body.errors) {
-            console.error(body.errors[0] || body.errors);
+            console.error("GraphQL Errors:", JSON.stringify(body.errors, null, 2));
             throw new Error(body.errors[0]?.message || "Error in Shopify GraphQL query");
         }
 

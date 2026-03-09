@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Drawer } from 'vaul';
 import { ChevronRight, ChevronLeft, X, Menu } from 'lucide-react';
 import Link from 'next/link';
+import { COLLECTION_HIERARCHY, MAIN_COLLECTION_HANDLES } from '@/lib/constants/collectionHierarchy';
 
 // ---------------------------------------------------------------------------
 // 1. Tipados y Mock de Datos JSON
@@ -43,210 +44,211 @@ const mockCategories: Category[] = [
   {
     id: '3',
     name: 'Herramientas',
-    href: '/herramientas', // No tiene hijos, lleva directo a la página
+    href: '/herramientas',
   },
 ];
 
 // ---------------------------------------------------------------------------
-// 2. Variantes de Animación Framer Motion (Transición Horizontal)
+// 2. Componente Principal
 // ---------------------------------------------------------------------------
-const slideVariants = {
-  // `direction` nos indica si vamos "hacia adentro" (+1) o "hacia afuera" (-1)
-  enter: (direction: number) => ({
-    x: direction > 0 ? '100%' : '-100%',
-    opacity: 1,
-  }),
-  center: {
-    x: 0,
-    opacity: 1,
-  },
-  exit: (direction: number) => ({
-    x: direction < 0 ? '100%' : '-100%',
-    opacity: 1,
-  }),
-};
-
-// ---------------------------------------------------------------------------
-// 3. Componente Principal
-// ---------------------------------------------------------------------------
-export default function MobileMenu() {
+export default function MobileMenu({ collections = [] }: { collections?: any[] }) {
   const [isOpen, setIsOpen] = useState(false);
   
-  // El stack guarda la "ruta" de menús. El root siempre está en index 0.
-  const [stack, setStack] = useState<{ id: string; name: string; items: Category[] }[]>([
-    { id: 'root', name: 'Menú Principal', items: mockCategories },
-  ]);
-  
-  // 'direction' controla de qué lado entra/sale la animación. 1 = push, -1 = pop
-  const [direction, setDirection] = useState(1);
+  // Mapeamos colecciones dinámicamente como en MegaMenu
+  const categories: Category[] = useMemo(() => {
+    const mainHandles = MAIN_COLLECTION_HANDLES;
+    if (!collections || collections.length === 0) return mockCategories;
 
-  // Bloquear scroll externo al abrir el Drawer
+    const finalCategories: Category[] = [];
+
+    mainHandles.forEach(handle => {
+      const mainCol = collections.find(c => c.handle === handle || c.handle === handle.split('-')[0]);
+      if (mainCol) {
+        const expectedSubs = COLLECTION_HIERARCHY[handle] || [];
+        const foundSubs = expectedSubs.map(sub => {
+            const foundCol = collections.find(c => c.handle === sub.handle);
+            return {
+                id: foundCol ? (foundCol.id || foundCol.handle) : sub.handle,
+                name: foundCol ? foundCol.title : sub.name,
+                href: `/collections/${sub.handle}`
+            };
+        });
+
+        finalCategories.push({
+          id: mainCol.id || mainCol.handle,
+          name: mainCol.title,
+          href: `/collections/${mainCol.handle}`,
+          children: foundSubs.length > 0 ? foundSubs : undefined
+        });
+      }
+    });
+
+    return finalCategories.length > 0 ? finalCategories : mockCategories;
+  }, [collections]);
+
+  // Manejo de la navegación anidada con transiciones CSS
+  // En lugar de Framer Motion, guardamos las vistas en un array y nos movemos con un índice.
+  const initialView = { id: 'root', name: 'Menú Principal', items: categories };
+  const [views, setViews] = useState<{ id: string; name: string; items: Category[]; href?: string }[]>([initialView]);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  // Actualizar el stack si `categories` cambia después del render inicial
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-      
-      // Opcional: Reiniciar el stack al cerrar (después delay para no cortar animación visual)
+    setViews((prev) => {
+        const newViews = [...prev];
+        newViews[0] = { id: 'root', name: 'Menú Principal', items: categories };
+        return newViews;
+    });
+  }, [categories]);
+
+  // Al cerrar el Drawer, reiniciamos la navegación anidada al root con un delay para no cortar animación
+  useEffect(() => {
+    if (!isOpen) {
       const timer = setTimeout(() => {
-        setStack([{ id: 'root', name: 'Menú Principal', items: mockCategories }]);
-        setDirection(1);
+        setActiveIndex(0);
+        setViews([{ id: 'root', name: 'Menú Principal', items: categories }]);
       }, 300);
       return () => clearTimeout(timer);
     }
-  }, [isOpen]);
-
-  // Vista activa actual en el frente
-  const currentView = stack[stack.length - 1];
+  }, [isOpen, categories]);
 
   // Lógica de "Avanzar" en el menú
   const handlePush = (category: Category) => {
     if (category.children && category.children.length > 0) {
-      setDirection(1); // Animamos hacia la izquierda
-      setStack([...stack, { id: category.id, name: category.name, items: category.children }]);
+      const newView = { id: category.id, name: category.name, items: category.children, href: category.href };
+      // Cortamos cualquier vista "futura" que se haya acumulado (ej si navegó hacia atrás y luego a otro hijo)
+      const nextViews = [...views.slice(0, activeIndex + 1), newView];
+      setViews(nextViews);
+      setActiveIndex(activeIndex + 1);
     }
   };
 
   // Lógica de "Retroceder" en el menú
   const handlePop = () => {
-    if (stack.length > 1) {
-      setDirection(-1); // Animamos hacia la derecha
-      setStack(stack.slice(0, -1));
+    if (activeIndex > 0) {
+      setActiveIndex(activeIndex - 1);
     }
   };
 
   return (
-    <>
-      {/* Botón Trigger de ejemplo */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className="p-2 text-gray-700 hover:text-black focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md"
-        aria-label="Abrir menú"
-      >
-        <Menu size={24} />
-      </button>
+    <Drawer.Root direction="left" open={isOpen} onOpenChange={setIsOpen} shouldScaleBackground>
+      <Drawer.Trigger asChild>
+        <button
+          className="p-2 text-gray-700 hover:text-black focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md"
+          aria-label="Abrir menú"
+        >
+          <Menu size={24} />
+        </button>
+      </Drawer.Trigger>
 
-      {/* Backdrop y Contenedor del Drawer */}
-      <AnimatePresence>
-        {isOpen && (
-          <div className="fixed inset-0 z-[100] flex">
-            {/* Backdrop oscuro translúcido */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              onClick={() => setIsOpen(false)}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm"
-              aria-hidden="true"
-            />
-
-            {/* Contenedor principal del Drawer (Mobile Menu deslizando desde la izquierda) */}
-            <motion.div
-              initial={{ x: '-100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '-100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="relative w-[300px] max-w-[85%] h-full bg-white shadow-2xl flex flex-col z-50 overflow-hidden"
+      <Drawer.Portal>
+        <Drawer.Overlay className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100]" />
+        
+        <Drawer.Content 
+          className="fixed bottom-0 left-0 top-0 z-[101] flex h-full w-[300px] max-w-[85vw] flex-col bg-white shadow-2xl outline-none"
+        >
+          <Drawer.Title className="sr-only">Navegación Móvil</Drawer.Title>
+          <Drawer.Description className="sr-only">Menú principal de categorías de compra</Drawer.Description>
+          
+          {/* Contenedor principal de vistas (Carrusel) */}
+          <div className="relative flex-1 w-full h-full overflow-hidden bg-white">
+            <div 
+              className="flex h-full w-full transition-transform duration-300 ease-in-out"
+              style={{ 
+                transform: `translateX(-${activeIndex * 100}%)`,
+                width: `${Math.max(1, views.length) * 100}%` 
+              }}
             >
-              {/* Contenedor relativo para el apilamiento de pantallas (Stack view) */}
-              <div className="relative flex-1 w-full h-full overflow-hidden bg-gray-50 flex flex-col">
-                {/* 
-                  Ojo: AnimatePresence con mode="popLayout" o inicial false + absolute
-                  permite que las vistas saliente y entrante convivan en el DOM durante el slide 
-                */}
-                <div className="flex-1 relative overflow-hidden">
-                <AnimatePresence initial={false} custom={direction}>
-                  <motion.div
-                    key={currentView.id}
-                    custom={direction}
-                    variants={slideVariants}
-                    initial="enter"
-                    animate="center"
-                    exit="exit"
-                    // Suavizado típico de interfaces nativas en iOS/Android
-                    transition={{ type: 'spring', bounce: 0, duration: 0.4 }}
-                    className="absolute inset-0 flex flex-col w-full h-full bg-white"
-                  >
-                    
-                    {/* Header Pega / Sticky de la Vista Actual */}
-                    <div className="flex items-center justify-between px-4 h-16 border-b border-gray-100 bg-white shrink-0">
-                      {stack.length > 1 ? (
-                        // Botón de Retroceso
-                        <button
-                          onClick={handlePop}
-                          className="flex items-center text-blue-600 font-medium active:opacity-60 transition-opacity -ml-2 p-2 rounded-lg"
-                        >
-                          <ChevronLeft size={22} className="mr-0.5" />
-                          Volver
-                        </button>
-                      ) : (
-                        // Título de Root
-                        <span className="font-bold text-lg tracking-tight text-gray-900">
-                          {currentView.name}
-                        </span>
-                      )}
-                      
-                      {/* Botón de Cerrar */}
+              {views.map((view, index) => (
+                <div 
+                  key={`${view.id}-${index}`} 
+                  className="h-full flex flex-col shrink-0 bg-white"
+                  style={{ width: `${100 / Math.max(1, views.length)}%` }}
+                  aria-hidden={index !== activeIndex}
+                >
+                  {/* Header Pega / Sticky de la Vista Actual */}
+                  <div className="flex items-center justify-between px-4 h-16 border-b border-gray-100 bg-white shrink-0">
+                    {index > 0 ? (
+                      // Botón de Retroceso
                       <button
-                        onClick={() => setIsOpen(false)}
-                        className="p-2 -mr-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full active:scale-95 transition-all"
+                        onClick={handlePop}
+                        className="flex items-center text-blue-600 font-medium active:opacity-60 transition-opacity -ml-2 p-2 rounded-lg"
+                      >
+                        <ChevronLeft size={22} className="mr-0.5" />
+                        Volver
+                      </button>
+                    ) : (
+                      // Título de Root
+                      <span className="font-bold text-lg tracking-tight text-gray-900">
+                        {view.name}
+                      </span>
+                    )}
+                    
+                    {/* Botón de Cerrar */}
+                    <Drawer.Close asChild>
+                      <button
+                        className="p-2 -mr-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full active:scale-95 transition-all outline-none"
                         aria-label="Cerrar menú"
                       >
                         <X size={22} />
                       </button>
+                    </Drawer.Close>
+                  </div>
+
+                  {/* Mostrar título destacado si estamos en un nivel profundo */}
+                  {index > 0 && (
+                    <div className="px-5 py-4 bg-gray-50 border-b border-gray-100 shrink-0 flex items-center justify-between gap-4">
+                      <h2 className="text-xl font-bold text-gray-900 tracking-tight">
+                        {view.name}
+                      </h2>
+                      {view.href && (
+                        <Link
+                          href={view.href}
+                          onClick={() => setIsOpen(false)}
+                          className="text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors shrink-0"
+                        >
+                          Ver todo
+                        </Link>
+                      )}
                     </div>
+                  )}
 
-                    {/* Mostrar título destacado ("Sub-header") si estamos en un nivel profundo */}
-                    {stack.length > 1 && (
-                      <div className="px-5 py-4 bg-gray-50 border-b border-gray-100 shrink-0">
-                        <h2 className="text-xl font-bold text-gray-900 tracking-tight">
-                          {currentView.name}
-                        </h2>
-                      </div>
-                    )}
-
-                    {/* Listado dinámico (Navegable deslizando mediante touch en móviles) */}
-                    <nav className="flex-1 overflow-y-auto overscroll-contain">
-                      <ul className="py-2">
-                        {currentView.items.map((item) => (
-                          <li key={item.id}>
-                            {item.children && item.children.length > 0 ? (
-                                <button
-                                  onClick={() => handlePush(item)}
-                                  // Estética "Tap target" nativa: Espaciado generoso (min-h: 44px o más)
+                  {/* Listado dinámico (Navegable deslizando mediante touch en móviles) */}
+                  <nav className="flex-1 overflow-y-auto overscroll-contain">
+                    <ul className="py-2">
+                      {view.items.map((item) => (
+                        <li key={item.id}>
+                          {item.children && item.children.length > 0 ? (
+                              <button
+                                onClick={() => handlePush(item)}
+                                className="w-full flex items-center justify-between px-5 py-4 min-h-[56px] text-left hover:bg-gray-50 active:bg-gray-100 transition-colors"
+                              >
+                                <span className="text-gray-800 font-medium text-[16px]">
+                                  {item.name}
+                                </span>
+                                <ChevronRight size={20} className="text-gray-400" />
+                              </button>
+                          ) : (
+                              <Link
+                                  href={item.href || '#'}
+                                  onClick={() => setIsOpen(false)}
                                   className="w-full flex items-center justify-between px-5 py-4 min-h-[56px] text-left hover:bg-gray-50 active:bg-gray-100 transition-colors"
-                                >
+                              >
                                   <span className="text-gray-800 font-medium text-[16px]">
-                                    {item.name}
+                                      {item.name}
                                   </span>
-                                  
-                                  <ChevronRight size={20} className="text-gray-400" />
-                                </button>
-                            ) : (
-                                <Link
-                                    href={item.href || '#'}
-                                    onClick={() => setIsOpen(false)}
-                                    className="w-full flex items-center justify-between px-5 py-4 min-h-[56px] text-left hover:bg-gray-50 active:bg-gray-100 transition-colors"
-                                >
-                                    <span className="text-gray-800 font-medium text-[16px]">
-                                        {item.name}
-                                    </span>
-                                </Link>
-                            )}
-                          </li>
-                        ))}
-                      </ul>
-                    </nav>
-
-                  </motion.div>
-                </AnimatePresence>
+                              </Link>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </nav>
                 </div>
-              </div>
-            </motion.div>
+              ))}
+            </div>
           </div>
-        )}
-      </AnimatePresence>
-    </>
+        </Drawer.Content>
+      </Drawer.Portal>
+    </Drawer.Root>
   );
 }

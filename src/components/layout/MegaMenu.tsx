@@ -12,6 +12,7 @@ import {
   Wrench,
   Droplets,
 } from "lucide-react";
+import { COLLECTION_HIERARCHY, MAIN_COLLECTION_HANDLES } from "@/lib/constants/collectionHierarchy";
 
 // ==========================================
 // 1. Tipados (Interfaces)
@@ -122,26 +123,58 @@ export function MegaMenu({
 }: {
   collections?: any[]; // Replaces categories?: Category[] 
 }) {
-  const categories: Category[] = collections.length > 0 
-    ? collections.map((col, idx) => {
-        // Recycle mock data for icons, subcategories and promos
+  // Map manual collections to the expected Mega Menu shape
+  const categories: Category[] = (() => {
+    // 1. Define the exact main category handles in order
+    const mainHandles = MAIN_COLLECTION_HANDLES;
+
+    // If no collections are passed from Shopify yet, fallback to mock data
+    if (!collections || collections.length === 0) return MOCK_CATEGORIES;
+
+    const finalCategories: Category[] = [];
+
+    // 3. Build the structure based on the mainHandles array
+    mainHandles.forEach((handle, idx) => {
+      // Find the main collection from Shopify data
+      const mainCol = collections.find(c => c.handle === handle || c.handle === handle.split('-')[0]);
+      
+      if (mainCol) {
+        // Find subcategories that belong to this main category
+        const expectedSubs = COLLECTION_HIERARCHY[handle] || [];
+        
+        // We will show the expected subcategory even if it isn't in Shopify yet, using our mapping's name
+        const foundSubs = expectedSubs.map(sub => {
+            const foundCol = collections.find(c => c.handle === sub.handle);
+            return {
+                title: foundCol ? foundCol.title : sub.name,
+                href: `/collections/${sub.handle}`
+            };
+        });
+
+        // Assign an icon from mock data circularly
         const mock = MOCK_CATEGORIES[idx % MOCK_CATEGORIES.length];
-        return {
-          id: col.id || col.handle,
-          title: col.title,
-          href: `/collections/${col.handle}`,
-          icon: mock.icon,
-          subcategories: mock.subcategories,
+
+        finalCategories.push({
+          id: mainCol.id || mainCol.handle,
+          title: mainCol.title,
+          href: `/collections/${mainCol.handle}`,
+          icon: mock.icon || MOCK_CATEGORIES[0].icon,
+          subcategories: foundSubs.length > 0 ? foundSubs : (mock?.subcategories || []),
           promo: {
-            ...mock.promo,
-            title: `Especial ${col.title}`,
-            subtitle: col.description || mock.promo.subtitle,
-            imageSrc: col.image?.url || mock.promo.imageSrc,
-            href: `/collections/${col.handle}`
+            // Use actual collection data if available, otherwise fallback to mock
+            title: `Especial ${mainCol.title}`,
+            subtitle: mainCol.description || "Descubrí las mejores ofertas en esta categoría",
+            imageSrc: mainCol.image?.url || mock.promo.imageSrc,
+            href: `/collections/${mainCol.handle}`,
+            ctaText: "Ver Colección"
           }
-        };
-      })
-    : MOCK_CATEGORIES;
+        });
+      }
+    });
+
+    // Fallback if the mapping found nothing (e.g. handles don't match exactly)
+    return finalCategories.length > 0 ? finalCategories : MOCK_CATEGORIES;
+  })();
 
   const [isOpen, setIsOpen] = useState(false);
   const [activeCategoryId, setActiveCategoryId] = useState<string>(
@@ -219,8 +252,9 @@ export function MegaMenu({
               {/* Columna Izquierda: Lista de Categorías Principales */}
               <div className="w-[30%] p-3 bg-neutral-50/60 flex flex-col gap-1 border-r border-neutral-100 pb-4 overflow-y-auto">
                 {categories.map((category) => (
-                  <button
+                  <Link
                     key={category.id}
+                    href={category.href}
                     onMouseEnter={() => setActiveCategoryId(category.id)}
                     onClick={closeMenu}
                     className={`group flex items-center justify-between w-full px-4 py-3.5 text-sm font-medium rounded-2xl transition-all duration-200 focus:outline-none ${
@@ -248,7 +282,7 @@ export function MegaMenu({
                           : "opacity-0 -translate-x-3"
                       }`}
                     />
-                  </button>
+                  </Link>
                 ))}
               </div>
 

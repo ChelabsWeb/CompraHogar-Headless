@@ -131,7 +131,7 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
     const packagingName = product.tags?.some((tag: string) => tag.toLowerCase() === "rendimiento") ? "Lata" : "Caja";
 
     return (
-        <div className="w-full flex flex-col lg:flex-row bg-transparent text-slate-900">
+        <div className="w-full flex flex-col lg:flex-row bg-transparent text-slate-900 pb-24 lg:pb-0">
 
             {/* LADO IZQUIERDO: Galería de Fotos Inmersiva */}
             <div className="w-full lg:w-[55%] relative flex flex-col bg-transparent pb-6 lg:pb-0">
@@ -198,12 +198,12 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
                             variant="ghost" 
                             size="icon" 
                             onClick={() => setIsFavorite(!isFavorite)}
-                            className={`rounded-full h-8 w-8 transition-colors ${isFavorite ? 'text-orange-500 hover:text-orange-600 bg-orange-50' : 'text-slate-400 hover:text-orange-500 hover:bg-orange-50'}`}
+                            className={`rounded-full h-11 w-11 transition-colors ${isFavorite ? 'text-orange-500 hover:text-orange-600 bg-orange-50' : 'text-slate-400 hover:text-orange-500 hover:bg-orange-50'}`}
                         >
-                            <Star className={`w-4 h-4 transition-all ${isFavorite ? 'fill-orange-500 text-orange-500 scale-110' : ''}`} />
+                            <Star className={`w-5 h-5 transition-all ${isFavorite ? 'fill-orange-500 text-orange-500 scale-110' : ''}`} />
                         </Button>
                         {isQuickView && onClose && (
-                            <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full h-8 w-8 text-slate-400 hover:text-slate-900 hover:bg-slate-100">
+                            <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full h-11 w-11 text-slate-400 hover:text-slate-900 hover:bg-slate-100">
                                 <X className="w-5 h-5" />
                             </Button>
                         )}
@@ -302,7 +302,7 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
                                                 <button
                                                     key={value}
                                                     onClick={() => handleOptionChange(option.name, value)}
-                                                    className={`w-10 h-10 rounded-full border-2 transition-all p-0.5 ${isSelected ? 'border-primary' : 'border-slate-200 hover:border-slate-300'}`}
+                                                    className={`w-11 h-11 rounded-full border-2 transition-all p-0.5 ${isSelected ? 'border-primary' : 'border-slate-200 hover:border-slate-300'}`}
                                                 >
                                                     <div className="w-full h-full rounded-full border border-black/10" style={{ backgroundColor: bgColor }} />
                                                     <span className="sr-only">{value}</span>
@@ -315,7 +315,7 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
                                                 key={value}
                                                 variant={isSelected ? "default" : "outline"}
                                                 onClick={() => handleOptionChange(option.name, value)}
-                                                className={`min-w-16 h-10 ${isSelected ? '' : 'text-slate-600'}`}
+                                                className={`min-w-[44px] h-11 ${isSelected ? '' : 'text-slate-600'}`}
                                             >
                                                 {value}
                                             </Button>
@@ -573,6 +573,52 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
                 </div>
 
             </div>
+
+            {/* Sticky Buy Box Móvil */}
+            {!isQuickView && !isOutOfStock && (
+                <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] z-50 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)] flex gap-3">
+                    <Button 
+                        size="lg" 
+                        className={`w-full h-11 text-base transition-all duration-300 ${isVariantChanging ? 'opacity-80' : ''}`}
+                        onClick={async () => {
+                            if (currentVariant?.id) {
+                                pushDatalayerEvent({
+                                    event: 'add_to_cart',
+                                    ecommerce: {
+                                        currency: displayPrice?.currencyCode || 'USD',
+                                        value: Number(displayPrice?.amount || 0),
+                                        items: [{
+                                            item_id: currentVariant.id,
+                                            item_name: product.title,
+                                            price: Number(displayPrice?.amount || 0),
+                                            quantity: quantity,
+                                            item_variant: currentVariant.title !== 'Default Title' ? currentVariant.title : undefined
+                                        }]
+                                    }
+                                });
+                                const url = await addToCart(currentVariant.id, quantity);
+                                if (url) {
+                                    window.location.href = url;
+                                } else if (checkoutUrl) {
+                                    window.location.href = checkoutUrl;
+                                } else {
+                                    setIsCartOpen(true);
+                                }
+                            }
+                        }}
+                        disabled={isCartLoading || !currentVariant?.id || isVariantChanging}
+                    >
+                        {isVariantChanging ? (
+                            <span className="flex items-center justify-center">
+                                <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                                Calculando...
+                            </span>
+                        ) : (
+                            "Comprar ahora"
+                        )}
+                    </Button>
+                </div>
+            )}
         </div>
     );
 }

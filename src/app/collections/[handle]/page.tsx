@@ -10,6 +10,8 @@ import { ChevronDown } from "lucide-react";
 import { SortDropdown } from "@/components/shop/SortDropdown";
 import { MobileFilterDrawer } from "@/components/shop/MobileFilterDrawer";
 import type { Metadata } from "next";
+import { getSubcollections } from "@/lib/constants/collectionHierarchy";
+import { SubcategoryCarousel } from "@/components/shop/SubcategoryCarousel";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
@@ -145,6 +147,8 @@ export default async function CollectionPage(props: {
     const pageInfo = collection.products?.pageInfo;
     const shopifyFilters = collection.products?.filters || [];
 
+    const subcollections = getSubcollections(resolvedParams.handle);
+    const isMainCategory = (subcollections && subcollections.length > 0);
 
     return (
         <div className="flex flex-col w-full bg-[#ebebeb] min-h-screen pt-4 pb-16">
@@ -154,12 +158,20 @@ export default async function CollectionPage(props: {
                 <div className="mb-4">
                     <Breadcrumbs 
                         items={[
-                            { label: "Volver al listado", href: "/collections" },
-                            { label: "Hogar y Construcción", href: "/collections/hogar" },
+                            { label: "Catálogo", href: "/products" },
                             { label: collection.title, isLast: true }
                         ]} 
                     />
                 </div>
+
+                {isMainCategory && subcollections && (
+                    <div className="-mx-4 md:mx-0">
+                        <SubcategoryCarousel 
+                            parentHandle={resolvedParams.handle} 
+                            subcollections={subcollections} 
+                        />
+                    </div>
+                )}
 
                 <div className="flex flex-col lg:flex-row gap-6">
 

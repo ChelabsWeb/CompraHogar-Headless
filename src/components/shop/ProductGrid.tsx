@@ -92,7 +92,7 @@ export function ProductGrid({
     return (
         <div className="flex flex-col w-full">
             <ActiveFilters />
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
                 {products.map(({ node }: any, i: number) => {
                 const currency = node.priceRange?.minVariantPrice?.currencyCode || "USD";
                 const priceAmount = Number(node.priceRange?.minVariantPrice?.amount || 0);
@@ -100,25 +100,47 @@ export function ProductGrid({
 
                 // ML specific logic: if price is over a certain amount, show installments
                 const installments = (priceAmount / 12).toLocaleString("es-UY", { maximumFractionDigits: 0 });
+                
+                // Get all available images or fallback to featured image
+                const images = node.images?.edges?.length > 0
+                    ? node.images.edges.map((e: any) => e.node)
+                    : node.featuredImage 
+                        ? [node.featuredImage]
+                        : [];
 
                 return (
-                    <Card key={node.handle} className="group bg-white rounded-md border border-slate-100 hover:shadow-lg transition-shadow duration-300 overflow-hidden flex flex-col cursor-pointer">
+                    <Card key={node.handle} className="group bg-white rounded-md border border-slate-100 hover:shadow-md sm:hover:shadow-lg transition-shadow duration-300 overflow-hidden flex flex-col cursor-pointer">
                         <Link href={`/products/${node.handle}`} className="flex-1 flex flex-col outline-none">
 
-                            {/* Image Container - Aspect 4/3, white background */}
-                            <div className="relative w-full aspect-[4/3] bg-white border-b border-slate-100 p-4 flex items-center justify-center">
-                                {node.featuredImage ? (
-                                    <Image
-                                        src={node.featuredImage.url}
-                                        alt={node.featuredImage.altText || node.title}
-                                        fill
-                                        className="object-contain p-4 group-hover:scale-105 transition-transform duration-500"
-                                        sizes="(max-width: 1024px) 50vw, 25vw"
-                                        priority={i < 4}
-                                    />
+                            {/* Image Carousel Container - CSS Snap */}
+                            <div className="relative w-full aspect-[4/3] bg-white border-b border-slate-100 flex items-center justify-center overflow-hidden">
+                                {images.length > 0 ? (
+                                    <div className="flex w-full h-full overflow-x-auto snap-x snap-mandatory no-scrollbar overscroll-x-contain">
+                                        {images.map((img: any, index: number) => (
+                                            <div key={index} className="w-full h-full shrink-0 snap-center relative">
+                                                <Image
+                                                    src={img.url}
+                                                    alt={img.altText || node.title}
+                                                    fill
+                                                    className="object-contain p-2 sm:p-4 group-hover:scale-105 transition-transform duration-500"
+                                                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                                                    priority={i < 4 && index === 0}
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
                                 ) : (
                                     <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-300 font-medium text-xs">
                                         CH
+                                    </div>
+                                )}
+
+                                {/* Pagination Dots (Visible only if > 1 image) */}
+                                {images.length > 1 && (
+                                    <div className="absolute bottom-1.5 left-0 right-0 flex justify-center gap-1.5 z-10 pointer-events-none">
+                                        {images.map((_: any, idx: number) => (
+                                            <div key={idx} className="w-1 h-1 rounded-full bg-slate-300/80" />
+                                        ))}
                                     </div>
                                 )}
 
@@ -128,38 +150,38 @@ export function ProductGrid({
                                 <ProductQuickView product={node} />
                             </div>
 
-                            {/* Information Container - ML Styling */}
-                            <div className="p-4 flex flex-col flex-1">
+                            {/* Information Container - Optimized for Mobile Grid */}
+                            <div className="p-2.5 sm:p-4 flex flex-col flex-1">
 
                                 {/* Price */}
                                 {priceAmount > 0 ? (
-                                    <div className="flex items-start gap-1 mb-1">
-                                        <span className="text-sm font-normal text-slate-800 mt-1">$</span>
-                                        <span className="text-[24px] font-normal text-slate-800 leading-none">{price}</span>
+                                    <div className="flex items-start gap-0.5 sm:gap-1 mb-1 sm:mb-2">
+                                        <span className="text-[11px] sm:text-sm font-normal text-slate-800 mt-0.5 sm:mt-1">$</span>
+                                        <span className="text-[18px] sm:text-[24px] font-normal text-slate-800 leading-none">{price}</span>
                                     </div>
                                 ) : (
                                     <div className="flex items-start gap-1 mb-1">
-                                        <span className="text-[18px] font-medium text-slate-500 leading-none">Consultar precio</span>
+                                        <span className="text-[14px] sm:text-[18px] font-medium text-slate-500 leading-none">Consultar precio</span>
                                     </div>
                                 )}
 
                                 {/* Installments */}
                                 {priceAmount > 1000 && (
-                                    <span className="text-[13px] text-green-500 mb-2">
-                                        Mismo precio en 12 cuotas de ${installments}
+                                    <span className="text-[11px] sm:text-[13px] text-green-500 mb-1.5 sm:mb-2 leading-tight">
+                                        <span className="hidden sm:inline">Mismo precio</span> en 12x ${installments}
                                     </span>
                                 )}
 
                                 {/* Free Shipping Trust Signal */}
                                 {priceAmount > 2000 && (
-                                    <div className="inline-flex items-center gap-1 bg-[#e6f5f0] text-[#008b6a] px-2 py-0.5 rounded-md text-[12px] font-semibold border border-[#b2e1d0] w-fit mb-2 mt-1">
-                                        Llega gratis mañana
-                                        <Zap className="w-3.5 h-3.5 fill-current" />
+                                    <div className="inline-flex items-center gap-1 bg-[#e6f5f0] text-[#008b6a] px-1.5 py-0.5 sm:px-2 rounded text-[10px] sm:text-[12px] font-semibold flex-wrap mb-1.5 sm:mb-2 w-fit">
+                                        Llega gratis <span className="hidden sm:inline">mañana</span>
+                                        <Zap className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-current shrink-0" />
                                     </div>
                                 )}
 
                                 {/* Title */}
-                                <h3 className="text-[14px] text-slate-500 font-normal leading-tight line-clamp-2 mt-auto group-hover:text-orange-500 transition-colors">
+                                <h3 className="text-[12px] sm:text-[14px] text-slate-600 font-normal leading-snug sm:leading-tight line-clamp-2 mt-auto group-hover:text-orange-500 transition-colors">
                                     {node.title}
                                 </h3>
                             </div>

@@ -28,26 +28,41 @@ export async function getProductReviews(productHandle: string): Promise<ProductR
     // `reviews.rating_count` and `reviews.rating` metafields via the Storefront API
     // for aggregate data, and then fetch a JSON endpoint (ex: Judge.me API) for the review texts.
     
-    // 2. Here we fetch a mock/generic endpoint prioritizing SSR using Next.js `fetch`
-    // with ISR (Incremental Static Regeneration) via `next: { revalidate: 3600 }`.
-    const res = await fetch(`https://api.judgeme.example.com/api/v1/reviews?handle=${productHandle}`, {
-      next: { revalidate: 3600 },
-      headers: {
-        'Accept': 'application/json',
-        // 'Authorization': `Bearer ${process.env.JUDGEME_API_TOKEN}` // if required
-      }
-    });
+    // Simulate network delay for realistic SSR rendering behavior
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
-    if (!res.ok) {
-      // Simulate fallback for the exercise: No reviews found or API offline
-      return { ratingCount: 0, averageRating: 0, reviews: [] };
-    }
-
-    const data = await res.json();
-    return data as ProductReviewsData;
-
+    // Return mock data for demonstration
+    return {
+      ratingCount: 3,
+      averageRating: 4.7,
+      reviews: [
+        {
+          id: "1",
+          author: "Sofía M.",
+          rating: 5,
+          title: "¡Me encantó!",
+          body: "La calidad superó mis expectativas. Queda perfecto y tiene terminaciones premium. El envío llegó en el tiempo estimado.",
+          createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(), // 2 days ago
+        },
+        {
+          id: "2",
+          author: "Esteban",
+          rating: 4,
+          title: "Muy buen producto",
+          body: "Me gusta mucho el diseño. Por el precio está muy bien, aunque me gustaría que tuvieran más opciones de colores.",
+          createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 14).toISOString(), // 2 weeks ago
+        },
+        {
+          id: "3",
+          author: "Laura G.",
+          rating: 5,
+          title: "Excelente atención al cliente",
+          body: "Tuve una duda antes de comprar y me respondieron enseguida. El producto llegó impecable. ¡Recomendado 100%!",
+          createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).toISOString(), // 1 month ago
+        }
+      ]
+    };
   } catch (error) {
-    console.error(`Error fetching reviews for ${productHandle}:`, error);
     // Silent fail gracefully in UI
     return { ratingCount: 0, averageRating: 0, reviews: [] };
   }

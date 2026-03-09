@@ -72,14 +72,18 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
 
     const recommendations = recBody?.data?.productRecommendations || [];
 
+    const collectionNode = product.collections?.edges?.[0]?.node;
+
     return (
         <div className="min-h-screen bg-[#f8fafc] w-full pt-8 lg:pt-12 pb-12">
             <Container>
                 <div className="mb-6 hidden md:block">
                     <Breadcrumbs 
                         items={[
-                            { label: "Catálogo", href: "/collections/all" },
-                            { label: product.productType || "Productos", href: `/collections/${product.productType?.toLowerCase() || 'all'}` },
+                            { label: "Catálogo", href: "/products" },
+                            ...(collectionNode 
+                                ? [{ label: collectionNode.title, href: `/collections/${collectionNode.handle}` }] 
+                                : []),
                             { label: product.title, isLast: true }
                         ]} 
                     />

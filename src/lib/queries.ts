@@ -113,6 +113,14 @@ export const getProductByHandleQuery = `
           }
         }
       }
+      collections(first: 1) {
+        edges {
+          node {
+            handle
+            title
+          }
+        }
+      }
     }
   }
 `;

@@ -106,25 +106,25 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                                     )}
 
                                     <div className="flex items-center justify-between mt-auto pt-2">
-                                        <div className="flex items-center border rounded-md">
+                                        <div className="flex items-center border rounded-md h-[44px]">
                                             <Button 
                                                 variant="ghost" 
                                                 size="icon" 
-                                                className="h-7 w-7 rounded-none"
+                                                className="h-full w-[44px] rounded-none"
                                                 onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
                                                 disabled={isCartLoading}
                                             >
-                                                <Minus className="w-3 h-3" />
+                                                <Minus className="w-4 h-4" />
                                             </Button>
                                             <span className="text-xs font-medium w-6 text-center">{item.quantity}</span>
                                             <Button 
                                                 variant="ghost" 
                                                 size="icon" 
-                                                className="h-7 w-7 rounded-none"
+                                                className="h-full w-[44px] rounded-none"
                                                 onClick={() => updateQuantity(item.id, item.quantity + 1)}
                                                 disabled={isCartLoading}
                                             >
-                                                <Plus className="w-3 h-3" />
+                                                <Plus className="w-4 h-4" />
                                             </Button>
                                         </div>
                                         <div className="flex flex-col items-end">
@@ -133,7 +133,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                                             </span>
                                             <Button 
                                                 variant="link" 
-                                                className="h-auto p-0 text-[10px] text-muted-foreground hover:text-destructive"
+                                                className="h-[44px] px-2 text-[10px] text-muted-foreground hover:text-destructive -mr-2"
                                                 onClick={() => removeFromCart(item.id)}
                                                 disabled={isCartLoading}
                                             >
