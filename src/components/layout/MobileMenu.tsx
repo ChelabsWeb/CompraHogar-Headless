@@ -145,7 +145,7 @@ export default function MobileMenu({ collections = [] }: { collections?: any[] }
         <Drawer.Overlay className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100]" />
         
         <Drawer.Content 
-          className="fixed bottom-0 left-0 top-0 z-[101] flex h-full w-[300px] max-w-[85vw] flex-col bg-white shadow-2xl outline-none"
+          className="fixed bottom-0 left-0 top-0 z-[101] flex h-full w-[85vw] max-w-[360px] flex-col bg-white shadow-2xl outline-none"
         >
           <Drawer.Title className="sr-only">Navegación Móvil</Drawer.Title>
           <Drawer.Description className="sr-only">Menú principal de categorías de compra</Drawer.Description>
@@ -172,14 +172,14 @@ export default function MobileMenu({ collections = [] }: { collections?: any[] }
                       // Botón de Retroceso
                       <button
                         onClick={handlePop}
-                        className="flex items-center text-blue-600 font-medium active:opacity-60 transition-opacity -ml-2 p-2 rounded-lg"
+                        className="flex items-center text-blue-600 font-medium active:opacity-60 transition-opacity p-2 rounded-lg"
                       >
                         <ChevronLeft size={22} className="mr-0.5" />
                         Volver
                       </button>
                     ) : (
                       // Título de Root
-                      <span className="font-bold text-lg tracking-tight text-gray-900">
+                      <span className="font-bold text-[17px] tracking-tight text-gray-900 truncate pr-2">
                         {view.name}
                       </span>
                     )}

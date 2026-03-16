@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import useSWR from "swr";
+
 import { Search, Loader2, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { predictiveSearchAction, PredictiveSearchResult } from "@/app/actions/search";
@@ -48,9 +48,10 @@ const searchFetcher = async ([key, query]: [string, string]) => {
 interface PredictiveSearchProps {
   placeholder?: string;
   className?: string;
+  hideBorder?: boolean;
 }
 
-export function PredictiveSearch({ placeholder = "Buscar productos, marcas y más...", className = "" }: PredictiveSearchProps) {
+export function PredictiveSearch({ placeholder = "Buscar productos, marcas y más...", className = "", hideBorder = false }: PredictiveSearchProps) {
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   
@@ -63,21 +64,43 @@ export function PredictiveSearch({ placeholder = "Buscar productos, marcas y má
   // 1. Debounce riguroso de al menos 400ms
   const debouncedQuery = useDebounce(query, 400);
 
-  // 2. Caché Local In-Memory con SWR
-  const shouldFetch = debouncedQuery.trim().length > 0;
+  // Local State Fetching since we removed SWR
+  const [results, setResults] = useState<PredictiveSearchResult[]>([]);
+  const [isSWRValidating, setIsSWRValidating] = useState(false);
   
-  const { 
-    data: results = [], 
-    isValidating: isSWRValidating 
-  } = useSWR<PredictiveSearchResult[]>(
-    shouldFetch ? ['predictive-search', debouncedQuery.trim()] : null, 
-    searchFetcher,
-    {
-      keepPreviousData: true,
-      revalidateOnFocus: false,
-      dedupingInterval: 60000 * 5, // Deduplicación de 5 minutos
+  const shouldFetch = debouncedQuery.trim().length > 0;
+
+  useEffect(() => {
+    let active = true;
+
+    if (!shouldFetch) {
+      setResults([]);
+      setIsSWRValidating(false);
+      return;
     }
-  );
+
+    const fetchData = async () => {
+      setIsSWRValidating(true);
+      try {
+        const data = await searchFetcher(['predictive-search', debouncedQuery.trim()]);
+        if (active) {
+          setResults(data || []);
+        }
+      } catch (error) {
+        console.error("Predictive search error:", error);
+      } finally {
+        if (active) {
+          setIsSWRValidating(false);
+        }
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      active = false;
+    };
+  }, [debouncedQuery, shouldFetch]);
 
   const isTyping = query !== debouncedQuery;
   const isLoading = (shouldFetch && isSWRValidating) || (query.trim().length > 0 && isTyping);
@@ -121,7 +144,7 @@ export function PredictiveSearch({ placeholder = "Buscar productos, marcas y má
               setIsOpen(true);
             }
           }}
-          className="w-full h-10 pl-10 pr-12 rounded-full border-0 bg-white text-slate-900 shadow-sm"
+          className={`w-full h-10 pl-10 pr-12 rounded-full bg-white text-slate-900 shadow-sm focus-visible:ring-0 ${hideBorder ? 'border-0' : 'border-slate-200'}`}
         />
         <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
         

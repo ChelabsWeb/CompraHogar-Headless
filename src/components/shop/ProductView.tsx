@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Star, ChevronLeft, ChevronRight, ShieldCheck, Ruler, ArrowRight, X, Zap, Play, Box, Loader2 } from "lucide-react";
+import { Star, ChevronLeft, ChevronRight, ShieldCheck, Ruler, ArrowRight, X, Zap, Play, Box, Loader2, ShoppingCart } from "lucide-react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CartDrawer } from "@/components/cart/CartSheet";
@@ -131,7 +132,7 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
     const packagingName = product.tags?.some((tag: string) => tag.toLowerCase() === "rendimiento") ? "Lata" : "Caja";
 
     return (
-        <div className="w-full flex flex-col lg:flex-row bg-transparent text-slate-900 pb-24 lg:pb-0">
+        <div className="w-full flex flex-col lg:flex-row bg-transparent text-slate-900 pb-32 lg:pb-8">
 
             {/* LADO IZQUIERDO: Galería de Fotos Inmersiva */}
             <div className="w-full lg:w-[55%] relative flex flex-col bg-transparent pb-6 lg:pb-0">
@@ -143,13 +144,51 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
                 </div>
 
                 {/* Imagen Principal Pura */}
-                <div className="relative flex items-center justify-center w-full aspect-square lg:aspect-[4/3] mx-auto mb-8 group bg-white rounded-3xl overflow-hidden">
-                    {renderMedia(activeMedia)}
+                <div 
+                    className="relative flex items-center justify-center w-full aspect-square lg:aspect-[4/3] mx-auto mb-2 lg:mb-8 group bg-white lg:rounded-3xl border-b border-slate-100 lg:border-none overflow-x-auto snap-x snap-mandatory no-scrollbar"
+                    onScroll={(e) => {
+                        const { scrollLeft, clientWidth } = e.currentTarget;
+                        const index = Math.round(scrollLeft / clientWidth);
+                        if (index !== activeImageIndex) setActiveImageIndex(index);
+                    }}
+                >
+                    {media.length > 0 ? (
+                        media.map((item: any, idx: number) => (
+                            <div key={idx} className="w-full h-full shrink-0 snap-center relative flex items-center justify-center">
+                                {renderMedia(item.node)}
+                            </div>
+                        ))
+                    ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                             <span className="text-slate-400 text-sm font-bold uppercase tracking-widest">Sin Media</span>
+                        </div>
+                    )}
                 </div>
+                
+                {/* Mobile Indicator Dots */}
+                {media.length > 1 && (
+                    <div className="flex lg:hidden justify-center gap-1.5 mt-2 mb-4 w-full bg-transparent items-center">
+                        {media.map((_: any, idx: number) => {
+                            const isActive = activeImageIndex === idx;
+                            return (
+                                <motion.div 
+                                    key={idx} 
+                                    initial={false}
+                                    animate={{
+                                        width: isActive ? 16 : 6,
+                                        backgroundColor: isActive ? "#f97316" : "#cbd5e1"
+                                    }}
+                                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                    className="h-1.5 rounded-full" 
+                                />
+                            );
+                        })}
+                    </div>
+                )}
 
-                {/* Miniaturas Inferiores (Film Strip) */}
+                {/* Miniaturas Inferiores (Film Strip) - Desktop Only */}
                 {!isQuickView && (
-                    <div className="flex flex-wrap gap-3 px-2 z-20 mb-8 lg:mb-0 justify-center max-w-xl mx-auto">
+                    <div className="hidden lg:flex flex-wrap gap-3 px-2 z-20 mb-8 lg:mb-0 justify-center max-w-xl mx-auto">
                         {media.map(({ node }: any, i: number) => {
                             const isVideo = node.mediaContentType === 'VIDEO';
                             const is3D = node.mediaContentType === 'MODEL_3D';
@@ -191,7 +230,7 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
             <div className="w-full lg:w-[45%] flex flex-col bg-transparent p-5 lg:px-12 lg:py-6">
 
                 {/* Meta info & Title */}
-                <div className="mb-2 text-[13px] text-slate-500 flex items-center justify-between">
+                <div className="mb-2 text-[12px] text-slate-500 font-medium tracking-wide flex items-center justify-between">
                     <span>Nuevo | 1024 vendidos</span>
                     <div className="flex gap-2 items-center">
                         <Button 
@@ -218,26 +257,26 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
                 <div className="flex items-center gap-1.5 mb-4">
                     <div className="flex">
                         {[...Array(5)].map((_, i) => (
-                            <Star key={i} className="w-4 h-4 fill-primary text-primary" />
+                            <Star key={i} className="w-3.5 h-3.5 fill-orange-500 text-orange-500" />
                         ))}
                     </div>
-                    <span className="text-[14px] text-primary font-normal hover:underline cursor-pointer">(24)</span>
+                    <span className="text-[14px] text-slate-500 font-normal hover:underline cursor-pointer">(24)</span>
                 </div>
 
-                {/* Price Section */}
-                <div className={`mb-4 flex flex-col pb-4 border-b border-slate-100 transition-all duration-300 ${isVariantChanging ? 'opacity-50 blur-sm' : 'opacity-100 blur-0'}`}>
-                    <span className="text-[36px] font-light text-slate-900 leading-none flex items-start">
-                        <span className="text-2xl mt-1.5 mr-1">$</span>
+                {/* Price Section ML Style */}
+                <div className={`mb-4 flex flex-col transition-all duration-300 ${isVariantChanging ? 'opacity-50 blur-sm' : 'opacity-100 blur-0'}`}>
+                    <span className="text-[40px] font-light text-slate-900 leading-none flex items-start tracking-tight">
+                        <span className="text-[20px] mt-2 mr-1">$</span>
                         {Number(displayPrice?.amount || 0).toLocaleString("es-UY")}
                     </span>
-                    <span className="text-[15px] font-normal text-slate-800 mt-2">
-                        Mismo precio en <span className="text-green-500">12 cuotas de ${(Number(displayPrice?.amount || 0) / 12).toLocaleString("es-UY", { maximumFractionDigits: 0 })}</span>
+                    <span className="text-[16px] font-medium mt-1 text-green-600">
+                        en 12x ${(Number(displayPrice?.amount || 0) / 12).toLocaleString("es-UY", { maximumFractionDigits: 0 })} sin interés
                     </span>
-                    <div className="mt-1 flex items-center justify-start">
+                    <div className="mt-2 flex items-center justify-start">
                         <InfoDrawer 
                             title="Medios de Pago" 
                             triggerText="Ver los medios de pago"
-                            className="text-[13px] text-orange-500 hover:text-orange-600 font-normal p-0 h-auto justify-start no-underline hover:underline"
+                            className="text-[14px] text-primary hover:text-primary/80 font-medium p-0 h-auto justify-start no-underline hover:underline"
                         >
                             <div className="space-y-8">
                                 <div className="space-y-4">
@@ -372,79 +411,36 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
                     )}
 
                     {!isOutOfStock ? (
-                        <div className="flex flex-col gap-3">
+                        <div className="hidden lg:flex flex-col gap-2 relative">
+                            {/* Desktop ML Style Buttons */}
                             <Button 
                                 size={isQuickView ? "default" : "lg"} 
-                                className={`w-full text-base transition-all duration-300 ${isVariantChanging ? 'opacity-80' : ''}`}
+                                className={`w-full text-base font-semibold h-[48px] rounded-md transition-all duration-300 bg-orange-500 hover:bg-orange-600 text-white ${isVariantChanging ? 'opacity-80' : ''}`}
                                 onClick={async () => {
                                     if (currentVariant?.id) {
-                                        pushDatalayerEvent({
-                                            event: 'add_to_cart',
-                                            ecommerce: {
-                                                currency: displayPrice?.currencyCode || 'USD',
-                                                value: Number(displayPrice?.amount || 0),
-                                                items: [{
-                                                    item_id: currentVariant.id,
-                                                    item_name: product.title,
-                                                    price: Number(displayPrice?.amount || 0),
-                                                    quantity: quantity,
-                                                    item_variant: currentVariant.title !== 'Default Title' ? currentVariant.title : undefined
-                                                }]
-                                            }
-                                        });
                                         const url = await addToCart(currentVariant.id, quantity);
-                                        if (url) {
-                                            window.location.href = url;
-                                        } else if (checkoutUrl) {
-                                            window.location.href = checkoutUrl;
-                                        } else {
-                                            setIsCartOpen(true);
-                                        }
+                                        if (url) window.location.href = url;
+                                        else if (checkoutUrl) window.location.href = checkoutUrl;
+                                        else setIsCartOpen(true);
                                     }
                                 }}
                                 disabled={isCartLoading || !currentVariant?.id || isVariantChanging}
                             >
-                                {isVariantChanging ? (
-                                    <span className="flex items-center justify-center">
-                                        <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                                        Calculando...
-                                    </span>
-                                ) : (
-                                    "Comprar ahora"
-                                )}
+                                {isVariantChanging ? <Loader2 className="w-5 h-5 animate-spin" /> : "Comprar ahora"}
                             </Button>
                             <Button 
                                 variant="secondary" 
                                 size={isQuickView ? "default" : "lg"} 
-                                className={`w-full text-base transition-all duration-300 ${isVariantChanging ? 'opacity-80' : ''}`}
+                                className={`w-full text-base font-semibold h-[48px] rounded-md transition-all duration-300 bg-orange-50 hover:bg-orange-100 text-orange-600 border-0 ${isVariantChanging ? 'opacity-80' : ''}`}
                                 onClick={async () => {
                                     if (currentVariant?.id) {
-                                        pushDatalayerEvent({
-                                            event: 'add_to_cart',
-                                            ecommerce: {
-                                                currency: displayPrice?.currencyCode || 'USD',
-                                                value: Number(displayPrice?.amount || 0),
-                                                items: [{
-                                                    item_id: currentVariant.id,
-                                                    item_name: product.title,
-                                                    price: Number(displayPrice?.amount || 0),
-                                                    quantity: quantity,
-                                                    item_variant: currentVariant.title !== 'Default Title' ? currentVariant.title : undefined
-                                                }]
-                                            }
-                                        });
                                         await addToCart(currentVariant.id, quantity);
                                         setIsCartOpen(true);
                                     }
                                 }}
                                 disabled={isCartLoading || !currentVariant?.id || isVariantChanging}
                             >
-                                {isVariantChanging ? (
-                                    <span className="flex items-center justify-center">
-                                        <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                                        Calculando...
-                                    </span>
-                                ) : isCartLoading ? "Agregando..." : "Agregar al carrito"}
+                                {isVariantChanging ? <Loader2 className="w-5 h-5 animate-spin" /> : (isCartLoading ? "Agregando..." : "Agregar al carrito")}
                             </Button>
                         </div>
                     ) : (
@@ -481,15 +477,14 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
                     <ShippingCalculator />
                 </div>
 
-                {/* Returns Highlight */}
-                <div className="mb-5 flex items-start gap-3 border-b border-slate-100 pb-5">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-slate-400 mt-0.5 ml-0.5">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
-                    </svg>
-                    <div className="flex flex-col">
-                        <span className="text-[15px] font-normal text-slate-900"><span className="text-green-500 font-medium">Devolución gratis.</span> Tenés 30 días desde que lo recibís.</span>
-                        <div className="mt-0.5 flex items-center justify-start">
-                            <InfoDrawer title="Devoluciones" triggerText="Conocer más" className="text-[13px] text-orange-500 hover:text-orange-600 font-normal p-0 h-auto justify-start no-underline hover:underline">
+                {/* Returns Highlight ML Style */}
+                <div className="mb-5 flex flex-col gap-2 mt-4 pt-4 border-t border-slate-200">
+                    <div className="flex items-start gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-slate-400 mt-0.5 shrink-0">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+                        </svg>
+                        <div className="flex flex-col">
+                            <InfoDrawer title="Devoluciones" triggerText="Devolución gratis" className="text-[14px] text-primary hover:text-primary/80 font-medium p-0 h-auto justify-start no-underline hover:underline">
                                 <div className="space-y-4 text-sm text-slate-600">
                                     <p>
                                         Queremos que estés 100% satisfecho con tu compra. Si no es lo que esperabas, <span className="font-medium text-slate-900">puedes devolverlo de forma gratuita</span> dentro de los 30 días posteriores a la recepción.
@@ -501,6 +496,14 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
                                     </ul>
                                 </div>
                             </InfoDrawer>
+                            <span className="text-[14px] font-normal text-slate-500 mt-0.5">Tenés 30 días desde que lo recibís.</span>
+                        </div>
+                    </div>
+                    <div className="flex items-start gap-3 mt-2">
+                        <ShieldCheck className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
+                        <div className="flex flex-col">
+                            <span className="text-[14px] text-primary font-medium cursor-pointer hover:underline">Compra Protegida</span>
+                            <span className="text-[14px] font-normal text-slate-500 mt-0.5">Recibí el producto que esperabas o te devolvemos tu dinero.</span>
                         </div>
                     </div>
                 </div>
@@ -574,50 +577,44 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
 
             </div>
 
-            {/* Sticky Buy Box Móvil */}
+            {/* Sticky Buy Box Móvil (App Native Style ML) */}
             {!isQuickView && !isOutOfStock && (
-                <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] z-50 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)] flex gap-3">
+                <motion.div 
+                    initial={{ y: 100 }}
+                    animate={{ y: 0 }}
+                    transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                    className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-slate-200/60 p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] z-[100] shadow-[0_-4px_16px_rgba(0,0,0,0.08)] flex flex-col gap-2"
+                >
                     <Button 
                         size="lg" 
-                        className={`w-full h-11 text-base transition-all duration-300 ${isVariantChanging ? 'opacity-80' : ''}`}
+                        className={`w-full h-[48px] text-base font-semibold rounded-md bg-orange-500 hover:bg-orange-600 text-white transition-all duration-300 ${isVariantChanging ? 'opacity-80' : ''}`}
                         onClick={async () => {
                             if (currentVariant?.id) {
-                                pushDatalayerEvent({
-                                    event: 'add_to_cart',
-                                    ecommerce: {
-                                        currency: displayPrice?.currencyCode || 'USD',
-                                        value: Number(displayPrice?.amount || 0),
-                                        items: [{
-                                            item_id: currentVariant.id,
-                                            item_name: product.title,
-                                            price: Number(displayPrice?.amount || 0),
-                                            quantity: quantity,
-                                            item_variant: currentVariant.title !== 'Default Title' ? currentVariant.title : undefined
-                                        }]
-                                    }
-                                });
                                 const url = await addToCart(currentVariant.id, quantity);
-                                if (url) {
-                                    window.location.href = url;
-                                } else if (checkoutUrl) {
-                                    window.location.href = checkoutUrl;
-                                } else {
-                                    setIsCartOpen(true);
-                                }
+                                if (url) window.location.href = url;
+                                else if (checkoutUrl) window.location.href = checkoutUrl;
+                                else setIsCartOpen(true);
                             }
                         }}
                         disabled={isCartLoading || !currentVariant?.id || isVariantChanging}
                     >
-                        {isVariantChanging ? (
-                            <span className="flex items-center justify-center">
-                                <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                                Calculando...
-                            </span>
-                        ) : (
-                            "Comprar ahora"
-                        )}
+                        {isVariantChanging ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Comprar ahora"}
                     </Button>
-                </div>
+                    <Button 
+                        size="lg" 
+                        variant="secondary"
+                        className={`w-full h-[48px] text-base font-semibold rounded-md bg-orange-50 hover:bg-orange-100 text-orange-600 border-0 transition-all duration-300 ${isVariantChanging ? 'opacity-80' : ''}`}
+                        onClick={async () => {
+                            if (currentVariant?.id) {
+                                await addToCart(currentVariant.id, quantity);
+                                setIsCartOpen(true);
+                            }
+                        }}
+                        disabled={isCartLoading || !currentVariant?.id || isVariantChanging}
+                    >
+                        {isVariantChanging ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Agregar al carrito"}
+                    </Button>
+                </motion.div>
             )}
         </div>
     );

@@ -39,6 +39,8 @@ export type CartContextType = {
     removeFromCart: (lineId: string) => Promise<void>;
     applyDiscountCode: (code: string) => Promise<{ success: boolean; error?: string }>;
     applyGiftCard: (code: string) => Promise<{ success: boolean; error?: string }>;
+    isCartOpen: boolean;
+    setIsCartOpen: (isOpen: boolean) => void;
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -51,6 +53,7 @@ export function CartProvider({ children, customerAccessToken }: { children: Reac
     const [subtotal, setSubtotal] = useState(0);
     const [estimatedShipping, setEstimatedShipping] = useState<number | null>(null);
     const [isCartLoading, setIsCartLoading] = useState(true);
+    const [isCartOpen, setIsCartOpen] = useState(false);
 
     // Load Cart ID from local storage on mount
     useEffect(() => {
@@ -281,6 +284,8 @@ export function CartProvider({ children, customerAccessToken }: { children: Reac
                 removeFromCart,
                 applyDiscountCode,
                 applyGiftCard,
+                isCartOpen,
+                setIsCartOpen,
             }}
         >
             {children}

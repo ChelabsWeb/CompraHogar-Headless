@@ -23,7 +23,7 @@ function FavoriteButton() {
                 e.preventDefault();
                 setIsFavorite(!isFavorite);
             }}
-            className={`absolute top-1 right-1 rounded-full h-8 w-8 bg-white/80 backdrop-blur-sm z-10 shadow-sm border border-slate-100/50 transition-colors ${
+            className={`absolute top-1 right-1 rounded-full h-8 w-8 bg-white/80 backdrop-blur-sm z-10 shadow-sm transition-colors ${
                 isFavorite 
                     ? 'text-orange-500 hover:text-orange-600 bg-orange-50' 
                     : 'text-slate-400 hover:text-orange-500 hover:bg-orange-50'
@@ -109,7 +109,7 @@ export function ProductGrid({
                         : [];
 
                 return (
-                    <Card key={node.handle} className="group bg-white rounded-md border border-slate-100 hover:shadow-md sm:hover:shadow-lg transition-shadow duration-300 overflow-hidden flex flex-col cursor-pointer">
+                    <Card key={node.handle} className="group bg-white rounded-lg border-none shadow-[0_1px_2px_0_rgba(0,0,0,0.15)] transition-shadow duration-300 overflow-hidden flex flex-col cursor-pointer">
                         <Link href={`/products/${node.handle}`} className="flex-1 flex flex-col outline-none">
 
                             {/* Image Carousel Container - CSS Snap */}
@@ -167,21 +167,21 @@ export function ProductGrid({
 
                                 {/* Installments */}
                                 {priceAmount > 1000 && (
-                                    <span className="text-[11px] sm:text-[13px] text-green-500 mb-1.5 sm:mb-2 leading-tight">
-                                        <span className="hidden sm:inline">Mismo precio</span> en 12x ${installments}
+                                    <span className="text-[11px] sm:text-[13px] text-green-600 mb-1.5 sm:mb-2 leading-tight font-medium">
+                                        <span className="hidden sm:inline">Mismo precio en </span>12x ${installments} sin interés
                                     </span>
                                 )}
 
                                 {/* Free Shipping Trust Signal */}
                                 {priceAmount > 2000 && (
-                                    <div className="inline-flex items-center gap-1 bg-[#e6f5f0] text-[#008b6a] px-1.5 py-0.5 sm:px-2 rounded text-[10px] sm:text-[12px] font-semibold flex-wrap mb-1.5 sm:mb-2 w-fit">
-                                        Llega gratis <span className="hidden sm:inline">mañana</span>
-                                        <Zap className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-current shrink-0" />
+                                    <div className="inline-flex items-center text-green-600 text-[12px] sm:text-[13px] font-semibold flex-wrap mb-1.5 sm:mb-2 w-fit">
+                                        Llega gratis <span className="hidden sm:inline ml-1 font-bold">mañana</span>
+                                        <Zap className="w-3.5 h-3.5 fill-current shrink-0 ml-1" />
                                     </div>
                                 )}
 
                                 {/* Title */}
-                                <h3 className="text-[12px] sm:text-[14px] text-slate-600 font-normal leading-snug sm:leading-tight line-clamp-2 mt-auto group-hover:text-orange-500 transition-colors">
+                                <h3 className="text-[14px] text-slate-800 font-normal leading-snug line-clamp-2 mt-auto group-hover:text-primary transition-colors">
                                     {node.title}
                                 </h3>
                             </div>

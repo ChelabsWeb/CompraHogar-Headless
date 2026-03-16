@@ -8,7 +8,22 @@ import {
   Phone, 
   ArrowRight, 
   ShieldCheck,
-  Sparkles
+  Sparkles,
+  Car,
+  Home as HomeIcon,
+  Laptop,
+  Sofa,
+  Wrench,
+  Hammer,
+  Dumbbell,
+  Shirt,
+  Gamepad2,
+  Watch,
+  Plus,
+  User,
+  ShoppingBag,
+  Heart,
+  HelpCircle
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -88,27 +103,51 @@ export function Footer() {
         {/* Navigation Grid */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 lg:gap-8 mb-16">
           
-          {/* Mobile Accordion Links */}
-          <div className="md:hidden col-span-1">
-            <Accordion 
-              type="single" 
-              className="w-full divide-slate-200 border-t border-slate-200"
-              items={FOOTER_LINKS.map((section, i) => ({
-                id: `item-${i}`,
-                title: <span className="text-slate-900 hover:text-primary transition-colors font-semibold py-1">{section.title}</span>,
-                content: (
-                  <ul className="space-y-3 pt-1 pb-4">
-                    {section.links.map((link) => (
-                      <li key={link.name}>
-                        <Link href={link.href} className="text-slate-500 hover:text-primary transition-colors block text-sm py-1 font-medium">
-                          {link.name}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                )
-              }))}
-            />
+          {/* Mobile Footer (ML Clone) */}
+          <div className="md:hidden col-span-1 pt-4 pb-8 border-t border-slate-200">
+            {/* 4x3 Category Grid */}
+            <div className="grid grid-cols-4 gap-y-6 gap-x-2 mb-8">
+                {[
+                    { icon: Car, label: "Autos" },
+                    { icon: HomeIcon, label: "Inmuebles" },
+                    { icon: Laptop, label: "Tecnología" },
+                    { icon: Sofa, label: "Hogar y Muebles" },
+                    { icon: Wrench, label: "Herramientas" },
+                    { icon: Hammer, label: "Construcción" },
+                    { icon: Dumbbell, label: "Deportes" },
+                    { icon: Shirt, label: "Moda" },
+                    { icon: Gamepad2, label: "Juegos" },
+                    { icon: Watch, label: "Accesorios" },
+                    { icon: Plus, label: "Más categorías" }
+                ].map((cat, i) => (
+                    <Link href="/collections/all" key={i} className="flex flex-col items-center gap-2 group cursor-pointer text-center">
+                        <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 group-hover:bg-[#ef7c1c]/10 group-hover:text-[#ef7c1c] transition-colors shadow-sm">
+                            <cat.icon className="w-5 h-5" strokeWidth={1.5} />
+                        </div>
+                        <span className="text-[11px] leading-tight text-slate-500 font-medium px-1 max-w-[80px]">{cat.label}</span>
+                    </Link>
+                ))}
+            </div>
+
+            {/* Bottom Text Links */}
+            <div className="flex flex-col border-t border-slate-200 pt-6 px-4">
+                <div className="flex justify-between items-center mb-4">
+                    <Link href="/cuenta" className="text-[14px] text-slate-700 font-medium flex items-center gap-2">
+                        <User className="w-5 h-5 text-slate-400" /> Mi Cuenta
+                    </Link>
+                    <Link href="/cuenta/compras" className="text-[14px] text-slate-700 font-medium flex items-center gap-2">
+                        <ShoppingBag className="w-5 h-5 text-slate-400" /> Mis Compras
+                    </Link>
+                </div>
+                <div className="flex justify-between items-center">
+                    <Link href="/cuenta/favoritos" className="text-[14px] text-slate-700 font-medium flex items-center gap-2">
+                        <Heart className="w-5 h-5 text-slate-400" /> Favoritos
+                    </Link>
+                    <Link href="/ayuda" className="text-[14px] text-slate-700 font-medium flex items-center gap-2">
+                        <HelpCircle className="w-5 h-5 text-slate-400" /> Ayuda
+                    </Link>
+                </div>
+            </div>
           </div>
 
           {/* Desktop Links Grid */}
