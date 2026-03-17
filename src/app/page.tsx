@@ -53,53 +53,41 @@ export default function Home() {
       {/* SECTION: Hero & Payment Bar */}
       <section className="relative w-full pb-6">
         {/* Hero Banner — background-image approach for maximum reliability */}
-        <Link
-          href="/collections/ofertas"
-          className="block w-full relative overflow-hidden group"
-          style={{
-            backgroundImage: "url('/hero-1.png')",
-            backgroundSize: "cover",
-            backgroundPosition: "right center",
-            minHeight: "65svh",
-          }}
-        >
-          {/* Gradient overlay */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background: "linear-gradient(to top right, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.5) 45%, rgba(0,0,0,0.08) 100%)",
-            }}
+        <Link href="/collections/ofertas" className="block w-full relative overflow-hidden group" style={{ height: "65svh", minHeight: "420px" }}>
+          {/* Hero image — native img for guaranteed rendering */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/hero-1.png"
+            alt="Temporada de Obra — Hasta 40% OFF en herramientas"
+            className="absolute inset-0 w-full h-full object-cover object-right"
+            fetchPriority="high"
           />
 
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-black/90 via-black/50 to-black/10 sm:bg-gradient-to-r sm:from-black/85 sm:via-black/40 sm:to-transparent" />
+
           {/* Content */}
-          <div className="relative z-10 flex flex-col justify-end h-full p-5 pb-7 sm:p-8 md:p-16" style={{ minHeight: "65svh" }}>
+          <div className="absolute inset-0 z-10 flex flex-col justify-end p-5 pb-7 sm:justify-center sm:p-8 md:p-16">
             {/* Trust badge */}
             <span className="inline-flex items-center gap-1.5 w-fit mb-3 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 text-white text-[11px] sm:text-xs font-semibold">
               <Truck className="w-3.5 h-3.5" strokeWidth={2} />
               Envío gratis en compras +$300k
             </span>
 
-            <h1 className="text-[30px] sm:text-4xl md:text-5xl lg:text-6xl font-black text-white leading-[1.05] tracking-tight mb-2 sm:mb-3 max-w-[300px] sm:max-w-md" style={{ textShadow: "0 2px 8px rgba(0,0,0,0.4)" }}>
-              Hasta <span className="text-[#f3843e]" style={{ textShadow: "0 2px 16px rgba(243,132,62,0.5)" }}>40% OFF</span> en Refacciones
+            <h1 className="text-[30px] sm:text-4xl md:text-5xl lg:text-6xl font-black text-white leading-[1.05] tracking-tight mb-2 sm:mb-3 max-w-[300px] sm:max-w-md drop-shadow-[0_2px_8px_rgba(0,0,0,0.4)]">
+              Hasta <span className="text-secondary drop-shadow-[0_2px_16px_rgba(243,132,62,0.5)]">40% OFF</span> en Refacciones
             </h1>
 
-            <p className="text-white/90 text-[13px] sm:text-base md:text-lg mb-5 sm:mb-6 font-medium leading-snug max-w-[260px] sm:max-w-sm" style={{ textShadow: "0 1px 4px rgba(0,0,0,0.5)" }}>
+            <p className="text-white/90 text-[13px] sm:text-base md:text-lg mb-5 sm:mb-6 font-medium leading-snug max-w-[260px] sm:max-w-sm drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)]">
               Equipamiento profesional de alto rendimiento.
             </p>
 
             {/* CTA — orange pill with shimmer */}
-            <span className="relative inline-flex items-center gap-2 w-fit bg-[#f3843e] text-white font-bold text-[13px] sm:text-base px-6 py-3 sm:py-3.5 rounded-full overflow-hidden" style={{ boxShadow: "0 4px 24px rgba(243,132,62,0.4)" }}>
+            <span className="relative inline-flex items-center gap-2 w-fit bg-secondary text-white font-bold text-[13px] sm:text-base px-6 py-3 sm:py-3.5 rounded-full shadow-[0_4px_24px_rgba(243,132,62,0.4)] overflow-hidden">
               <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_3s_infinite]" />
               Comprar Ahora
               <ArrowRight className="w-4 h-4" />
             </span>
-
-            {/* Dots */}
-            <div className="flex gap-1.5 mt-5">
-              <div className="w-6 h-1.5 rounded-full bg-[#f3843e]" />
-              <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
-              <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
-            </div>
           </div>
         </Link>
 
@@ -127,16 +115,12 @@ export default function Home() {
                     <p className="text-[12px] md:text-[15px] font-medium text-slate-500 truncate hidden sm:block">Comprá más rápido y seguí tus pedidos.</p>
                 </div>
                 <div className="flex flex-row items-center gap-2 shrink-0">
-                    <Link href="/login">
-                      <Button variant="default" size="sm" className="bg-primary hover:bg-primary/90 text-white font-semibold rounded-lg h-9 md:h-11 px-4 md:px-8 text-[12px] md:text-sm">
-                          Ingresar
-                      </Button>
-                    </Link>
-                    <Link href="/registro" className="hidden sm:block">
-                      <Button variant="outline" size="sm" className="text-primary border-primary/20 hover:bg-primary/5 font-semibold rounded-lg h-9 md:h-11 px-4 md:px-8 text-[12px] md:text-sm">
-                          Crear cuenta
-                      </Button>
-                    </Link>
+                    <Button asChild variant="default" size="sm" className="bg-primary hover:bg-primary/90 text-white font-semibold rounded-lg h-9 md:h-11 px-4 md:px-8 text-[12px] md:text-sm">
+                      <Link href="/login">Ingresar</Link>
+                    </Button>
+                    <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex text-primary border-primary/20 hover:bg-primary/5 font-semibold rounded-lg h-9 md:h-11 px-4 md:px-8 text-[12px] md:text-sm">
+                      <Link href="/registro">Crear cuenta</Link>
+                    </Button>
                 </div>
             </div>
           </div>
@@ -233,7 +217,7 @@ export default function Home() {
       </section>
 
       {/* SECTION: Featured Products */}
-      <section className="w-full py-10 md:py-20 bg-slate-100/60 pb-24 lg:pb-20">
+      <section className="w-full py-10 md:py-20 bg-slate-100/60">
         <Container>
           <div className="flex items-center gap-3 mb-4 md:mb-10 px-1">
               <h2 className="text-xl md:text-2xl font-semibold tracking-tight text-slate-800">Equipamiento Destacado</h2>

@@ -44,7 +44,7 @@ export function ProductCarousel({ title, products }: ProductCarouselProps) {
                 <h2 className="text-xl lg:text-2xl font-semibold text-slate-900">{title}</h2>
             </div>
             
-            <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-6 custom-scrollbar -mx-4 px-4 lg:mx-0 lg:px-0">
+            <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-6 no-scrollbar -mx-4 px-4 lg:mx-0 lg:px-0">
                 {products.map((product) => {
                     // Extract data whether it's wrapped in a node or not
                     const node = product.node || product;

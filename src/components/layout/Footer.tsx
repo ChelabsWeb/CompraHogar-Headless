@@ -7,14 +7,12 @@ import {
   Mail,
   Phone,
   ArrowRight,
-  ShieldCheck,
-  Sparkles
+  ShieldCheck
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Container } from "@/components/ui/container";
-import { Accordion } from "@/components/ui/accordion";
 
 const FOOTER_LINKS = [
   {
@@ -120,7 +118,7 @@ export function Footer() {
         <Separator className="bg-slate-200 mb-8" />
 
         {/* Bottom Section */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6 pb-24 lg:pb-12">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6 pb-12">
           <div className="flex items-center gap-3">
             <Link href="#" aria-label="Instagram" className="w-10 h-10 rounded-full bg-white border border-slate-200 shadow-sm flex items-center justify-center text-slate-400 hover:text-primary hover:bg-slate-50 transition-all duration-300 hover:-translate-y-1">
               <Instagram className="h-[18px] w-[18px]" />

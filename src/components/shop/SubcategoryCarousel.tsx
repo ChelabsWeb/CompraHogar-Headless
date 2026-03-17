@@ -23,7 +23,7 @@ export function SubcategoryCarousel({ parentHandle, subcollections }: Subcategor
         </div>
 
         {/* CSS Scroll Snapping Container */}
-        <div className="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory hide-scrollbar">
+        <div className="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory no-scrollbar">
           {subcollections.map((sub) => (
             <Link
               key={sub.handle}

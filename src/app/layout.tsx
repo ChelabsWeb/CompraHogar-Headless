@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { BottomNav } from "@/components/layout/BottomNav";
 import { CartProvider } from "@/components/cart/CartProvider";
 import { shopifyFetch } from "@/lib/shopify";
 import { getCollectionsQuery } from "@/lib/queries";
@@ -42,7 +41,6 @@ export default async function RootLayout({
             {children}
           </main>
           <Footer />
-          <BottomNav />
         </CartProvider>
       </body>
     </html>
