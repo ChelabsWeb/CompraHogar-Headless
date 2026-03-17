@@ -38,7 +38,7 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
     const headerBg = "bg-[#21645d]";
 
     return (
-        <div className={`fixed top-0 inset-x-0 z-50 flex flex-col pointer-events-auto transition-transform duration-300 ${isScrolled ? "lg:-translate-y-[72px] -translate-y-[56px]" : "translate-y-0"}`}>
+        <div className={`fixed top-0 inset-x-0 z-50 flex flex-col pointer-events-auto transition-transform duration-300 ${isScrolled ? "lg:-translate-y-[72px] -translate-y-[60px]" : "translate-y-0"}`}>
 
             <header className={`w-full ${headerBg} shadow-sm border-b border-black/5`}>
                 <div className="container mx-auto max-w-[1200px] px-4">
@@ -64,7 +64,7 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
                                         <div className="bg-[#21645d] text-white p-5 pt-10 flex flex-col gap-4">
                                             <div className="flex items-center gap-3 bg-white/10 p-2 rounded-xl border border-white/20 w-fit">
                                                 <div className="relative w-8 h-8 bg-white rounded-full p-1 shadow-sm flex items-center justify-center">
-                                                    <Image src="/logo-generated.png" alt="Heladless" fill className="object-contain scale-[1.1]" sizes="32px" />
+                                                    <Image src="/logo.png" alt="Heladless" fill className="object-contain scale-[1.1]" sizes="32px" />
                                                 </div>
                                                 <span className="font-black tracking-tight leading-none flex flex-col">
                                                     <span className="text-[11px] uppercase tracking-wide opacity-80">Heladless</span>
@@ -126,7 +126,7 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
                                 {/* Desktop Logo */}
                                 <Link href="/" className="hidden lg:flex items-center ml-2 lg:ml-0 gap-2">
                                     <div className="relative w-[46px] h-[46px] shrink-0 bg-white rounded-full p-1.5 shadow-sm border border-black/10 overflow-hidden flex items-center justify-center">
-                                        <Image src="/logo-generated.png" alt="Logo CompraHogar" fill className="object-contain scale-[1.15]" priority sizes="46px" />
+                                        <Image src="/logo.png" alt="Logo CompraHogar" fill className="object-contain scale-[1.15]" priority sizes="46px" />
                                     </div>
                                     <div className="flex flex-col text-white font-black tracking-tight leading-[0.85]">
                                         <span className="text-[20px] ml-[1px]">compra</span>

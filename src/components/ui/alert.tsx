@@ -15,7 +15,7 @@ const alertVariants = cva(
         warning:
           "border-amber-500/50 text-amber-600 bg-amber-50/50 dark:bg-amber-500/10 [&>svg]:text-amber-600",
         info:
-          "border-blue-500/50 text-blue-600 bg-blue-50/50 dark:bg-blue-500/10 [&>svg]:text-blue-600",
+          "border-primary/50 text-primary bg-primary/5 dark:bg-primary/10 [&>svg]:text-primary",
       },
     },
     defaultVariants: {

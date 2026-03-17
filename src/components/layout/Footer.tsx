@@ -1,29 +1,14 @@
 import Link from "next/link";
-import { 
-  Instagram, 
-  Facebook, 
-  Linkedin, 
-  MapPin, 
-  Mail, 
-  Phone, 
-  ArrowRight, 
+import {
+  Instagram,
+  Facebook,
+  Linkedin,
+  MapPin,
+  Mail,
+  Phone,
+  ArrowRight,
   ShieldCheck,
-  Sparkles,
-  Car,
-  Home as HomeIcon,
-  Laptop,
-  Sofa,
-  Wrench,
-  Hammer,
-  Dumbbell,
-  Shirt,
-  Gamepad2,
-  Watch,
-  Plus,
-  User,
-  ShoppingBag,
-  Heart,
-  HelpCircle
+  Sparkles
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -64,105 +49,47 @@ const FOOTER_LINKS = [
 export function Footer() {
   return (
     <footer className="w-full bg-[#FAFAFA] bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-white to-[#F1F5F9] text-slate-600 border-t border-slate-200 mt-auto overflow-hidden relative">
-      <Container className="pt-16 md:pt-24 relative z-10">
-        
-        {/* Newsletter Section - Premium Glassmorphism Card */}
-        <div className="relative overflow-hidden rounded-[2rem] bg-white border border-slate-200 p-8 md:p-12 mb-16 shadow-xl shadow-slate-200/50 group">
-          {/* Subtle animated background gradients */}
-          <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 rounded-full bg-primary/5 blur-[80px] pointer-events-none transition-all duration-1000 group-hover:bg-primary/20" />
-          <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-48 h-48 rounded-full bg-blue-500/5 blur-[80px] pointer-events-none transition-all duration-1000 group-hover:bg-blue-500/10" />
+      <Container className="pt-10 md:pt-24 relative z-10">
 
-          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            <div className="space-y-5">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-100 shadow-sm w-fit">
-                <Sparkles className="w-4 h-4 text-primary" />
-                <span className="text-xs font-semibold text-slate-600">Únete a la comunidad de CompraHogar</span>
-              </div>
-              <h3 className="text-3xl md:text-4xl font-bold tracking-tight text-slate-900 mb-2">
-                Diseña tu espacio ideal.
+        {/* Newsletter Section — compact on mobile */}
+        <div className="relative overflow-hidden rounded-xl md:rounded-[2rem] bg-primary p-5 md:p-12 mb-8 md:mb-16">
+          <div className="absolute top-0 right-0 w-48 h-48 bg-secondary/20 rounded-full blur-[80px] pointer-events-none" />
+          <div className="relative z-10 flex flex-col md:grid md:grid-cols-2 gap-4 md:gap-12 items-center">
+            <div>
+              <h3 className="text-xl md:text-3xl font-bold tracking-tight text-white mb-1 md:mb-3">
+                Recibí ofertas exclusivas
               </h3>
-              <p className="text-slate-500 max-w-md leading-relaxed text-sm md:text-base">
-                Recibe novedades exclusivas, descuentos por lanzamiento y asesoría de obra directamente en tu bandeja de entrada.
+              <p className="text-white/70 text-[13px] md:text-base leading-snug">
+                Novedades y descuentos directo a tu bandeja.
               </p>
             </div>
-            
-            <div className="flex flex-col sm:flex-row gap-3 lg:justify-end">
-              <Input 
-                type="email" 
-                placeholder="tu@correo.com" 
-                className="bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 h-14 md:min-w-[320px] focus-visible:ring-primary shadow-sm transition-all rounded-xl"
+            <div className="flex flex-row gap-2 w-full md:justify-end">
+              <Input
+                type="email"
+                placeholder="tu@correo.com"
+                className="bg-white/10 border-white/20 text-white placeholder:text-white/50 h-11 md:h-14 md:min-w-[280px] focus-visible:ring-white/30 rounded-lg flex-1 md:flex-none"
               />
-              <Button size="lg" className="h-14 px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold transition-all group/btn rounded-xl shadow-[0_4px_14px_0_rgba(var(--primary),0.39)] hover:shadow-[0_6px_20px_rgba(var(--primary),0.3)] hover:-translate-y-0.5">
-                Suscribirme
-                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
+              <Button size="lg" className="h-11 md:h-14 px-5 md:px-8 bg-secondary hover:bg-secondary/90 text-white font-semibold rounded-lg shrink-0">
+                <ArrowRight className="h-4 w-4 md:hidden" />
+                <span className="hidden md:inline">Suscribirme</span>
               </Button>
             </div>
           </div>
         </div>
 
         {/* Navigation Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 lg:gap-8 mb-16">
-          
-          {/* Mobile Footer (ML Clone) */}
-          <div className="md:hidden col-span-1 pt-4 pb-8 border-t border-slate-200">
-            {/* 4x3 Category Grid */}
-            <div className="grid grid-cols-4 gap-y-6 gap-x-2 mb-8">
-                {[
-                    { icon: Car, label: "Autos" },
-                    { icon: HomeIcon, label: "Inmuebles" },
-                    { icon: Laptop, label: "Tecnología" },
-                    { icon: Sofa, label: "Hogar y Muebles" },
-                    { icon: Wrench, label: "Herramientas" },
-                    { icon: Hammer, label: "Construcción" },
-                    { icon: Dumbbell, label: "Deportes" },
-                    { icon: Shirt, label: "Moda" },
-                    { icon: Gamepad2, label: "Juegos" },
-                    { icon: Watch, label: "Accesorios" },
-                    { icon: Plus, label: "Más categorías" }
-                ].map((cat, i) => (
-                    <Link href="/collections/all" key={i} className="flex flex-col items-center gap-2 group cursor-pointer text-center">
-                        <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 group-hover:bg-[#ef7c1c]/10 group-hover:text-[#ef7c1c] transition-colors shadow-sm">
-                            <cat.icon className="w-5 h-5" strokeWidth={1.5} />
-                        </div>
-                        <span className="text-[11px] leading-tight text-slate-500 font-medium px-1 max-w-[80px]">{cat.label}</span>
-                    </Link>
-                ))}
-            </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8 mb-10 md:mb-16">
 
-            {/* Bottom Text Links */}
-            <div className="flex flex-col border-t border-slate-200 pt-6 px-4">
-                <div className="flex justify-between items-center mb-4">
-                    <Link href="/cuenta" className="text-[14px] text-slate-700 font-medium flex items-center gap-2">
-                        <User className="w-5 h-5 text-slate-400" /> Mi Cuenta
-                    </Link>
-                    <Link href="/cuenta/compras" className="text-[14px] text-slate-700 font-medium flex items-center gap-2">
-                        <ShoppingBag className="w-5 h-5 text-slate-400" /> Mis Compras
-                    </Link>
-                </div>
-                <div className="flex justify-between items-center">
-                    <Link href="/cuenta/favoritos" className="text-[14px] text-slate-700 font-medium flex items-center gap-2">
-                        <Heart className="w-5 h-5 text-slate-400" /> Favoritos
-                    </Link>
-                    <Link href="/ayuda" className="text-[14px] text-slate-700 font-medium flex items-center gap-2">
-                        <HelpCircle className="w-5 h-5 text-slate-400" /> Ayuda
-                    </Link>
-                </div>
-            </div>
-          </div>
+          {/* Mobile: simple link columns. Desktop: full sections */}
 
-          {/* Desktop Links Grid */}
           {FOOTER_LINKS.map((section) => (
-            <div key={section.title} className="hidden md:block space-y-6">
-              <h4 className="text-sm font-bold text-slate-900 tracking-wider uppercase mb-8">{section.title}</h4>
-              <ul className="space-y-4">
+            <div key={section.title} className="space-y-3">
+              <h4 className="text-[13px] font-bold text-slate-900 tracking-wider uppercase">{section.title}</h4>
+              <ul className="space-y-2">
                 {section.links.map((link) => (
                   <li key={link.name}>
-                    <Link href={link.href} className="text-sm font-medium text-slate-500 hover:text-primary transition-colors relative group inline-flex items-center">
-                      <span className="relative">
-                        {link.name}
-                        {/* Subrayado animado al estilo hover-slide */}
-                        <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-primary transition-all duration-300 ease-out group-hover:w-full"></span>
-                      </span>
+                    <Link href={link.href} className="text-[13px] font-medium text-slate-500 hover:text-primary transition-colors">
+                      {link.name}
                     </Link>
                   </li>
                 ))}
@@ -170,36 +97,21 @@ export function Footer() {
             </div>
           ))}
 
-          {/* Contact Info (Visible on both Mobile and Desktop) */}
-          <div className="col-span-1 space-y-6 pt-6 md:pt-0 border-t border-slate-200 md:border-t-0">
-            <h4 className="text-sm font-bold text-slate-900 tracking-wider uppercase md:mb-8">Contacto</h4>
-            <ul className="space-y-5">
-              <li className="flex items-start gap-4 group cursor-default">
-                <div className="w-10 h-10 rounded-full bg-white border border-slate-200 shadow-sm flex flex-shrink-0 items-center justify-center text-slate-400 group-hover:bg-primary/5 group-hover:text-primary group-hover:border-primary/20 transition-all duration-300">
-                  <MapPin className="w-4 h-4" />
-                </div>
-                <div className="flex flex-col pt-1">
-                  <span className="text-sm text-slate-900 font-semibold mb-1">Dirección</span>
-                  <span className="text-sm font-medium text-slate-500 leading-relaxed">Av. Italia 4567<br/>Montevideo, Uruguay</span>
-                </div>
+          {/* Contact Info */}
+          <div className="col-span-2 md:col-span-1 space-y-3 pt-4 md:pt-0 border-t md:border-t-0 border-slate-200">
+            <h4 className="text-[13px] font-bold text-slate-900 tracking-wider uppercase">Contacto</h4>
+            <ul className="space-y-2 text-[13px] text-slate-500 font-medium">
+              <li className="flex items-center gap-2">
+                <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                <span>Av. Italia 4567, Montevideo</span>
               </li>
-              <li className="flex items-center gap-4 group cursor-pointer">
-                <div className="w-10 h-10 rounded-full bg-white border border-slate-200 shadow-sm flex flex-shrink-0 items-center justify-center text-slate-400 group-hover:bg-primary/5 group-hover:text-primary group-hover:border-primary/20 transition-all duration-300">
-                  <Phone className="w-4 h-4" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-sm text-slate-900 font-semibold mb-1">Teléfono</span>
-                  <span className="text-sm font-medium text-slate-500 transition-colors group-hover:text-primary">2619 0000</span>
-                </div>
+              <li className="flex items-center gap-2">
+                <Phone className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                <a href="tel:26190000" className="hover:text-primary transition-colors">2619 0000</a>
               </li>
-              <li className="flex items-center gap-4 group cursor-pointer">
-                <div className="w-10 h-10 rounded-full bg-white border border-slate-200 shadow-sm flex flex-shrink-0 items-center justify-center text-slate-400 group-hover:bg-primary/5 group-hover:text-primary group-hover:border-primary/20 transition-all duration-300">
-                  <Mail className="w-4 h-4" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-sm text-slate-900 font-semibold mb-1">Email</span>
-                  <span className="text-sm font-medium text-slate-500 transition-colors group-hover:text-primary">ventas@comprahogar.com.uy</span>
-                </div>
+              <li className="flex items-center gap-2">
+                <Mail className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                <a href="mailto:ventas@comprahogar.com.uy" className="hover:text-primary transition-colors">ventas@comprahogar.com.uy</a>
               </li>
             </ul>
           </div>
@@ -208,7 +120,7 @@ export function Footer() {
         <Separator className="bg-slate-200 mb-8" />
 
         {/* Bottom Section */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6 pb-12">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6 pb-24 lg:pb-12">
           <div className="flex items-center gap-3">
             <Link href="#" aria-label="Instagram" className="w-10 h-10 rounded-full bg-white border border-slate-200 shadow-sm flex items-center justify-center text-slate-400 hover:text-primary hover:bg-slate-50 transition-all duration-300 hover:-translate-y-1">
               <Instagram className="h-[18px] w-[18px]" />

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Search, ShoppingBag, User } from "lucide-react";
+import { Home, Grid3X3, ShoppingBag, User } from "lucide-react";
 import { useCart } from "@/components/cart/CartProvider";
 
 export function BottomNav() {
@@ -17,11 +17,10 @@ export function BottomNav() {
             isActive: pathname === "/",
         },
         {
-            label: "Buscar",
-            icon: Search,
-            href: "/search",
-            // For now, search act as a link. We could make it open a drawer or focus the header input.
-            isActive: pathname === "/search",
+            label: "Categorías",
+            icon: Grid3X3,
+            href: "/collections",
+            isActive: pathname === "/collections" || (pathname?.startsWith("/collections/") ?? false),
         },
         {
             label: "Carrito",
@@ -34,29 +33,29 @@ export function BottomNav() {
             label: "Mi Cuenta",
             icon: User,
             href: "/cuenta",
-            isActive: pathname?.startsWith("/cuenta"),
+            isActive: pathname?.startsWith("/cuenta") ?? false,
         },
     ];
 
     return (
-        <div className={`lg:hidden fixed bottom-0 left-0 right-0 z-[60] bg-white/80 backdrop-blur-xl border-t border-slate-200/60 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_30px_rgba(0,0,0,0.04)] transition-transform duration-300 ${pathname?.startsWith('/products/') ? 'translate-y-full' : 'translate-y-0'}`}>
-            <nav className="flex items-center justify-around h-16 px-2">
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-[60] bg-white border-t border-slate-200 pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
+            <nav className="flex items-center justify-around h-14 px-1">
                 {navItems.map((item, index) => {
                     const Icon = item.icon;
                     const isActive = item.isActive;
                     const isAction = !!item.action;
 
                     const content = (
-                        <div className="relative flex flex-col items-center justify-center gap-1 min-w-[64px] h-full transition-transform active:scale-95">
-                            <div className={`relative flex items-center justify-center w-8 h-8 rounded-full transition-colors ${isActive ? 'bg-[#2968c8]/10 text-[#2968c8]' : 'text-slate-500'}`}>
-                                <Icon className={`w-6 h-6 transition-all ${isActive ? 'stroke-[2.5px]' : 'stroke-2'}`} />
+                        <div className="relative flex flex-col items-center justify-center gap-0.5 min-w-[56px] h-full transition-transform active:scale-95">
+                            <div className="relative flex items-center justify-center">
+                                <Icon className={`w-[22px] h-[22px] transition-colors ${isActive ? 'text-primary' : 'text-slate-400'}`} strokeWidth={isActive ? 2.2 : 1.6} />
                                 {item.badge && (
-                                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+                                    <span className="absolute -top-1.5 -right-2.5 min-w-[16px] h-4 bg-secondary text-white text-[10px] font-bold rounded-full flex items-center justify-center px-0.5 border-2 border-white">
                                         {item.badge}
                                     </span>
                                 )}
                             </div>
-                            <span className={`text-[10px] font-medium tracking-wide transition-colors ${isActive ? 'text-[#2968c8]' : 'text-slate-500'}`}>
+                            <span className={`text-[10px] leading-none mt-0.5 transition-colors ${isActive ? 'font-semibold text-primary' : 'font-medium text-slate-400'}`}>
                                 {item.label}
                             </span>
                         </div>
@@ -64,14 +63,14 @@ export function BottomNav() {
 
                     if (isAction) {
                         return (
-                            <button key={index} onClick={item.action} className="flex-1 flex justify-center outline-none">
+                            <button key={index} onClick={item.action} className="flex-1 flex justify-center outline-none h-full">
                                 {content}
                             </button>
                         );
                     }
 
                     return (
-                        <Link key={index} href={item.href || "#"} className="flex-1 flex justify-center outline-none">
+                        <Link key={index} href={item.href || "#"} className="flex-1 flex justify-center outline-none h-full">
                             {content}
                         </Link>
                     );

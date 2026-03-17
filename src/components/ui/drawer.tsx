@@ -21,7 +21,7 @@ export function Drawer({ isOpen, onClose, title, children, className, side = "ri
       open={isOpen} 
       onOpenChange={(open) => !open && onClose()} 
       direction={side}
-      shouldScaleBackground
+      shouldScaleBackground={false}
     >
       <VaulDrawer.Portal>
         <VaulDrawer.Overlay className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50" />

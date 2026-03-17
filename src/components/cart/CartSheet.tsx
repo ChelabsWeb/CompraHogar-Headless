@@ -54,7 +54,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
         <Drawer
             isOpen={isOpen}
             onClose={onClose}
-            title="Shopping Cart"
+            title="Mi Carrito"
             side="right"
         >
             {items.length > 0 ? (
@@ -220,12 +220,12 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 <div className="flex flex-col h-full bg-slate-50/50 dark:bg-slate-900/50 -mx-6 px-6 py-4">
                     <div className="flex-1 flex flex-col items-center justify-center text-center opacity-60">
                         <ShoppingCart className="w-12 h-12 mb-4 text-muted-foreground" />
-                        <p className="text-lg font-medium">Your cart is empty</p>
-                        <p className="text-sm">Looks like you haven&apos;t added anything yet.</p>
+                        <p className="text-lg font-medium">Tu carrito está vacío</p>
+                        <p className="text-sm">Parece que aún no agregaste productos.</p>
                     </div>
                     <div className="mt-auto pt-6 border-t font-medium">
                         <Button className="w-full" size="lg" onClick={onClose}>
-                            Continue Shopping
+                            Seguir Comprando
                         </Button>
                     </div>
                 </div>

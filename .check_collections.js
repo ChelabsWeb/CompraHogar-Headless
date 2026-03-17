@@ -1,7 +1,7 @@
 const STORE_DOMAIN = "comprahogar.com.uy";
 const ACCESS_TOKEN = "ac96d0914980a4419c72aa3621ac40c9";
 
-async function getShopifyCollections() {
+async function    getShopifyCollections() {
   const query = `
     query {
       collections(first: 250) {

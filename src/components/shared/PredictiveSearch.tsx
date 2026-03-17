@@ -196,7 +196,7 @@ export function PredictiveSearch({ placeholder = "Buscar productos, marcas y má
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-slate-900 truncate group-hover:text-blue-600 transition-colors">
+                      <p className="text-sm font-medium text-slate-900 truncate group-hover:text-primary transition-colors">
                         {product.title}
                       </p>
                       <p className="text-sm font-semibold text-[#21645d] mt-0.5">

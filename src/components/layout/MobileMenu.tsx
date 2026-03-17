@@ -134,7 +134,7 @@ export default function MobileMenu({ collections = [] }: { collections?: any[] }
     <Drawer.Root direction="left" open={isOpen} onOpenChange={setIsOpen} shouldScaleBackground>
       <Drawer.Trigger asChild>
         <button
-          className="p-2 text-gray-700 hover:text-black focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md"
+          className="p-2 text-gray-700 hover:text-black focus:outline-none focus:ring-2 focus:ring-primary rounded-md"
           aria-label="Abrir menú"
         >
           <Menu size={24} />
@@ -172,7 +172,7 @@ export default function MobileMenu({ collections = [] }: { collections?: any[] }
                       // Botón de Retroceso
                       <button
                         onClick={handlePop}
-                        className="flex items-center text-blue-600 font-medium active:opacity-60 transition-opacity p-2 rounded-lg"
+                        className="flex items-center text-primary font-medium active:opacity-60 transition-opacity p-2 rounded-lg"
                       >
                         <ChevronLeft size={22} className="mr-0.5" />
                         Volver
@@ -205,7 +205,7 @@ export default function MobileMenu({ collections = [] }: { collections?: any[] }
                         <Link
                           href={view.href}
                           onClick={() => setIsOpen(false)}
-                          className="text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors shrink-0"
+                          className="text-sm font-semibold text-primary hover:text-primary/80 transition-colors shrink-0"
                         >
                           Ver todo
                         </Link>

@@ -291,7 +291,7 @@ export function MegaMenu({
                 <Link
                   href={activeCategory.href}
                   onClick={closeMenu}
-                  className="inline-block mb-6 text-xl font-semibold tracking-tight text-neutral-900 transition-colors hover:text-blue-600"
+                  className="inline-block mb-6 text-xl font-semibold tracking-tight text-neutral-900 transition-colors hover:text-primary"
                 >
                   Explorar todo {activeCategory.title}
                 </Link>
@@ -351,7 +351,7 @@ export function MegaMenu({
                         {activeCategory.promo.subtitle}
                       </p>
 
-                      <span className="inline-flex items-center gap-2 mt-3 text-xs font-bold tracking-wider uppercase transition-colors group-hover:text-blue-400">
+                      <span className="inline-flex items-center gap-2 mt-3 text-xs font-bold tracking-wider uppercase transition-colors group-hover:text-secondary">
                         {activeCategory.promo.ctaText}
                         <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
                       </span>

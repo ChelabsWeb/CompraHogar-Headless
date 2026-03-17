@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ShoppingBag, Star, Zap, Loader2 } from "lucide-react";
+import { ArrowRight, ShoppingBag, Star, Loader2 } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -92,7 +92,7 @@ export function ProductGrid({
     return (
         <div className="flex flex-col w-full">
             <ActiveFilters />
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
                 {products.map(({ node }: any, i: number) => {
                 const currency = node.priceRange?.minVariantPrice?.currencyCode || "USD";
                 const priceAmount = Number(node.priceRange?.minVariantPrice?.amount || 0);
@@ -174,10 +174,9 @@ export function ProductGrid({
 
                                 {/* Free Shipping Trust Signal */}
                                 {priceAmount > 2000 && (
-                                    <div className="inline-flex items-center text-green-600 text-[12px] sm:text-[13px] font-semibold flex-wrap mb-1.5 sm:mb-2 w-fit">
-                                        Llega gratis <span className="hidden sm:inline ml-1 font-bold">mañana</span>
-                                        <Zap className="w-3.5 h-3.5 fill-current shrink-0 ml-1" />
-                                    </div>
+                                    <span className="inline-flex items-center text-[#00a650] text-[11px] sm:text-[12px] font-bold mb-1.5 sm:mb-2 w-fit bg-[#00a650]/8 px-1.5 py-0.5 rounded">
+                                        Envío gratis
+                                    </span>
                                 )}
 
                                 {/* Title */}

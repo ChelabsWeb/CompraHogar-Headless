@@ -81,14 +81,14 @@ function ToastItem({ toast, onRemove }: { toast: ToastMessage; onRemove: () => v
     default: "bg-background border-border text-foreground",
     success: "bg-green-50/90 border-green-200 text-green-900 dark:bg-green-900/20 dark:border-green-800 dark:text-green-300",
     error: "bg-red-50/90 border-red-200 text-red-900 dark:bg-red-900/20 dark:border-red-800 dark:text-red-300",
-    info: "bg-blue-50/90 border-blue-200 text-blue-900 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-300",
+    info: "bg-primary/5 border-primary/20 text-primary dark:bg-primary/10 dark:border-primary/30 dark:text-primary",
   }
 
   const icons = {
     default: null,
     success: <CheckCircle2 className="mt-0.5 h-5 w-5 text-green-600 dark:text-green-400 shrink-0" />,
     error: <AlertCircle className="mt-0.5 h-5 w-5 text-red-600 dark:text-red-400 shrink-0" />,
-    info: <Info className="mt-0.5 h-5 w-5 text-blue-600 dark:text-blue-400 shrink-0" />,
+    info: <Info className="mt-0.5 h-5 w-5 text-primary dark:text-primary/80 shrink-0" />,
   }
 
   return (
