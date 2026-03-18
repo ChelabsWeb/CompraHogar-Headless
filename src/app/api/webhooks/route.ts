@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { revalidateTag as _revalidateTag } from 'next/cache';
 import crypto from 'crypto';
 
-// Next.js 16 requires a second argument (cache profile) for revalidateTag
-const revalidate = (tag: string) => _revalidateTag(tag, "default" as any);
+// Next.js 16 requires a cache profile as second argument for revalidateTag
+const revalidate = (tag: string) => _revalidateTag(tag, { expire: 0 });
 
 // --- Interfaces ---
 

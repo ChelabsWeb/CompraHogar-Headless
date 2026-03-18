@@ -2,10 +2,13 @@ import type { MetadataRoute } from "next";
 import { shopifyFetch } from "@/lib/shopify";
 import { getCollectionsQuery, getProductsQuery } from "@/lib/queries";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
-const staticPages: { path: string; priority: number; changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"] }[] = [
+const staticPages: {
+  path: string;
+  priority: number;
+  changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"];
+}[] = [
   { path: "/", priority: 1.0, changeFrequency: "daily" },
   { path: "/collections", priority: 0.9, changeFrequency: "daily" },
   { path: "/products", priority: 0.9, changeFrequency: "daily" },
@@ -18,6 +21,37 @@ const staticPages: { path: string; priority: number; changeFrequency: MetadataRo
   { path: "/login", priority: 0.4, changeFrequency: "yearly" },
   { path: "/registro", priority: 0.4, changeFrequency: "yearly" },
 ];
+
+/** Fetch all handles from a paginated Shopify connection (products or collections). */
+async function fetchAllHandles(
+  query: string,
+  rootKey: "products" | "collections"
+): Promise<string[]> {
+  const handles: string[] = [];
+  let cursor: string | undefined;
+  const MAX_PAGES = 10; // safety cap: 250 × 10 = 2500 items max
+
+  for (let page = 0; page < MAX_PAGES; page++) {
+    const { body } = await shopifyFetch({
+      query,
+      variables: { first: 250, ...(cursor ? { after: cursor } : {}) },
+      cache: "no-store",
+    });
+
+    const edges = body?.data?.[rootKey]?.edges;
+    if (!edges || edges.length === 0) break;
+
+    for (const { node } of edges) {
+      if (node.handle) handles.push(node.handle);
+    }
+
+    const pageInfo = body?.data?.[rootKey]?.pageInfo;
+    if (!pageInfo?.hasNextPage || !pageInfo.endCursor) break;
+    cursor = pageInfo.endCursor;
+  }
+
+  return handles;
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
@@ -33,54 +67,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let productEntries: MetadataRoute.Sitemap = [];
 
   try {
-    const [collectionsResponse, productsResponse] = await Promise.all([
-      shopifyFetch<{
-        data: {
-          collections: {
-            edges: { node: { handle: string } }[];
-          };
-        };
-      }>({
-        query: getCollectionsQuery,
-        variables: { first: 250 },
-        cache: "no-store",
-      }),
-      shopifyFetch<{
-        data: {
-          products: {
-            edges: { node: { handle: string } }[];
-          };
-        };
-      }>({
-        query: getProductsQuery,
-        variables: { first: 250 },
-        cache: "no-store",
-      }),
+    const [collectionHandles, productHandles] = await Promise.all([
+      fetchAllHandles(getCollectionsQuery, "collections"),
+      fetchAllHandles(getProductsQuery, "products"),
     ]);
 
-    if (collectionsResponse?.body?.data?.collections?.edges) {
-      collectionEntries = collectionsResponse.body.data.collections.edges.map(
-        ({ node }: { node: { handle: string } }) => ({
-          url: `${BASE_URL}/collections/${node.handle}`,
-          lastModified: now,
-          changeFrequency: "daily" as const,
-          priority: 0.8,
-        })
-      );
-    }
+    collectionEntries = collectionHandles.map((handle) => ({
+      url: `${BASE_URL}/collections/${handle}`,
+      lastModified: now,
+      changeFrequency: "daily" as const,
+      priority: 0.8,
+    }));
 
-    if (productsResponse?.body?.data?.products?.edges) {
-      productEntries = productsResponse.body.data.products.edges.map(
-        ({ node }: { node: { handle: string } }) => ({
-          url: `${BASE_URL}/products/${node.handle}`,
-          lastModified: now,
-          changeFrequency: "daily" as const,
-          priority: 0.7,
-        })
-      );
-    }
-  } catch (error) {
-    console.error("[sitemap] Failed to fetch Shopify data:", error);
+    productEntries = productHandles.map((handle) => ({
+      url: `${BASE_URL}/products/${handle}`,
+      lastModified: now,
+      changeFrequency: "daily" as const,
+      priority: 0.7,
+    }));
+  } catch {
     // Gracefully degrade — static pages will still be returned
   }
 
