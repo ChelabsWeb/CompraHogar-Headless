@@ -66,14 +66,14 @@ export function LocationSelector() {
 
   return (
     <>
-      <button 
+      <button
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 h-9 px-3 py-2 border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground rounded-md text-foreground transition-colors group"
+        className="flex items-center gap-2 h-9 px-3 py-2 border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground rounded-md text-foreground transition-colors group lg:h-12 lg:px-4 lg:rounded-xl lg:border-slate-200 lg:bg-white lg:text-slate-700 lg:hover:bg-slate-50"
       >
         <MapPin className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
         <div className="flex items-center gap-1.5 leading-none">
-          <span className="text-muted-foreground">Enviar a</span>
-          <span className="font-medium hidden sm:block">
+          <span className="text-muted-foreground lg:text-slate-500">Enviar a</span>
+          <span className="font-medium hidden sm:block lg:text-sm">
             {currentLocation ? `${currentLocation.department} ${currentLocation.cp}` : "Seleccionar ubicación"}
           </span>
         </div>

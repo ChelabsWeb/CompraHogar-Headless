@@ -45,6 +45,19 @@ import { Switch } from "@/components/ui/switch"
 import { Progress } from "@/components/ui/progress"
 
 export default function UITestPage() {
+  if (process.env.NODE_ENV === "production") {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <p className="text-slate-400">Página no disponible.</p>
+      </div>
+    );
+  }
+
+  const OriginalContent = UITestPageContent;
+  return <OriginalContent />;
+}
+
+function UITestPageContent() {
   return (
     <TooltipProvider>
       <ToastProvider>

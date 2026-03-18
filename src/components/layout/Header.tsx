@@ -40,26 +40,24 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
     return (
         <div className={`fixed top-0 inset-x-0 z-50 flex flex-col pointer-events-auto transition-transform duration-300 ${isScrolled ? "lg:-translate-y-[72px] -translate-y-[60px]" : "translate-y-0"}`}>
 
-            <header className={`w-full ${headerBg} shadow-sm border-b border-black/5`}>
-                <div className="container mx-auto max-w-[1200px] px-4">
+            <header className="w-full shadow-sm border-b border-black/5">
+                {/* TOP ROW: Green on mobile, white on desktop */}
+                <div className={`${headerBg} lg:bg-white lg:border-b lg:border-slate-200`}>
 
-                    {/* TOP ROW: Logo, Search, Ad */}
-                    <div className="flex flex-col lg:flex-row lg:h-[72px] lg:items-center justify-between gap-3 lg:gap-8 py-2 pb-3 lg:pb-2">
-                        {/* Mobile and Desktop Top Row Items */}
-                        <div className="flex items-center justify-between w-full lg:w-auto gap-3 sm:gap-4 lg:gap-8">
-                            
-                            {/* Mobile Hamburger / Desktop Logo */}
+                    {/* === MOBILE TOP ROW === */}
+                    <div className="lg:hidden container mx-auto max-w-7xl px-4">
+                        <div className="flex items-center justify-between w-full gap-3 sm:gap-4 py-2 pb-3">
+                            {/* Hamburger */}
                             <div className="flex items-center shrink-0">
-                                {/* Hamburger Menu in Mobile ML */}
                                 <Sheet>
                                     <SheetTrigger asChild>
-                                        <button className="lg:hidden p-2 -ml-2 text-white active:bg-white/10 rounded-full transition-colors">
+                                        <button className="p-2 -ml-2 text-white active:bg-white/10 rounded-full transition-colors">
                                             <Menu className="w-6 h-6" strokeWidth={1.5} />
                                         </button>
                                     </SheetTrigger>
                                     <SheetContent side="left" className="w-[85vw] max-w-[320px] p-0 flex flex-col bg-slate-50 border-r-0">
                                         <SheetTitle className="sr-only">Menú de navegación</SheetTitle>
-                                        
+
                                         {/* Drawer Header with Logo & Profile */}
                                         <div className="bg-[#21645d] text-white p-5 pt-10 flex flex-col gap-4">
                                             <div className="flex items-center gap-3 bg-white/10 p-2 rounded-xl border border-white/20 w-fit">
@@ -96,13 +94,13 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
                                                     </Link>
                                                 </SheetClose>
                                                 <SheetClose asChild>
-                                                    <Link href="/institucional/historial" className="flex items-center gap-4 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg font-medium text-[15px] transition-colors">
-                                                        <Clock className="w-5 h-5 text-slate-400" /> Historial
+                                                    <Link href="/cuenta" className="flex items-center gap-4 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg font-medium text-[15px] transition-colors">
+                                                        <Clock className="w-5 h-5 text-slate-400" /> Mis Compras
                                                     </Link>
                                                 </SheetClose>
                                                 <SheetClose asChild>
-                                                    <Link href="/institucional/vender" className="flex items-center gap-4 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg font-medium text-[15px] transition-colors">
-                                                        <Store className="w-5 h-5 text-slate-400" /> Vender
+                                                    <Link href="/collections" className="flex items-center gap-4 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg font-medium text-[15px] transition-colors">
+                                                        <Store className="w-5 h-5 text-slate-400" /> Catálogo
                                                     </Link>
                                                 </SheetClose>
 
@@ -122,29 +120,18 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
                                         </div>
                                     </SheetContent>
                                 </Sheet>
-
-                                {/* Desktop Logo */}
-                                <Link href="/" className="hidden lg:flex items-center ml-2 lg:ml-0 gap-2">
-                                    <div className="relative w-[46px] h-[46px] shrink-0 bg-white rounded-full p-1.5 shadow-sm border border-black/10 overflow-hidden flex items-center justify-center">
-                                        <Image src="/logo.png" alt="Logo CompraHogar" fill className="object-contain scale-[1.15]" priority sizes="46px" />
-                                    </div>
-                                    <div className="flex flex-col text-white font-black tracking-tight leading-[0.85]">
-                                        <span className="text-[20px] ml-[1px]">compra</span>
-                                        <span className="text-[20px]">hogar</span>
-                                    </div>
-                                </Link>
                             </div>
 
-                            {/* Huge Central Search (ML Style Pill) - Expands to fill available space */}
-                            <div className="flex-1 w-full max-w-[600px] block">
+                            {/* Mobile Search */}
+                            <div className="flex-1 w-full max-w-[600px]">
                                 <div className="bg-white rounded-full sm:rounded-md shadow-sm border-none overflow-hidden h-[38px] md:h-10 flex items-center">
                                     <PredictiveSearch hideBorder />
                                 </div>
                             </div>
 
-                            {/* Mobile Cart Icon in Top Level */}
-                            <button 
-                                className="lg:hidden relative p-2 -mr-2 text-white active:bg-white/10 rounded-full transition-colors shrink-0"
+                            {/* Mobile Cart */}
+                            <button
+                                className="relative p-2 -mr-2 text-white active:bg-white/10 rounded-full transition-colors shrink-0"
                                 onClick={() => setIsCartOpen(true)}
                             >
                                 <ShoppingBag className="w-6 h-6" strokeWidth={1.5} />
@@ -154,35 +141,51 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
                                     </span>
                                 )}
                             </button>
-
-                            {/* Right Actions (Desktop) */}
-                            <div className="hidden lg:flex shrink-0 items-center justify-end gap-4 min-w-[180px] text-sm text-white">
-                                <LocationSelector />
-                                <LocaleSwitcher className="h-9 px-3 py-2 border border-input bg-background/10 backdrop-blur-sm hover:bg-background/20 rounded-md text-white transition-colors" />
-                            </div>
                         </div>
                     </div>
 
+                    {/* === DESKTOP TOP ROW === */}
+                    <div className="hidden lg:flex items-center h-[72px] pl-4 pr-6 xl:pl-6 xl:pr-10 gap-2">
+                        {/* Logo — left aligned */}
+                        <Link href="/" className="flex items-center shrink-0 ml-2">
+                            <div className="relative w-[380px] h-[90px] shrink-0">
+                                <Image src="/logo.png" alt="Logo CompraHogar" fill className="object-contain object-left" priority sizes="380px" />
+                            </div>
+                        </Link>
+
+                        {/* Search bar — fills all available space */}
+                        <div className="flex-1 min-w-0">
+                            <div className="bg-white rounded-xl border border-slate-300 overflow-hidden h-12 flex items-center">
+                                <PredictiveSearch hideBorder />
+                            </div>
+                        </div>
+
+                        {/* Right Actions — selectors unified */}
+                        <div className="flex shrink-0 items-center gap-4 text-sm text-slate-700">
+                            <LocationSelector />
+                            <LocaleSwitcher className="h-12 px-4 border border-slate-200 bg-white text-slate-700 rounded-xl hover:bg-slate-50 transition-colors text-sm" />
+                        </div>
+                    </div>
                 </div>
 
                 {/* BOTTOM ROW (Full width teal background) */}
                 <div className="w-full bg-[#21645d] border-b border-[#1c554f]">
-                    <div className="container mx-auto max-w-[1200px] px-4">
-                        <div className="h-[44px] flex items-center justify-between text-white/95 text-[13px]">
+                    <div className="w-full px-4 xl:px-6">
+                        <div className="h-[44px] flex items-center justify-between text-white/95 text-[13px] lg:text-sm">
 
                             {/* Category & Quick Links */}
-                            <nav className="hidden lg:flex items-center gap-1 flex-1">
+                            <nav className="hidden lg:flex items-center gap-1 lg:gap-2 flex-1">
                                 <MegaMenu collections={collections} />
 
-                                <Link href="/collections/ofertas" className="px-3 py-2 font-medium hover:bg-black/10 rounded-sm transition-colors">Ofertas</Link>
-                                <Link href="/institucional/historial" className="px-3 py-2 font-medium hover:bg-black/10 rounded-sm transition-colors">Historial</Link>
-                                <Link href="/institucional/vender" className="px-3 py-2 font-medium hover:bg-black/10 rounded-sm transition-colors">Corporativo</Link>
-                                <Link href="/ayuda" className="px-3 py-2 font-medium hover:bg-black/10 rounded-sm transition-colors">Ayuda</Link>
+                                <Link href="/collections/ofertas" className="px-3 lg:px-4 py-2 font-medium hover:bg-black/10 rounded-sm transition-colors">Ofertas</Link>
+                                <Link href="/collections" className="px-3 lg:px-4 py-2 font-medium hover:bg-black/10 rounded-sm transition-colors">Catálogo</Link>
+                                <Link href="/sobre-nosotros" className="px-3 lg:px-4 py-2 font-medium hover:bg-black/10 rounded-sm transition-colors">Nosotros</Link>
+                                <Link href="/envios-y-entregas" className="px-3 lg:px-4 py-2 font-medium hover:bg-black/10 rounded-sm transition-colors">Envíos</Link>
                             </nav>
 
                             {/* User & Cart Actions (Desktop) */}
                             <div className="hidden lg:flex items-center gap-2">
-                                
+
                                 <Link href="/cuenta" className="hidden sm:flex items-center gap-1.5 font-medium hover:bg-black/10 px-3 h-11 rounded-sm transition-colors">
                                     <User className="w-4 h-4 opacity-80" />
                                     <span className="hidden lg:block">Mi cuenta</span>
@@ -191,7 +194,7 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
                                     Mis compras
                                 </Link>
 
-                                <button 
+                                <button
                                     className="relative flex items-center justify-center w-11 h-11 mx-1 hover:bg-black/10 rounded-full transition-colors"
                                     onClick={() => setIsCartOpen(true)}
                                 >

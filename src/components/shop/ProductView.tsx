@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Star, ChevronLeft, ChevronRight, ShieldCheck, Ruler, ArrowRight, X, Zap, Play, Box, Loader2, ShoppingCart } from "lucide-react";
+import { ChevronLeft, ChevronRight, ShieldCheck, Ruler, ArrowRight, X, Zap, Play, Box, Loader2, ShoppingCart } from "lucide-react";
+import { FavoriteButton } from "@/components/shop/FavoriteButton";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -21,7 +22,6 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
     const { addToCart, isCartLoading, checkoutUrl } = useCart();
     const media = product.media?.edges || [];
     const price = product.priceRange?.minVariantPrice;
-    const [isFavorite, setIsFavorite] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [quantity, setQuantity] = useState(1);
     const [isVariantChanging, setIsVariantChanging] = useState(false);
@@ -120,10 +120,10 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
 
     const isOutOfStock = !currentVariant?.availableForSale;
 
-    const handleBackInStockSubmit = async (email: string) => {
-        // Mock function para simular registro de lead
-        console.log(`Registrando lead para restock: ${email}, Variedad: ${currentVariant?.id}`);
-        alert(`¡Gracias! Te avisaremos a ${email} cuando vuelva a estar disponible.`);
+    const [backInStockSent, setBackInStockSent] = useState(false);
+    const handleBackInStockSubmit = async (_email: string) => {
+        // TODO: Connect to Klaviyo or internal API
+        setBackInStockSent(true);
     };
 
     const isM2Product = product.tags?.some((tag: string) => tag.toLowerCase() === "m2" || tag.toLowerCase() === "rendimiento");
@@ -231,16 +231,9 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
 
                 {/* Meta info & Title */}
                 <div className="mb-2 text-[12px] text-slate-500 font-medium tracking-wide flex items-center justify-between">
-                    <span>Nuevo | 1024 vendidos</span>
+                    <span>Nuevo</span>
                     <div className="flex gap-2 items-center">
-                        <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            onClick={() => setIsFavorite(!isFavorite)}
-                            className={`rounded-full h-11 w-11 transition-colors ${isFavorite ? 'text-orange-500 hover:text-orange-600 bg-orange-50' : 'text-slate-400 hover:text-orange-500 hover:bg-orange-50'}`}
-                        >
-                            <Star className={`w-5 h-5 transition-all ${isFavorite ? 'fill-orange-500 text-orange-500 scale-110' : ''}`} />
-                        </Button>
+                        <FavoriteButton productId={product.id} size="md" />
                         {isQuickView && onClose && (
                             <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full h-11 w-11 text-slate-400 hover:text-slate-900 hover:bg-slate-100">
                                 <X className="w-5 h-5" />
@@ -253,15 +246,8 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
                     {product.title}
                 </h1>
 
-                {/* Stars Trust Signal */}
-                <div className="flex items-center gap-1.5 mb-4">
-                    <div className="flex">
-                        {[...Array(5)].map((_, i) => (
-                            <Star key={i} className="w-3.5 h-3.5 fill-orange-500 text-orange-500" />
-                        ))}
-                    </div>
-                    <span className="text-[14px] text-slate-500 font-normal hover:underline cursor-pointer">(24)</span>
-                </div>
+                {/* Stars placeholder — will be connected to real reviews */}
+                <div className="mb-4" />
 
                 {/* Price Section ML Style */}
                 <div className={`mb-4 flex flex-col transition-all duration-300 ${isVariantChanging ? 'opacity-50 blur-sm' : 'opacity-100 blur-0'}`}>
@@ -449,24 +435,31 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
                                 <h3 className="text-[15px] font-semibold text-slate-900 mb-1">¿Te avisamos cuando vuelva?</h3>
                                 <p className="text-[13px] text-slate-500 mb-3 leading-relaxed">Dejanos tu email y te notificaremos apenas ingrese nuevo stock de esta variante.</p>
                             </div>
-                            <form 
-                                onSubmit={(e) => {
-                                    e.preventDefault();
-                                    handleBackInStockSubmit((e.currentTarget.elements.namedItem('email') as HTMLInputElement).value);
-                                }} 
-                                className="flex flex-col sm:flex-row gap-2.5"
-                            >
-                                <input 
-                                    type="email" 
-                                    name="email"
-                                    placeholder="Tu correo electrónico" 
-                                    required
-                                    className="flex-1 rounded-lg border border-slate-300 px-3 py-2.5 text-[14px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/20 focus:border-slate-900 transition-all shadow-sm"
-                                />
-                                <Button type="submit" size="lg" className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-medium shadow-sm h-auto py-2.5">
-                                    Avisarme
-                                </Button>
-                            </form>
+                            {backInStockSent ? (
+                                <div className="flex items-center gap-2 text-green-600 bg-green-50 border border-green-200 rounded-lg px-4 py-3">
+                                    <Zap className="w-4 h-4 shrink-0" />
+                                    <span className="text-sm font-medium">¡Listo! Te avisaremos cuando vuelva a estar disponible.</span>
+                                </div>
+                            ) : (
+                                <form
+                                    onSubmit={(e) => {
+                                        e.preventDefault();
+                                        handleBackInStockSubmit((e.currentTarget.elements.namedItem('email') as HTMLInputElement).value);
+                                    }}
+                                    className="flex flex-col sm:flex-row gap-2.5"
+                                >
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        placeholder="Tu correo electrónico"
+                                        required
+                                        className="flex-1 rounded-lg border border-slate-300 px-3 py-2.5 text-[14px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/20 focus:border-slate-900 transition-all shadow-sm"
+                                    />
+                                    <Button type="submit" size="lg" className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-medium shadow-sm h-auto py-2.5">
+                                        Avisarme
+                                    </Button>
+                                </form>
+                            )}
                         </div>
                     )}
                     <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />

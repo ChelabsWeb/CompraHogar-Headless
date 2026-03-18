@@ -144,11 +144,11 @@ export function PredictiveSearch({ placeholder = "Buscar productos, marcas y má
               setIsOpen(true);
             }
           }}
-          className={`w-full h-10 pl-10 pr-12 rounded-full bg-white text-slate-900 shadow-sm focus-visible:ring-0 ${hideBorder ? 'border-0' : 'border-slate-200'}`}
+          className={`w-full h-full pl-10 pr-12 text-slate-900 focus-visible:ring-0 ${hideBorder ? 'border-0 bg-transparent shadow-none rounded-none' : 'h-10 rounded-full bg-white shadow-sm border-slate-200'}`}
         />
         <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
         
-        <div className="absolute right-0 top-0 h-10 flex items-center pr-3 gap-2">
+        <div className="absolute right-0 top-0 h-full flex items-center pr-3 gap-2">
           {isLoading ? (
             <Loader2 className="w-4 h-4 text-slate-400 animate-spin" />
           ) : query.length > 0 ? (

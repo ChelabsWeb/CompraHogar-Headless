@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import {
   Instagram,
@@ -27,56 +30,71 @@ const FOOTER_LINKS = [
   {
     title: "Soporte",
     links: [
-      { name: "Centro de Ayuda", href: "/contact" },
-      { name: "Envíos y Entregas", href: "/shipping" },
-      { name: "Cambios y Devoluciones", href: "/returns" },
-      { name: "Preguntas Frecuentes", href: "/faq" },
+      { name: "Envíos y Entregas", href: "/envios-y-entregas" },
+      { name: "Cambios y Devoluciones", href: "/devoluciones-y-garantias" },
+      { name: "Términos y Condiciones", href: "/terminos-y-condiciones" },
+      { name: "Política de Privacidad", href: "/politica-privacidad" },
     ],
   },
   {
     title: "Empresa",
     links: [
-      { name: "Sobre Nosotros", href: "/about" },
-      { name: "Ventas Corporativas", href: "/b2b" },
-      { name: "Nuestras Sucursales", href: "/stores" },
-      { name: "Trabaja con Nosotros", href: "/careers" },
+      { name: "Sobre Nosotros", href: "/sobre-nosotros" },
+      { name: "Ventas Corporativas", href: "/collections" },
+      { name: "Mi Cuenta", href: "/cuenta" },
     ],
   },
 ];
 
 export function Footer() {
+  const [newsletterSent, setNewsletterSent] = useState(false);
   return (
     <footer className="w-full bg-[#FAFAFA] bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-white to-[#F1F5F9] text-slate-600 border-t border-slate-200 mt-auto overflow-hidden relative">
       <Container className="pt-10 md:pt-24 relative z-10">
 
         {/* Newsletter Section — compact on mobile */}
-        <div className="relative overflow-hidden rounded-xl md:rounded-[2rem] bg-primary p-5 md:p-12 mb-8 md:mb-16">
+        <div className="relative overflow-hidden rounded-xl md:rounded-[2rem] bg-primary p-5 md:p-12 lg:p-16 mb-8 md:mb-16">
           <div className="absolute top-0 right-0 w-48 h-48 bg-secondary/20 rounded-full blur-[80px] pointer-events-none" />
           <div className="relative z-10 flex flex-col md:grid md:grid-cols-2 gap-4 md:gap-12 items-center">
             <div>
-              <h3 className="text-xl md:text-3xl font-bold tracking-tight text-white mb-1 md:mb-3">
+              <h3 className="text-xl md:text-3xl lg:text-4xl font-bold tracking-tight text-white mb-1 md:mb-3">
                 Recibí ofertas exclusivas
               </h3>
               <p className="text-white/70 text-[13px] md:text-base leading-snug">
                 Novedades y descuentos directo a tu bandeja.
               </p>
             </div>
-            <div className="flex flex-row gap-2 w-full md:justify-end">
-              <Input
-                type="email"
-                placeholder="tu@correo.com"
-                className="bg-white/10 border-white/20 text-white placeholder:text-white/50 h-11 md:h-14 md:min-w-[280px] focus-visible:ring-white/30 rounded-lg flex-1 md:flex-none"
-              />
-              <Button size="lg" className="h-11 md:h-14 px-5 md:px-8 bg-secondary hover:bg-secondary/90 text-white font-semibold rounded-lg shrink-0">
-                <ArrowRight className="h-4 w-4 md:hidden" />
-                <span className="hidden md:inline">Suscribirme</span>
-              </Button>
-            </div>
+            {newsletterSent ? (
+              <div className="flex items-center gap-2 text-white/90 bg-white/10 border border-white/20 rounded-lg px-4 py-3 w-full md:max-w-md md:ml-auto">
+                <ShieldCheck className="w-5 h-5 shrink-0" />
+                <span className="text-sm font-medium">¡Gracias! Te mantendremos al tanto de las novedades.</span>
+              </div>
+            ) : (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  setNewsletterSent(true);
+                }}
+                className="flex flex-row gap-2 w-full md:justify-end"
+              >
+                <Input
+                  type="email"
+                  name="email"
+                  placeholder="tu@correo.com"
+                  required
+                  className="bg-white/10 border-white/20 text-white placeholder:text-white/50 h-11 md:h-14 md:min-w-[280px] lg:min-w-[340px] focus-visible:ring-white/30 rounded-lg flex-1 md:flex-none"
+                />
+                <Button type="submit" size="lg" className="h-11 md:h-14 px-5 md:px-8 bg-secondary hover:bg-secondary/90 text-white font-semibold rounded-lg shrink-0">
+                  <ArrowRight className="h-4 w-4 md:hidden" />
+                  <span className="hidden md:inline">Suscribirme</span>
+                </Button>
+              </form>
+            )}
           </div>
         </div>
 
         {/* Navigation Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8 mb-10 md:mb-16">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8 xl:gap-12 mb-10 md:mb-16">
 
           {/* Mobile: simple link columns. Desktop: full sections */}
 
@@ -86,7 +104,7 @@ export function Footer() {
               <ul className="space-y-2">
                 {section.links.map((link) => (
                   <li key={link.name}>
-                    <Link href={link.href} className="text-[13px] font-medium text-slate-500 hover:text-primary transition-colors">
+                    <Link href={link.href} className="text-[13px] lg:text-sm font-medium text-slate-500 hover:text-primary transition-colors">
                       {link.name}
                     </Link>
                   </li>
@@ -137,8 +155,8 @@ export function Footer() {
               <span>Compra 100% Segura</span>
             </div>
             <div className="flex items-center gap-6 mt-4 md:mt-0 font-semibold">
-              <Link href="/privacy" className="hover:text-primary transition-colors">Privacidad</Link>
-              <Link href="/terms" className="hover:text-primary transition-colors">Términos</Link>
+              <Link href="/politica-privacidad" className="hover:text-primary transition-colors">Privacidad</Link>
+              <Link href="/terminos-y-condiciones" className="hover:text-primary transition-colors">Términos</Link>
             </div>
             <p className="mt-2 md:mt-0 text-slate-400 text-xs md:text-sm font-medium">
               &copy; {new Date().getFullYear()} CompraHogar. Todos los derechos reservados.

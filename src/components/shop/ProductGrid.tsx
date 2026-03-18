@@ -2,36 +2,15 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Star, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ProductQuickView } from "@/components/shop/ProductQuickView";
+import { FavoriteButton } from "@/components/shop/FavoriteButton";
 import ActiveFilters from "@/components/shop/ActiveFilters";
 import { useState, useTransition } from "react";
 import { loadMoreCollectionProducts } from "@/app/actions/collection";
 import { EmptyState } from "@/components/shop/EmptyState";
-
-function FavoriteButton() {
-    const [isFavorite, setIsFavorite] = useState(false);
-
-    return (
-        <Button
-            variant="ghost"
-            size="icon"
-            onClick={(e) => {
-                e.preventDefault();
-                setIsFavorite(!isFavorite);
-            }}
-            className={`absolute top-1 right-1 rounded-full h-8 w-8 bg-white/80 backdrop-blur-sm z-10 shadow-sm transition-colors ${
-                isFavorite 
-                    ? 'text-orange-500 hover:text-orange-600 bg-orange-50' 
-                    : 'text-slate-400 hover:text-orange-500 hover:bg-orange-50'
-            }`}
-        >
-            <Star className={`w-4 h-4 transition-all ${isFavorite ? 'fill-orange-500 text-orange-500 scale-110' : ''}`} />
-        </Button>
-    );
-}
 
 
 interface PageInfo {
@@ -91,7 +70,7 @@ export function ProductGrid({
     return (
         <div className="flex flex-col w-full">
             <ActiveFilters />
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4 lg:gap-5 xl:gap-6">
                 {products.map(({ node }: any, i: number) => {
                 const currency = node.priceRange?.minVariantPrice?.currencyCode || "USD";
                 const priceAmount = Number(node.priceRange?.minVariantPrice?.amount || 0);
@@ -121,7 +100,7 @@ export function ProductGrid({
                                                     src={img.url}
                                                     alt={img.altText || node.title}
                                                     fill
-                                                    className="object-contain p-2 sm:p-4 group-hover:scale-105 transition-transform duration-500"
+                                                    className="object-contain p-2 sm:p-4 lg:p-5 group-hover:scale-105 transition-transform duration-500"
                                                     sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                                                     priority={i < 4 && index === 0}
                                                 />
@@ -143,20 +122,19 @@ export function ProductGrid({
                                     </div>
                                 )}
 
-                                {/* Favorite Star Icon placeholder (ML style) */}
-                                <FavoriteButton />
+                                <FavoriteButton productId={node.id} className="absolute top-2 right-2" />
 
                                 <ProductQuickView product={node} />
                             </div>
 
                             {/* Information Container - Optimized for Mobile Grid */}
-                            <div className="p-2.5 sm:p-4 flex flex-col flex-1">
+                            <div className="p-2.5 sm:p-4 lg:p-5 flex flex-col flex-1">
 
                                 {/* Price */}
                                 {priceAmount > 0 ? (
                                     <div className="flex items-start gap-0.5 sm:gap-1 mb-1 sm:mb-2">
                                         <span className="text-[11px] sm:text-sm font-normal text-slate-800 mt-0.5 sm:mt-1">$</span>
-                                        <span className="text-[18px] sm:text-[24px] font-normal text-slate-800 leading-none">{price}</span>
+                                        <span className="text-[18px] sm:text-[24px] lg:text-[26px] font-normal text-slate-800 leading-none">{price}</span>
                                     </div>
                                 ) : (
                                     <div className="flex items-start gap-1 mb-1">
