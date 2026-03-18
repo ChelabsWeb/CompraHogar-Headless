@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MAX_ENTRIES = 500;
 
 const domain = process.env.SHOPIFY_STORE_DOMAIN || process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN;
 const adminToken = process.env.SHOPIFY_ADMIN_ACCESS_TOKEN;
 
-/**
- * Shopify Admin API helper (server-only, never exposed to client)
- */
 async function shopifyAdmin(query: string, variables?: object) {
   const res = await fetch(`https://${domain}/admin/api/2024-04/graphql.json`, {
     method: "POST",
@@ -17,21 +15,24 @@ async function shopifyAdmin(query: string, variables?: object) {
     },
     body: JSON.stringify({ query, variables }),
   });
-  return res.json();
+
+  if (!res.ok) {
+    throw new Error(`Shopify Admin API error: ${res.status}`);
+  }
+
+  const json = await res.json();
+  if (json.errors) {
+    throw new Error(json.errors[0]?.message || "Shopify Admin API error");
+  }
+
+  return json;
 }
 
-/**
- * Extracts the numeric product ID from a Shopify variant GID.
- * Variant GID format: "gid://shopify/ProductVariant/12345"
- * We need the product ID, so we first look up the variant.
- */
 const getProductIdFromVariantQuery = `
   query getProductFromVariant($variantId: ID!) {
     productVariant(id: $variantId) {
       id
-      product {
-        id
-      }
+      product { id }
     }
   }
 `;
@@ -50,29 +51,12 @@ const getExistingMetafieldQuery = `
 const setMetafieldMutation = `
   mutation metafieldsSet($metafields: [MetafieldsSetInput!]!) {
     metafieldsSet(metafields: $metafields) {
-      metafields {
-        id
-        key
-        value
-      }
-      userErrors {
-        field
-        message
-      }
+      metafields { id key value }
+      userErrors { field message }
     }
   }
 `;
 
-/**
- * POST /api/back-in-stock
- *
- * Saves the email + variantId to a JSON metafield on the product via
- * Shopify Admin API. Shopify Flow can then watch for inventory changes
- * and email these leads automatically.
- *
- * Metafield: namespace "custom", key "back_in_stock_emails"
- * Value: JSON array of { email, variantId, createdAt }
- */
 export async function POST(request: NextRequest) {
   try {
     if (!adminToken) {
@@ -95,58 +79,48 @@ export async function POST(request: NextRequest) {
     }
 
     // 1. Get the product ID from the variant
-    const variantResult = await shopifyAdmin(getProductIdFromVariantQuery, {
-      variantId,
-    });
-
+    const variantResult = await shopifyAdmin(getProductIdFromVariantQuery, { variantId });
     const productId = variantResult?.data?.productVariant?.product?.id;
     if (!productId) {
       return NextResponse.json({ error: "Product not found." }, { status: 404 });
     }
 
-    // 2. Read existing metafield (if any)
-    const metafieldResult = await shopifyAdmin(getExistingMetafieldQuery, {
-      productId,
-    });
-
+    // 2. Read existing metafield
+    const metafieldResult = await shopifyAdmin(getExistingMetafieldQuery, { productId });
     const existing = metafieldResult?.data?.product?.metafield;
     let entries: Array<{ email: string; variantId: string; createdAt: string }> = [];
 
     if (existing?.value) {
-      try {
-        entries = JSON.parse(existing.value);
-      } catch {
-        entries = [];
-      }
+      try { entries = JSON.parse(existing.value); } catch { entries = []; }
     }
 
-    // 3. Check for duplicate (same email + same variant)
-    const alreadyRegistered = entries.some(
-      (e) => e.email === trimmedEmail && e.variantId === variantId
-    );
-
-    if (alreadyRegistered) {
+    // 3. Deduplicate
+    if (entries.some((e) => e.email === trimmedEmail && e.variantId === variantId)) {
       return NextResponse.json({ success: true }, { status: 200 });
     }
 
-    // 4. Append and save
-    entries.push({
-      email: trimmedEmail,
-      variantId,
-      createdAt: new Date().toISOString(),
+    // 4. Cap entries to prevent unbounded metafield growth
+    if (entries.length >= MAX_ENTRIES) {
+      return NextResponse.json({ success: true }, { status: 200 });
+    }
+
+    // 5. Append and save
+    entries.push({ email: trimmedEmail, variantId, createdAt: new Date().toISOString() });
+
+    const writeResult = await shopifyAdmin(setMetafieldMutation, {
+      metafields: [{
+        ownerId: productId,
+        namespace: "custom",
+        key: "back_in_stock_emails",
+        type: "json",
+        value: JSON.stringify(entries),
+      }],
     });
 
-    await shopifyAdmin(setMetafieldMutation, {
-      metafields: [
-        {
-          ownerId: productId,
-          namespace: "custom",
-          key: "back_in_stock_emails",
-          type: "json",
-          value: JSON.stringify(entries),
-        },
-      ],
-    });
+    const userErrors = writeResult?.data?.metafieldsSet?.userErrors;
+    if (userErrors?.length > 0) {
+      return NextResponse.json({ error: "Failed to save notification." }, { status: 500 });
+    }
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch {

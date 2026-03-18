@@ -75,13 +75,13 @@ export function Footer() {
                   e.preventDefault();
                   const email = (e.currentTarget.elements.namedItem("email") as HTMLInputElement).value;
                   try {
-                    await fetch("/api/newsletter", {
+                    const res = await fetch("/api/newsletter", {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify({ email }),
                     });
+                    if (res.ok) setNewsletterSent(true);
                   } catch {}
-                  setNewsletterSent(true);
                 }}
                 className="flex flex-row gap-2 w-full md:justify-end"
               >

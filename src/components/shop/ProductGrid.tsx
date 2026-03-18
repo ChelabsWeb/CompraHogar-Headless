@@ -46,7 +46,7 @@ export function ProductGrid({
             try {
                 const nextData = await loadMoreCollectionProducts(
                     collectionHandle,
-                    pageInfo.endCursor,
+                    pageInfo.endCursor!,
                     24,
                     filters,
                     sortKey,

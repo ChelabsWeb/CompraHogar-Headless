@@ -131,13 +131,13 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
     const [backInStockSent, setBackInStockSent] = useState(false);
     const handleBackInStockSubmit = async (email: string) => {
         try {
-            await fetch("/api/back-in-stock", {
+            const res = await fetch("/api/back-in-stock", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, variantId: currentVariant?.id }),
             });
+            if (res.ok) setBackInStockSent(true);
         } catch {}
-        setBackInStockSent(true);
     };
 
     const isM2Product = product.tags?.some((tag: string) => tag.toLowerCase() === "m2" || tag.toLowerCase() === "rendimiento");

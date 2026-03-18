@@ -97,7 +97,9 @@ export interface ShopifyProductEdge {
 /** Pagination info from Shopify connections. */
 export interface ShopifyPageInfo {
   hasNextPage: boolean;
-  endCursor: string;
+  hasPreviousPage?: boolean;
+  endCursor: string | null;
+  startCursor?: string | null;
 }
 
 /** Collection node — minimal shape used in navigation. */

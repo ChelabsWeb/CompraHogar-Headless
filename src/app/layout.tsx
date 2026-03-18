@@ -53,7 +53,8 @@ export default async function RootLayout({
   const customerAccessToken = cookieStore.get("customerAccessToken")?.value;
   const isLoggedIn = !!customerAccessToken;
 
-  const gtmId = process.env.NEXT_PUBLIC_GTM_ID;
+  const rawGtmId = process.env.NEXT_PUBLIC_GTM_ID;
+  const gtmId = rawGtmId && /^GTM-[A-Z0-9]+$/.test(rawGtmId) ? rawGtmId : null;
 
   return (
     <html lang="es" className="scroll-smooth">
