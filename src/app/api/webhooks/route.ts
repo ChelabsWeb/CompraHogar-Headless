@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { revalidateTag } from 'next/cache';
+import { revalidateTag as _revalidateTag } from 'next/cache';
 import crypto from 'crypto';
+
+// Next.js 16 requires a second argument (cache profile) for revalidateTag
+const revalidate = (tag: string) => _revalidateTag(tag, "default" as any);
 
 // --- Interfaces ---
 
@@ -62,11 +65,11 @@ async function handleInventoryLevelWebhook(topic: string, payload: ShopifyInvent
     console.log(`[Webhook] ⚠️ Alerta de Stock: El item ${payload.inventory_item_id} de la locación ${payload.location_id} se quedó sin inventario.`);
     
     // Invalidamos la caché general de productos para evitar over-selling en el frontend estático
-    revalidateTag('products', {} as any);
+    revalidate('products');
     console.log('[Webhook] Caché revalidada para tag: "products" (Previniendo over-selling)');
   } else {
     // Si hay stock, revalidamos para asegurar que el dato fresco está en la UI
-    revalidateTag('products', {} as any);
+    revalidate('products');
     console.log('[Webhook] Caché revalidada para tag: "products" (Actualización de stock regular)');
   }
 }
@@ -75,11 +78,11 @@ async function handleCatalogWebhook(topic: string, shopDomain: string) {
   console.log(`[Webhook] Procesando evento de catálogo (${topic}) para la tienda ${shopDomain}`);
   
   if (topic.startsWith('products/')) {
-    revalidateTag('products', {} as any);
-    revalidateTag('collections', {} as any);
+    revalidate('products');
+    revalidate('collections');
     console.log('[Webhook] Caché revalidada para tags: "products", "collections"');
   } else if (topic.startsWith('collections/')) {
-    revalidateTag('collections', {} as any);
+    revalidate('collections');
     console.log('[Webhook] Caché revalidada para tag: "collections"');
   }
 }
