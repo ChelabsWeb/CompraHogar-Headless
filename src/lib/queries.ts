@@ -232,6 +232,70 @@ export const getCollectionWithProductsQuery = `
   }
 `;
 
+export const getCollectionWithProductsPrevQuery = `
+  query getCollectionWithProductsPrev(
+    $handle: String!
+    $last: Int!
+    $filters: [ProductFilter!]
+    $sortKey: ProductCollectionSortKeys
+    $reverse: Boolean
+    $cursor: String
+  ) {
+    collection(handle: $handle) {
+      id
+      title
+      handle
+      description
+      image {
+        url
+        altText
+      }
+      products(
+        last: $last
+        filters: $filters
+        sortKey: $sortKey
+        reverse: $reverse
+        before: $cursor
+      ) {
+        filters {
+          id
+          label
+          type
+          values {
+            id
+            label
+            count
+            input
+          }
+        }
+        pageInfo {
+          hasNextPage
+          hasPreviousPage
+          startCursor
+          endCursor
+        }
+        edges {
+          node {
+            id
+            title
+            handle
+            priceRange {
+              minVariantPrice {
+                amount
+                currencyCode
+              }
+            }
+            featuredImage {
+              url
+              altText
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
 // ==========================================
 // CART OPERATIONS
 // ==========================================

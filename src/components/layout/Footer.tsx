@@ -71,8 +71,16 @@ export function Footer() {
               </div>
             ) : (
               <form
-                onSubmit={(e) => {
+                onSubmit={async (e) => {
                   e.preventDefault();
+                  const email = (e.currentTarget.elements.namedItem("email") as HTMLInputElement).value;
+                  try {
+                    await fetch("/api/newsletter", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ email }),
+                    });
+                  } catch {}
                   setNewsletterSent(true);
                 }}
                 className="flex flex-row gap-2 w-full md:justify-end"

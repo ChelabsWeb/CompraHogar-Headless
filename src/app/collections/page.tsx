@@ -75,7 +75,6 @@ async function getCollections(): Promise<CollectionNode[]> {
   const json: ShopifyResponse = await response.json();
 
   if (json.errors) {
-    console.error("GraphQL Errors:", json.errors);
     throw new Error("Error en la respuesta de la query GraphQL de Shopify.");
   }
 

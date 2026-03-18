@@ -121,8 +121,14 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
     const isOutOfStock = !currentVariant?.availableForSale;
 
     const [backInStockSent, setBackInStockSent] = useState(false);
-    const handleBackInStockSubmit = async (_email: string) => {
-        // TODO: Connect to Klaviyo or internal API
+    const handleBackInStockSubmit = async (email: string) => {
+        try {
+            await fetch("/api/back-in-stock", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, variantId: currentVariant?.id }),
+            });
+        } catch {}
         setBackInStockSent(true);
     };
 

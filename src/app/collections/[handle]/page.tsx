@@ -1,5 +1,5 @@
 import { shopifyFetch } from "@/lib/shopify";
-import { getCollectionWithProductsQuery } from "@/lib/queries";
+import { getCollectionWithProductsQuery, getCollectionWithProductsPrevQuery } from "@/lib/queries";
 import { ProductGrid } from "@/components/shop/ProductGrid";
 import { notFound } from "next/navigation";
 import Image from "next/image";
@@ -76,8 +76,8 @@ export default async function CollectionPage(props: {
         filtersArray.forEach(f => {
             try {
                 filters.push(JSON.parse(f));
-            } catch (e) {
-                console.error("Error parseando filtro de URL", e);
+            } catch {
+                // Silently skip malformed filter params
             }
         });
     }
@@ -116,19 +116,27 @@ export default async function CollectionPage(props: {
     const cursor = Array.isArray(resolvedSearchParams.cursor) ? resolvedSearchParams.cursor[0] : resolvedSearchParams.cursor;
     const direction = Array.isArray(resolvedSearchParams.direction) ? resolvedSearchParams.direction[0] : resolvedSearchParams.direction;
 
-    // Llamada con variables dinámicas
+    // Llamada con variables dinámicas — usa query distinta según dirección de paginación
+    const isPrev = direction === 'prev';
     const { body } = await shopifyFetch({
-        query: getCollectionWithProductsQuery,
-        variables: { 
-            handle: resolvedParams.handle, 
-            first: 24,
-            filters: filters.length > 0 ? filters : undefined,
-            sortKey,
-            reverse,
-            cursor: direction === 'next' ? cursor : undefined
-            // Note: Para ir hacia atrás (direction === 'prev'), requieres actualizar el Query 
-            // de GraphQL para soportar `last: 24` y `before: cursor`.
-        },
+        query: isPrev ? getCollectionWithProductsPrevQuery : getCollectionWithProductsQuery,
+        variables: isPrev
+            ? {
+                handle: resolvedParams.handle,
+                last: 24,
+                filters: filters.length > 0 ? filters : undefined,
+                sortKey,
+                reverse,
+                cursor: cursor || undefined,
+            }
+            : {
+                handle: resolvedParams.handle,
+                first: 24,
+                filters: filters.length > 0 ? filters : undefined,
+                sortKey,
+                reverse,
+                cursor: direction === 'next' ? cursor : undefined,
+            },
     });
 
     let collection = body?.data?.collection;
