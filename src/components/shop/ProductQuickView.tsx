@@ -22,7 +22,7 @@ export function ProductQuickView({ product, triggerText = "Vista Rápida", trigg
       <Button
         variant="secondary"
         size="sm"
-        className="w-full bg-white/90 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-4 left-1/2 -translate-x-1/2 w-[90%] shadow-lg border border-slate-200 text-slate-800 hover:bg-white hover:text-primary"
+        className="hidden lg:flex w-full bg-white/90 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-4 left-1/2 -translate-x-1/2 w-[90%] shadow-lg border border-slate-200 text-slate-800 hover:bg-white hover:text-primary justify-center"
         onClick={(e) => {
           e.preventDefault() // prevent navigating if inside a Link
           setIsOpen(true)

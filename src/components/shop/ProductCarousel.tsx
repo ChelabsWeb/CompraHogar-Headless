@@ -2,33 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Zap, Star } from "lucide-react";
+import { Zap } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { useState } from "react";
 import { ProductQuickView } from "@/components/shop/ProductQuickView";
-
-function FavoriteButton() {
-    const [isFavorite, setIsFavorite] = useState(false);
-
-    return (
-        <Button
-            variant="ghost"
-            size="icon"
-            onClick={(e) => {
-                e.preventDefault();
-                setIsFavorite(!isFavorite);
-            }}
-            className={`absolute top-2 right-2 rounded-full h-8 w-8 bg-white/80 backdrop-blur-sm z-10 shadow-sm border border-slate-100/50 transition-colors ${
-                isFavorite 
-                    ? 'text-orange-500 hover:text-orange-600 bg-orange-50' 
-                    : 'text-slate-400 hover:text-orange-500 hover:bg-orange-50'
-            }`}
-        >
-            <Star className={`w-4 h-4 transition-all ${isFavorite ? 'fill-orange-500 text-orange-500 scale-110' : ''}`} />
-        </Button>
-    );
-}
+import { FavoriteButton } from "@/components/shop/FavoriteButton";
 
 interface ProductCarouselProps {
     title: string;
@@ -44,7 +21,7 @@ export function ProductCarousel({ title, products }: ProductCarouselProps) {
                 <h2 className="text-xl lg:text-2xl font-semibold text-slate-900">{title}</h2>
             </div>
             
-            <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-6 custom-scrollbar -mx-4 px-4 lg:mx-0 lg:px-0">
+            <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-6 no-scrollbar -mx-4 px-4 lg:mx-0 lg:px-0">
                 {products.map((product) => {
                     // Extract data whether it's wrapped in a node or not
                     const node = product.node || product;
@@ -71,7 +48,7 @@ export function ProductCarousel({ title, products }: ProductCarouselProps) {
                                             CH
                                         </div>
                                     )}
-                                    <FavoriteButton />
+                                    <FavoriteButton productId={node.id} className="absolute top-2 right-2" />
                                     <ProductQuickView product={node} />
                                 </div>
 

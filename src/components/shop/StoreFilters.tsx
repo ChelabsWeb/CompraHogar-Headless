@@ -86,7 +86,7 @@ export function StoreFilters({ filters }: StoreFiltersProps) {
                         <div
                           className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors ${
                             isActive
-                              ? "border-blue-600 bg-blue-600 text-white"
+                              ? "border-primary bg-primary text-white"
                               : "border-slate-300 bg-white"
                           }`}
                         >

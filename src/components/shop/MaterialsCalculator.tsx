@@ -103,8 +103,8 @@ export function MaterialsCalculator({
 
       {calculatedQuantity > 0 && (
         <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
-          <Alert className="bg-white border-blue-100 py-3 shadow-sm">
-            <Info className="h-4 w-4 text-blue-500" />
+          <Alert className="bg-white border-primary/20 py-3 shadow-sm">
+            <Info className="h-4 w-4 text-primary" />
             <AlertDescription className="text-xs text-slate-600 ml-2 mt-0.5 leading-relaxed">
                Área total: <span className="font-medium text-slate-800">{totalArea.toFixed(2)} {unitName}</span> + 10% desperdicio sugerido ({areaWithWaste.toFixed(2)} {unitName}).<br/>
                Rinde <span className="font-medium text-slate-800">{yieldPerUnit} {unitName}</span> por {packagingName.toLowerCase()}.
