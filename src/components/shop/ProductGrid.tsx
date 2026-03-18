@@ -11,18 +11,14 @@ import ActiveFilters from "@/components/shop/ActiveFilters";
 import { useState, useTransition } from "react";
 import { loadMoreCollectionProducts } from "@/app/actions/collection";
 import { EmptyState } from "@/components/shop/EmptyState";
+import type { ShopifyProductEdge, ShopifyPageInfo, ShopifyImage } from "@/lib/types";
 
-
-interface PageInfo {
-    hasNextPage: boolean;
-    endCursor: string;
-}
 
 interface ProductGridProps {
-    products: any[];
-    pageInfo?: PageInfo;
+    products: ShopifyProductEdge[];
+    pageInfo?: ShopifyPageInfo;
     collectionHandle?: string;
-    filters?: any[];
+    filters?: unknown[];
     sortKey?: string;
     reverse?: boolean;
 }
@@ -71,18 +67,18 @@ export function ProductGrid({
         <div className="flex flex-col w-full">
             <ActiveFilters />
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4 lg:gap-5 xl:gap-6">
-                {products.map(({ node }: any, i: number) => {
+                {products.map(({ node }, i) => {
                 const currency = node.priceRange?.minVariantPrice?.currencyCode || "USD";
                 const priceAmount = Number(node.priceRange?.minVariantPrice?.amount || 0);
                 const price = priceAmount.toLocaleString("es-UY");
 
                 // ML specific logic: if price is over a certain amount, show installments
                 const installments = (priceAmount / 12).toLocaleString("es-UY", { maximumFractionDigits: 0 });
-                
+
                 // Get all available images or fallback to featured image
-                const images = node.images?.edges?.length > 0
-                    ? node.images.edges.map((e: any) => e.node)
-                    : node.featuredImage 
+                const images: ShopifyImage[] = node.images?.edges?.length
+                    ? node.images.edges.map((e) => e.node)
+                    : node.featuredImage
                         ? [node.featuredImage]
                         : [];
 
@@ -94,7 +90,7 @@ export function ProductGrid({
                             <div className="relative w-full aspect-[4/3] bg-white border-b border-slate-100 flex items-center justify-center overflow-hidden">
                                 {images.length > 0 ? (
                                     <div className="flex w-full h-full overflow-x-auto snap-x snap-mandatory no-scrollbar overscroll-x-contain">
-                                        {images.map((img: any, index: number) => (
+                                        {images.map((img, index) => (
                                             <div key={index} className="w-full h-full shrink-0 snap-center relative">
                                                 <Image
                                                     src={img.url}
@@ -116,7 +112,7 @@ export function ProductGrid({
                                 {/* Pagination Dots (Visible only if > 1 image) */}
                                 {images.length > 1 && (
                                     <div className="absolute bottom-1.5 left-0 right-0 flex justify-center gap-1.5 z-10 pointer-events-none">
-                                        {images.map((_: any, idx: number) => (
+                                        {images.map((_, idx) => (
                                             <div key={idx} className="w-1 h-1 rounded-full bg-slate-300/80" />
                                         ))}
                                     </div>

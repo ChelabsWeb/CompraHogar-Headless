@@ -17,8 +17,15 @@ import { Info } from "lucide-react";
 import { MaterialsCalculator } from "./MaterialsCalculator";
 import { ShippingCalculator } from "@/components/shop/ShippingCalculator";
 import { InfoDrawer } from "@/components/shared/InfoDrawer";
+import type { ShopifyProduct, ShopifyMediaNode, ShopifyMediaSource, ShopifySelectedOption, ShopifyProductOption, ShopifyVariant } from "@/lib/types";
 
-export function ProductView({ product, isQuickView = false, onClose }: { product: any, isQuickView?: boolean, onClose?: () => void }) {
+interface ProductViewProps {
+    product: ShopifyProduct;
+    isQuickView?: boolean;
+    onClose?: () => void;
+}
+
+export function ProductView({ product, isQuickView = false, onClose }: ProductViewProps) {
     const { addToCart, isCartLoading, checkoutUrl } = useCart();
     const media = product.media?.edges || [];
     const price = product.priceRange?.minVariantPrice;
@@ -30,17 +37,17 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
     const variants = product.variants?.edges || [];
 
     // Find initial variant
-    const initialVariant = variants.find(({ node }: any) => node.availableForSale)?.node || variants[0]?.node;
+    const initialVariant = variants.find(({ node }: { node: ShopifyVariant }) => node.availableForSale)?.node || variants[0]?.node;
 
     const [activeImageIndex, setActiveImageIndex] = useState(0);
     const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>(() => {
         const initialStates: Record<string, string> = {};
         if (initialVariant && initialVariant.selectedOptions) {
-            initialVariant.selectedOptions.forEach((opt: any) => {
+            initialVariant.selectedOptions.forEach((opt: ShopifySelectedOption) => {
                 initialStates[opt.name] = opt.value;
             });
         } else {
-            options.forEach((opt: any) => {
+            options.forEach((opt: ShopifyProductOption) => {
                 initialStates[opt.name] = opt.values[0];
             });
         }
@@ -49,11 +56,11 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
 
     const activeMedia = media[activeImageIndex]?.node;
 
-    const renderMedia = (node: any) => {
+    const renderMedia = (node: ShopifyMediaNode | undefined) => {
         if (!node) return <div className="text-slate-400 text-sm font-bold uppercase tracking-widest">Sin Media</div>;
 
         if (node.mediaContentType === 'VIDEO') {
-            const videoSource = node.sources?.find((s: any) => s.format === 'mp4') || node.sources?.[0];
+            const videoSource = node.sources?.find((s: ShopifyMediaSource) => s.format === 'mp4') || node.sources?.[0];
             return (
                 <video 
                     src={videoSource?.url} 
@@ -68,7 +75,7 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
         }
 
         if (node.mediaContentType === 'MODEL_3D') {
-            const modelSource = node.sources?.find((s: any) => s.format === 'glb') || node.sources?.[0];
+            const modelSource = node.sources?.find((s: ShopifyMediaSource) => s.format === 'glb') || node.sources?.[0];
             const ModelViewer = "model-viewer" as any;
             return (
                 <>
@@ -89,6 +96,7 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
 
         // Fallback to IMAGE
         const imageUrl = node.image?.url || node.previewImage?.url;
+        if (!imageUrl) return <div className="text-slate-400 text-sm font-bold uppercase tracking-widest">Sin Media</div>;
         return (
             <Image
                 src={imageUrl}
@@ -102,9 +110,9 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
     }
 
     // Compute current variant
-    const currentVariant = variants.find(({ node }: any) => {
+    const currentVariant = variants.find(({ node }: { node: ShopifyVariant }) => {
         if (!node.selectedOptions) return false;
-        return node.selectedOptions.every((opt: any) => selectedOptions[opt.name] === opt.value);
+        return node.selectedOptions.every((opt: ShopifySelectedOption) => selectedOptions[opt.name] === opt.value);
     })?.node || initialVariant;
 
     const displayPrice = currentVariant?.price || price;
@@ -133,7 +141,7 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
     };
 
     const isM2Product = product.tags?.some((tag: string) => tag.toLowerCase() === "m2" || tag.toLowerCase() === "rendimiento");
-    const yieldPerUnit = parseFloat(product.rendimiento?.value) || 1.44;
+    const yieldPerUnit = parseFloat(product.rendimiento?.value ?? '') || 1.44;
     const unitName = product.tags?.some((tag: string) => tag.toLowerCase() === "rendimiento") ? "Litros" : "m²";
     const packagingName = product.tags?.some((tag: string) => tag.toLowerCase() === "rendimiento") ? "Lata" : "Caja";
 
@@ -159,7 +167,7 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
                     }}
                 >
                     {media.length > 0 ? (
-                        media.map((item: any, idx: number) => (
+                        media.map((item: { node: ShopifyMediaNode }, idx: number) => (
                             <div key={idx} className="w-full h-full shrink-0 snap-center relative flex items-center justify-center">
                                 {renderMedia(item.node)}
                             </div>
@@ -174,7 +182,7 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
                 {/* Mobile Indicator Dots */}
                 {media.length > 1 && (
                     <div className="flex lg:hidden justify-center gap-1.5 mt-2 mb-4 w-full bg-transparent items-center">
-                        {media.map((_: any, idx: number) => {
+                        {media.map((_: { node: ShopifyMediaNode }, idx: number) => {
                             const isActive = activeImageIndex === idx;
                             return (
                                 <motion.div 
@@ -195,7 +203,7 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
                 {/* Miniaturas Inferiores (Film Strip) - Desktop Only */}
                 {!isQuickView && (
                     <div className="hidden lg:flex flex-wrap gap-3 px-2 z-20 mb-8 lg:mb-0 justify-center max-w-xl mx-auto">
-                        {media.map(({ node }: any, i: number) => {
+                        {media.map(({ node }: { node: ShopifyMediaNode }, i: number) => {
                             const isVideo = node.mediaContentType === 'VIDEO';
                             const is3D = node.mediaContentType === 'MODEL_3D';
                             const thumbnailUrl = node.previewImage?.url || node.image?.url;
@@ -314,7 +322,7 @@ export function ProductView({ product, isQuickView = false, onClose }: { product
 
                 {/* Options / Selectors */}
                 <div className="flex flex-col gap-4 mb-5">
-                    {options.map((option: any) => {
+                    {options.map((option: ShopifyProductOption) => {
                         if (option.name === 'Title' && option.values[0] === 'Default Title') return null;
                         const isColor = option.name.toLowerCase().includes('color');
 

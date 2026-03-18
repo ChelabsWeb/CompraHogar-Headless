@@ -8,6 +8,7 @@ import { WishlistProvider } from "@/components/shop/WishlistProvider";
 import { shopifyFetch } from "@/lib/shopify";
 import { getCollectionsQuery } from "@/lib/queries";
 import { cookies } from "next/headers";
+import type { ShopifyCollection, ShopifyCollectionEdge } from "@/lib/types";
 
 // Pure clean geometry: Single highly readable sans-serif
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
@@ -37,13 +38,13 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  let collections: any[] = [];
+  let collections: ShopifyCollection[] = [];
   try {
     const { body } = await shopifyFetch({
       query: getCollectionsQuery,
       variables: { first: 20 },
     });
-    collections = body?.data?.collections?.edges?.map((edge: any) => edge.node) || [];
+    collections = body?.data?.collections?.edges?.map((edge: ShopifyCollectionEdge) => edge.node) || [];
   } catch {
     // Shopify unreachable — render with empty collections
   }
