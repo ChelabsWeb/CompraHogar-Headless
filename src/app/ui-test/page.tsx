@@ -562,6 +562,7 @@ function SearchAndFiltersDemo() {
              <ProductGrid products={[
                 {
                   node: {
+                    id: "gid://shopify/Product/mock-1",
                     handle: "taladro-mock",
                     title: "Taladro Atornillador Inalámbrico 20v",
                     priceRange: { minVariantPrice: { amount: "3500", currencyCode: "UYU" } },
@@ -570,6 +571,7 @@ function SearchAndFiltersDemo() {
                 },
                 {
                   node: {
+                    id: "gid://shopify/Product/mock-2",
                     handle: "pintura-mock",
                     title: "Pintura Interior Lavable 4L Blanca Premium",
                     priceRange: { minVariantPrice: { amount: "1200", currencyCode: "UYU" } },
@@ -578,6 +580,7 @@ function SearchAndFiltersDemo() {
                 },
                 {
                   node: {
+                    id: "gid://shopify/Product/mock-3",
                     handle: "sillon-mock",
                     title: "Sillón de 3 Cuerpos Tela Antimanchas",
                     priceRange: { minVariantPrice: { amount: "18500", currencyCode: "UYU" } },

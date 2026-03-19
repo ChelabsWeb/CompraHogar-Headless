@@ -49,9 +49,10 @@ interface PredictiveSearchProps {
   placeholder?: string;
   className?: string;
   hideBorder?: boolean;
+  inputRef?: React.RefObject<HTMLInputElement | null>;
 }
 
-export function PredictiveSearch({ placeholder = "Buscar productos, marcas y más...", className = "", hideBorder = false }: PredictiveSearchProps) {
+export function PredictiveSearch({ placeholder = "Buscar productos, marcas y más...", className = "", hideBorder = false, inputRef }: PredictiveSearchProps) {
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   
@@ -130,6 +131,7 @@ export function PredictiveSearch({ placeholder = "Buscar productos, marcas y má
     <div className={`relative ${className}`} ref={containerRef}>
       <div className="relative w-full">
         <Input
+          ref={inputRef}
           type="text"
           placeholder={placeholder}
           value={query}

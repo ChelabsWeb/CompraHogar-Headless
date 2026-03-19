@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import { useScroll, useMotionValueEvent } from "framer-motion";
+import { useScroll, useMotionValueEvent, AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ShoppingBag, Search, Menu, ChevronDown, User, ChevronRight, Home, Tag, Clock, Store, List } from "lucide-react";
+import { ShoppingBag, Search, Menu, ChevronDown, User, ChevronRight, Home, Tag, Clock, Store, List, X } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetClose } from "@/components/ui/sheet";
 import { CartDrawer } from "@/components/cart/CartSheet";
 import { useCart } from "@/components/cart/CartProvider";
@@ -29,7 +29,15 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
     const { scrollY } = useScroll();
     const pathname = usePathname();
     const [isScrolled, setIsScrolled] = useState(false);
+    const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+    const mobileSearchRef = useRef<HTMLInputElement>(null);
     const { totalQuantity, isCartOpen, setIsCartOpen } = useCart();
+
+    useEffect(() => {
+        if (mobileSearchOpen && mobileSearchRef.current) {
+            mobileSearchRef.current.focus();
+        }
+    }, [mobileSearchOpen]);
 
     useMotionValueEvent(scrollY, "change", (latest: number) => {
         setIsScrolled(latest > 50);
@@ -42,105 +50,133 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
 
             <header className="w-full shadow-sm border-b border-black/5">
                 {/* TOP ROW: Green on mobile, white on desktop */}
-                <div className={`${headerBg} lg:bg-white lg:border-b lg:border-slate-200`}>
+                <div className="bg-white lg:border-b lg:border-slate-200">
 
                     {/* === MOBILE TOP ROW === */}
                     <div className="lg:hidden container mx-auto max-w-7xl px-4">
-                        <div className="flex items-center justify-between w-full gap-3 sm:gap-4 py-2 pb-3">
-                            {/* Hamburger */}
-                            <div className="flex items-center shrink-0">
-                                <Sheet>
-                                    <SheetTrigger asChild>
-                                        <button className="p-2 -ml-2 text-white active:bg-white/10 rounded-full transition-colors">
-                                            <Menu className="w-6 h-6" strokeWidth={1.5} />
+                        <div className="flex items-center justify-between w-full h-[56px] relative">
+                            <AnimatePresence mode="wait">
+                                {mobileSearchOpen ? (
+                                    /* ── Search mode: full-width search bar ── */
+                                    <motion.div
+                                        key="search-bar"
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.95 }}
+                                        transition={{ duration: 0.15 }}
+                                        className="flex items-center gap-2 w-full"
+                                    >
+                                        <div className="flex-1 bg-slate-100 rounded-full overflow-hidden h-[40px] flex items-center">
+                                            <PredictiveSearch hideBorder inputRef={mobileSearchRef} />
+                                        </div>
+                                        <button
+                                            onClick={() => setMobileSearchOpen(false)}
+                                            className="p-2 -mr-2 text-slate-600 active:bg-slate-100 rounded-full transition-colors shrink-0"
+                                        >
+                                            <X className="w-5 h-5" strokeWidth={2} />
                                         </button>
-                                    </SheetTrigger>
-                                    <SheetContent side="left" className="w-[85vw] max-w-[320px] p-0 flex flex-col bg-slate-50 border-r-0">
-                                        <SheetTitle className="sr-only">Menú de navegación</SheetTitle>
+                                    </motion.div>
+                                ) : (
+                                    /* ── Default mode: Menu | Logo | Search ── */
+                                    <motion.div
+                                        key="header-default"
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.95 }}
+                                        transition={{ duration: 0.15 }}
+                                        className="flex items-center justify-between w-full"
+                                    >
+                                        {/* Left: Hamburger menu */}
+                                        <div className="flex items-center shrink-0">
+                                            <Sheet>
+                                                <SheetTrigger asChild>
+                                                    <button className="p-2 -ml-2 text-slate-700 active:bg-slate-100 rounded-full transition-colors">
+                                                        <Menu className="w-6 h-6" strokeWidth={1.5} />
+                                                    </button>
+                                                </SheetTrigger>
+                                                <SheetContent side="left" className="w-[85vw] max-w-[320px] p-0 flex flex-col bg-white border-r-0">
+                                                    <SheetTitle className="sr-only">Menú de navegación</SheetTitle>
 
-                                        {/* Drawer Header with Logo & Profile */}
-                                        <div className="bg-[#21645d] text-white p-5 pt-10 flex flex-col gap-4">
-                                            <div className="flex items-center gap-3 bg-white/10 p-2 rounded-xl border border-white/20 w-fit">
-                                                <div className="relative w-8 h-8 bg-white rounded-full p-1 shadow-sm flex items-center justify-center">
-                                                    <Image src="/logo.png" alt="Heladless" fill className="object-contain scale-[1.1]" sizes="32px" />
-                                                </div>
-                                                <span className="font-black tracking-tight leading-none flex flex-col">
-                                                    <span className="text-[11px] uppercase tracking-wide opacity-80">Heladless</span>
-                                                    <span className="text-[14px]">compra hogar</span>
-                                                </span>
-                                            </div>
-                                            <div className="flex items-center gap-3 mt-2">
-                                                <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center shrink-0">
-                                                    <User className="w-6 h-6" />
-                                                </div>
-                                                <div className="flex flex-col">
-                                                    <span className="font-semibold text-lg leading-tight">Bienvenido</span>
-                                                    <span className="text-sm text-white/90">Ingresa a tu cuenta</span>
-                                                </div>
-                                            </div>
+                                                    {/* Drawer Header with Logo */}
+                                                    <div className="px-5 pt-10 pb-4 flex items-center justify-center">
+                                                        <div className="relative w-[260px] h-[65px]">
+                                                            <Image src="/logo.png" alt="CompraHogar" fill className="object-contain" sizes="260px" />
+                                                        </div>
+                                                    </div>
+                                                    <div className="h-px bg-[#21645d]/20 mx-5" />
+
+                                                    {/* Drawer Links */}
+                                                    <div className="flex-1 overflow-y-auto py-2">
+                                                        <div className="flex flex-col px-2">
+                                                            <SheetClose asChild>
+                                                                <Link href="/" className="flex items-center gap-4 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg font-medium text-[15px] transition-colors">
+                                                                    <Home className="w-5 h-5 text-slate-400" /> Inicio
+                                                                </Link>
+                                                            </SheetClose>
+                                                            <SheetClose asChild>
+                                                                <Link href="/collections/ofertas" className="flex items-center gap-4 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg font-medium text-[15px] transition-colors">
+                                                                    <Tag className="w-5 h-5 text-slate-400" /> Ofertas
+                                                                </Link>
+                                                            </SheetClose>
+                                                            <SheetClose asChild>
+                                                                <Link href="/cuenta" className="flex items-center gap-4 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg font-medium text-[15px] transition-colors">
+                                                                    <Clock className="w-5 h-5 text-slate-400" /> Mis Compras
+                                                                </Link>
+                                                            </SheetClose>
+                                                            <SheetClose asChild>
+                                                                <Link href="/collections" className="flex items-center gap-4 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg font-medium text-[15px] transition-colors">
+                                                                    <Store className="w-5 h-5 text-slate-400" /> Catálogo
+                                                                </Link>
+                                                            </SheetClose>
+
+                                                            <div className="h-px bg-slate-200 my-2 mx-4" />
+
+                                                            <div className="px-4 py-3 pb-1">
+                                                                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Categorías</span>
+                                                            </div>
+                                                            {CATEGORIES.map(cat => (
+                                                                <SheetClose key={cat.handle} asChild>
+                                                                    <Link href={`/collections/${cat.handle}`} className="flex items-center gap-4 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg font-medium text-[15px] transition-colors">
+                                                                        <List className="w-5 h-5 text-slate-400" /> {cat.name}
+                                                                    </Link>
+                                                                </SheetClose>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </SheetContent>
+                                            </Sheet>
                                         </div>
 
-                                        {/* Drawer Links */}
-                                        <div className="flex-1 overflow-y-auto py-2">
-                                            <div className="flex flex-col px-2">
-                                                <SheetClose asChild>
-                                                    <Link href="/" className="flex items-center gap-4 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg font-medium text-[15px] transition-colors">
-                                                        <Home className="w-5 h-5 text-slate-400" /> Inicio
-                                                    </Link>
-                                                </SheetClose>
-                                                <SheetClose asChild>
-                                                    <Link href="/collections/ofertas" className="flex items-center gap-4 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg font-medium text-[15px] transition-colors">
-                                                        <Tag className="w-5 h-5 text-slate-400" /> Ofertas
-                                                    </Link>
-                                                </SheetClose>
-                                                <SheetClose asChild>
-                                                    <Link href="/cuenta" className="flex items-center gap-4 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg font-medium text-[15px] transition-colors">
-                                                        <Clock className="w-5 h-5 text-slate-400" /> Mis Compras
-                                                    </Link>
-                                                </SheetClose>
-                                                <SheetClose asChild>
-                                                    <Link href="/collections" className="flex items-center gap-4 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg font-medium text-[15px] transition-colors">
-                                                        <Store className="w-5 h-5 text-slate-400" /> Catálogo
-                                                    </Link>
-                                                </SheetClose>
-
-                                                <div className="h-px bg-slate-200 my-2 mx-4" />
-
-                                                <div className="px-4 py-3 pb-1">
-                                                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Categorías</span>
-                                                </div>
-                                                {CATEGORIES.map(cat => (
-                                                    <SheetClose key={cat.handle} asChild>
-                                                        <Link href={`/collections/${cat.handle}`} className="flex items-center gap-4 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg font-medium text-[15px] transition-colors">
-                                                            <List className="w-5 h-5 text-slate-400" /> {cat.name}
-                                                        </Link>
-                                                    </SheetClose>
-                                                ))}
+                                        {/* Center: Logo */}
+                                        <Link href="/" className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center">
+                                            <div className="relative w-[42px] h-[42px]">
+                                                <Image src="/logo2.png" alt="CompraHogar" fill className="object-contain" priority sizes="42px" />
                                             </div>
+                                        </Link>
+
+                                        {/* Right: Search + Cart */}
+                                        <div className="flex items-center shrink-0 gap-1">
+                                            <button
+                                                onClick={() => setMobileSearchOpen(true)}
+                                                className="p-2 text-slate-700 active:bg-slate-100 rounded-full transition-colors"
+                                            >
+                                                <Search className="w-5 h-5" strokeWidth={1.5} />
+                                            </button>
+                                            <button
+                                                className="relative p-2 -mr-2 text-slate-700 active:bg-slate-100 rounded-full transition-colors"
+                                                onClick={() => setIsCartOpen(true)}
+                                            >
+                                                <ShoppingBag className="w-5 h-5" strokeWidth={1.5} />
+                                                {totalQuantity > 0 && (
+                                                    <span className="absolute top-1 right-0 w-4 h-4 bg-[#ef7c1c] text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm">
+                                                        {totalQuantity}
+                                                    </span>
+                                                )}
+                                            </button>
                                         </div>
-                                    </SheetContent>
-                                </Sheet>
-                            </div>
-
-                            {/* Mobile Search */}
-                            <div className="flex-1 w-full max-w-[600px]">
-                                <div className="bg-white rounded-full sm:rounded-md shadow-sm border-none overflow-hidden h-[38px] md:h-10 flex items-center">
-                                    <PredictiveSearch hideBorder />
-                                </div>
-                            </div>
-
-                            {/* Mobile Cart */}
-                            <button
-                                className="relative p-2 -mr-2 text-white active:bg-white/10 rounded-full transition-colors shrink-0"
-                                onClick={() => setIsCartOpen(true)}
-                            >
-                                <ShoppingBag className="w-6 h-6" strokeWidth={1.5} />
-                                {totalQuantity > 0 && (
-                                    <span className="absolute top-1 right-0 w-4 h-4 bg-[#ef7c1c] text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm">
-                                        {totalQuantity}
-                                    </span>
+                                    </motion.div>
                                 )}
-                            </button>
+                            </AnimatePresence>
                         </div>
                     </div>
 
@@ -168,8 +204,8 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
                     </div>
                 </div>
 
-                {/* BOTTOM ROW (Full width teal background) */}
-                <div className="w-full bg-[#21645d] border-b border-[#1c554f]">
+                {/* BOTTOM ROW (Full width teal background) — desktop only */}
+                <div className="hidden lg:block w-full bg-[#21645d] border-b border-[#1c554f]">
                     <div className="w-full px-4 xl:px-6">
                         <div className="h-[44px] flex items-center justify-between text-white/95 text-[13px] lg:text-sm">
 
