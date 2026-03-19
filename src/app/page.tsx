@@ -102,7 +102,7 @@ export default function Home() {
             ].map((item) => (
               <div key={item.label} className="flex flex-col items-center gap-1.5 py-3 md:py-4 lg:py-5 xl:py-6 rounded-xl lg:rounded-2xl bg-slate-50 border border-slate-100 transition-colors hover:bg-slate-100">
                 <item.icon className={`w-5 h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 ${item.color}`} strokeWidth={1.5} />
-                <span className="text-[10px] md:text-[13px] lg:text-sm font-medium text-slate-600 text-center leading-tight">{item.label}</span>
+                <span className="text-[11px] md:text-[13px] lg:text-sm font-medium text-slate-600 text-center leading-tight">{item.label}</span>
                 <span className="hidden lg:block text-xs text-slate-400 text-center leading-tight">{item.description}</span>
               </div>
             ))}
@@ -144,12 +144,12 @@ export default function Home() {
             <Link href="/" className="block bg-white rounded-xl shadow-[0_2px_12px_rgba(0,0,0,0.06)] overflow-hidden hover:shadow-[0_4px_20px_rgba(0,0,0,0.1)] border border-slate-100 transition-all cursor-pointer group">
                 <div className="flex flex-row items-stretch min-h-[140px] lg:min-h-[220px]">
                     {/* Image — left side, compact */}
-                    <div className="w-[120px] sm:w-[180px] md:w-1/2 relative bg-slate-50 flex items-center justify-center shrink-0">
+                    <div className="w-[140px] sm:w-[180px] md:w-1/2 relative bg-slate-50 flex items-center justify-center shrink-0">
                         <Badge className="absolute top-2 left-2 z-10 bg-secondary text-white border-none font-bold px-2 py-0.5 text-[10px] uppercase tracking-wider">
                             -50%
                         </Badge>
                         <div className="relative w-full h-full transition-transform duration-500 group-hover:scale-105">
-                            <Image src="https://images.unsplash.com/photo-1572981779307-38b8cabb2407?auto=format&fit=crop&q=80" alt="Oferta del día" fill className="object-contain p-3" sizes="(max-width: 768px) 120px, 50vw" />
+                            <Image src="https://images.unsplash.com/photo-1572981779307-38b8cabb2407?auto=format&fit=crop&q=80" alt="Oferta del día" fill className="object-contain p-3" sizes="(max-width: 768px) 140px, 50vw" />
                         </div>
                     </div>
                     {/* Info — right side */}
@@ -173,6 +173,7 @@ export default function Home() {
             <div className="flex justify-between items-center mb-4 md:mb-6 px-4 md:px-0">
               <h2 className="text-xl md:text-2xl lg:text-3xl font-semibold tracking-tight text-slate-800">Promociones Especiales</h2>
             </div>
+            <div className="relative">
             <div className="flex overflow-x-auto snap-x snap-mandatory scroll-p-4 no-scrollbar pb-4 -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 lg:gap-8">
               {/* Promo Banner 1 */}
               <div className="relative rounded-xl overflow-hidden h-[180px] md:h-[280px] lg:h-[340px] w-[75vw] max-w-[320px] md:max-w-none md:w-auto shrink-0 md:shrink snap-center group cursor-pointer shadow-sm border border-slate-100 transition-all hover:shadow-md">
@@ -212,6 +213,9 @@ export default function Home() {
                   </Button>
                 </div>
               </div>
+            </div>
+            {/* Fade indicator for horizontal scroll on mobile */}
+            <div className="absolute right-0 top-0 bottom-4 w-6 bg-gradient-to-l from-white to-transparent pointer-events-none md:hidden" />
             </div>
           </div>
         </Container>

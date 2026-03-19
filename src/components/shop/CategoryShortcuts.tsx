@@ -56,17 +56,21 @@ export interface CategoryShortcutsListProps {
 
 export function CategoryShortcutsList({ categories, className }: CategoryShortcutsListProps) {
   return (
-    <div className={cn("w-full overflow-x-auto snap-x snap-mandatory scroll-p-4 no-scrollbar py-4 lg:overflow-x-visible lg:snap-none", className)}>
-      <div className="flex w-max items-start gap-4 sm:gap-6 md:gap-12 px-4 mx-auto md:mx-0 lg:w-full lg:justify-between lg:px-0">
-        {categories.map((category) => (
-          <CategoryShortcutItem
-            key={category.label}
-            label={category.label}
-            href={category.href}
-            icon={category.icon}
-          />
-        ))}
+    <div className={cn("relative w-full", className)}>
+      <div className="w-full overflow-x-auto snap-x snap-mandatory scroll-p-4 no-scrollbar py-4 lg:overflow-x-visible lg:snap-none">
+        <div className="flex w-max items-start gap-4 sm:gap-6 md:gap-12 px-4 mx-auto md:mx-0 lg:w-full lg:justify-between lg:px-0">
+          {categories.map((category) => (
+            <CategoryShortcutItem
+              key={category.label}
+              label={category.label}
+              href={category.href}
+              icon={category.icon}
+            />
+          ))}
+        </div>
       </div>
+      {/* Fade indicator — hints there's more content to scroll */}
+      <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none lg:hidden" />
     </div>
   )
 }
