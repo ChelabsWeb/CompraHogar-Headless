@@ -124,7 +124,7 @@ export function ProductGrid({
                             </div>
 
                             {/* Information Container - Optimized for Mobile Grid */}
-                            <div className="p-2.5 sm:p-4 lg:p-5 flex flex-col flex-1">
+                            <div className="p-2.5 sm:p-4 lg:p-5 flex flex-col flex-1 min-h-[100px] sm:min-h-[120px]">
 
                                 {/* Price */}
                                 {priceAmount > 0 ? (
@@ -153,7 +153,7 @@ export function ProductGrid({
                                 )}
 
                                 {/* Title */}
-                                <h3 className="text-[14px] text-slate-800 font-normal leading-snug line-clamp-2 mt-auto group-hover:text-primary transition-colors">
+                                <h3 className="text-[13px] sm:text-[14px] text-slate-800 font-normal leading-snug line-clamp-2 mt-auto group-hover:text-primary transition-colors">
                                     {node.title}
                                 </h3>
                             </div>
