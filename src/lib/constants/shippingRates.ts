@@ -1,4 +1,4 @@
-export const FREE_SHIPPING_THRESHOLD = 300000;
+export const FREE_SHIPPING_THRESHOLD = 4000;
 
 export const SHIPPING_ZONES: Record<string, { rate: number; estimate: string }> = {
   "Montevideo": { rate: 250, estimate: "1-2 d\u00edas h\u00e1biles" },

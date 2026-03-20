@@ -215,8 +215,8 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
 
                 {/* BOTTOM ROW (Full width teal background) — desktop only */}
                 <div className="hidden lg:block w-full bg-[#21645d] border-b border-[#1c554f]">
-                    <div className="w-full px-4 xl:px-6">
-                        <div className="h-[44px] flex items-center justify-between text-white/95 text-[13px] lg:text-sm">
+                    <div className="w-full px-4 xl:px-8">
+                        <div className="h-[52px] flex items-center justify-between text-white/95 text-[13px] lg:text-sm">
 
                             {/* Category & Quick Links */}
                             <nav className="hidden lg:flex items-center gap-1 lg:gap-2 flex-1">
@@ -229,7 +229,7 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
                             </nav>
 
                             {/* User & Cart Actions (Desktop) */}
-                            <div className="hidden lg:flex items-center gap-2">
+                            <div className="hidden lg:flex items-center gap-1">
 
                                 <Link href="/cuenta" className="hidden sm:flex items-center gap-1.5 font-medium hover:bg-black/10 px-3 h-11 rounded-sm transition-colors">
                                     <User className="w-4 h-4 opacity-80" />
