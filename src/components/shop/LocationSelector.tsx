@@ -68,6 +68,7 @@ export function LocationSelector() {
     <>
       <button
         onClick={() => setIsOpen(true)}
+        data-location-selector
         className="flex items-center gap-2 h-9 px-3 py-2 border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground rounded-md text-foreground transition-colors group lg:h-12 lg:px-4 lg:rounded-xl lg:border-slate-200 lg:bg-white lg:text-slate-700 lg:hover:bg-slate-50"
       >
         <MapPin className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />

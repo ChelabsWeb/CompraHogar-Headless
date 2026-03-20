@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Loader2, Mail, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input";
 import { loginCustomer } from "./actions";
 
 export default function LoginForm() {
-  const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectParam = searchParams.get("redirect") || "";
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,16 +22,17 @@ export default function LoginForm() {
     const formData = new FormData(event.currentTarget);
     const result = await loginCustomer(formData);
 
-    if (result.error) {
+    // If redirect() was called server-side, this code won't execute.
+    // We only reach here if the action returned an error response.
+    if (result?.error) {
       setError(result.error);
       setIsPending(false);
-    } else {
-      router.push("/cuenta");
     }
   }
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-5">
+      <input type="hidden" name="redirect" value={redirectParam} />
       {error && (
         <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-xl">
           {error}

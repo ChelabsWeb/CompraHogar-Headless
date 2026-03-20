@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { shopifyFetch } from "@/lib/shopify";
+import { getShippingRate } from "@/lib/constants/shippingRates";
 import { 
     createCartMutation, 
     addToCartMutation, 
@@ -52,8 +53,23 @@ export function CartProvider({ children, customerAccessToken }: { children: Reac
     const [totalQuantity, setTotalQuantity] = useState(0);
     const [subtotal, setSubtotal] = useState(0);
     const [estimatedShipping, setEstimatedShipping] = useState<number | null>(null);
+    const [department, setDepartment] = useState<string | null>(null);
     const [isCartLoading, setIsCartLoading] = useState(true);
     const [isCartOpen, setIsCartOpen] = useState(false);
+
+    // Fetch user department from location cookie
+    useEffect(() => {
+        fetch("/api/location")
+            .then((r) => r.json())
+            .then((d) => setDepartment(d.department))
+            .catch(() => {});
+    }, []);
+
+    // Recalculate estimated shipping when department or subtotal changes
+    useEffect(() => {
+        const shippingInfo = getShippingRate(department, subtotal);
+        setEstimatedShipping(shippingInfo?.rate ?? null);
+    }, [department, subtotal]);
 
     // Load Cart ID from local storage on mount
     useEffect(() => {

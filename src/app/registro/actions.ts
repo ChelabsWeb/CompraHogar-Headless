@@ -2,9 +2,17 @@
 
 import { shopifyFetch } from "@/lib/shopify";
 import { customerCreateMutation, customerAccessTokenCreateMutation } from "@/lib/customer";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function registerCustomer(formData: FormData) {
+  const headerStore = await headers();
+  const ip = headerStore.get("x-forwarded-for")?.split(",")[0]?.trim() || headerStore.get("x-real-ip") || "unknown";
+  const { success: allowed } = rateLimit(`register:${ip}`, 5, 60000);
+  if (!allowed) {
+    return { error: "Demasiados intentos. Esperá un minuto antes de volver a intentar." };
+  }
+
   const firstName = formData.get("firstName") as string;
   const lastName = formData.get("lastName") as string;
   const email = formData.get("email") as string;

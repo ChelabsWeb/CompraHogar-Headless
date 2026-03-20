@@ -2,6 +2,8 @@
 
 import { shopifyFetch } from "@/lib/shopify";
 import { customerRecoverMutation } from "@/lib/customer";
+import { headers } from "next/headers";
+import { rateLimit } from "@/lib/rate-limit";
 
 export type RecoverActionState = {
   success: boolean;
@@ -13,6 +15,13 @@ export async function customerRecoverAction(
   prevState: RecoverActionState,
   formData: FormData
 ): Promise<RecoverActionState> {
+  const headerStore = await headers();
+  const ip = headerStore.get("x-forwarded-for")?.split(",")[0]?.trim() || headerStore.get("x-real-ip") || "unknown";
+  const { success: allowed } = rateLimit(`recover:${ip}`, 3, 60000);
+  if (!allowed) {
+    return { success: false, error: "Demasiados intentos. Esperá un minuto antes de volver a intentar." };
+  }
+
   const email = formData.get("email");
 
   if (!email || typeof email !== "string") {

@@ -32,7 +32,7 @@ export function ProductCarousel({ title, products }: ProductCarouselProps) {
                     const installments = (priceAmount / 12).toLocaleString("es-UY", { maximumFractionDigits: 0 });
 
                     return (
-                        <Card key={node.id} className="min-w-[260px] max-w-[260px] lg:min-w-[280px] lg:max-w-[280px] snap-center shrink-0 group bg-white rounded-xl border border-slate-200 hover:shadow-lg transition-shadow duration-300 overflow-hidden flex flex-col cursor-pointer">
+                        <Card key={node.id} className="min-w-[260px] max-w-[260px] lg:min-w-[280px] lg:max-w-[280px] snap-center shrink-0 group bg-white rounded-xl border border-slate-200 hover:shadow-lg transition-shadow duration-300 overflow-hidden flex flex-col cursor-pointer p-0">
                             <Link href={`/products/${node.handle}`} className="flex-1 flex flex-col outline-none">
                                 <div className="relative w-full aspect-[4/3] bg-white border-b border-slate-100 p-4 flex items-center justify-center">
                                     {node.featuredImage ? (
@@ -53,9 +53,17 @@ export function ProductCarousel({ title, products }: ProductCarouselProps) {
                                 </div>
 
                                 <div className="p-4 flex flex-col flex-1">
-                                    <h3 className="text-[14px] text-slate-600 font-normal leading-tight line-clamp-2 mb-3 group-hover:text-orange-500 transition-colors">
+                                    <h3 className="text-[14px] text-slate-600 font-normal leading-tight line-clamp-2 mb-2 group-hover:text-orange-500 transition-colors">
                                         {node.title}
                                     </h3>
+
+                                    {/* Judge.me Star Badge */}
+                                    <div
+                                        className="jdgm-widget jdgm-preview-badge"
+                                        data-id={node.id.split("/").pop()}
+                                        data-handle={node.handle}
+                                        style={{ minHeight: '18px' }}
+                                    />
                                     
                                     <div className="mt-auto">
                                         {priceAmount > 0 ? (

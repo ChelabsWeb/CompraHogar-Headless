@@ -1,155 +1,138 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Truck, MapPin, Search, AlertCircle, CheckCircle2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Truck, MapPin, Clock } from "lucide-react";
+import { getShippingRate, FREE_SHIPPING_THRESHOLD } from "@/lib/constants/shippingRates";
 
-type ShippingStatus = "idle" | "loading" | "success" | "error";
-
-interface ShippingOption {
-  id: string;
-  name: string;
-  estimatedTime: string;
-  price: number;
+interface ShippingCalculatorProps {
+  cartTotal?: number;
 }
 
-export function ShippingCalculator() {
-  const [cp, setCp] = useState("");
-  const [status, setStatus] = useState<ShippingStatus>("idle");
-  const [options, setOptions] = useState<ShippingOption[]>([]);
-  const [errorMessage, setErrorMessage] = useState("");
+export function ShippingCalculator({ cartTotal = 0 }: ShippingCalculatorProps) {
+  const [department, setDepartment] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Initialize from cookies
   useEffect(() => {
-    const savedCp = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("user_cp="))
-      ?.split("=")[1];
-
-    if (savedCp) {
-      setCp(savedCp);
-      calculateShipping(savedCp);
-    }
+    fetch("/api/location")
+      .then((r) => r.json())
+      .then((d) => setDepartment(d.department))
+      .catch(() => {})
+      .finally(() => setIsLoading(false));
   }, []);
 
-  const calculateShipping = (postcode: string) => {
-    if (!postcode || postcode.length < 4) {
-      setStatus("error");
-      setErrorMessage("Por favor, ingresa un código postal válido.");
-      return;
+  const shippingInfo = getShippingRate(department, cartTotal);
+
+  const handleChangeLocation = () => {
+    // Trigger the LocationSelector modal by clicking the header button
+    const locationBtn = document.querySelector<HTMLButtonElement>(
+      '[data-location-selector]'
+    );
+    if (locationBtn) {
+      locationBtn.click();
     }
-
-    setStatus("loading");
-
-    // Simulate API call to logistics service
-    setTimeout(() => {
-      const isMontevideo = postcode.startsWith("11") || postcode.startsWith("12");
-      const baseOptions: ShippingOption[] = [
-        {
-          id: "home_delivery",
-          name: "Envío a Domicilio",
-          estimatedTime: isMontevideo ? "Llega mañana" : "Llega en 48-72 hrs",
-          price: isMontevideo ? 200 : 350,
-        },
-        {
-          id: "store_pickup",
-          name: "Retiro en Sucursal",
-          estimatedTime: "Disponible gratis hoy",
-          price: 0,
-        },
-      ];
-
-      setOptions(baseOptions);
-      setStatus("success");
-
-      // Save valid CP in cookies for 30 days
-      document.cookie = `user_cp=${postcode}; path=/; max-age=${60 * 60 * 24 * 30}`;
-    }, 1000);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    calculateShipping(cp);
-  };
+  // Listen for location changes (router refresh after LocationSelector saves)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        fetch("/api/location")
+          .then((r) => r.json())
+          .then((d) => setDepartment(d.department))
+          .catch(() => {});
+      }
+    };
+
+    // Also refetch on focus to catch location changes
+    const handleFocus = () => {
+      fetch("/api/location")
+        .then((r) => r.json())
+        .then((d) => setDepartment(d.department))
+        .catch(() => {});
+    };
+
+    window.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("focus", handleFocus);
+    return () => {
+      window.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="w-full rounded-xl border border-border bg-card p-4 shadow-sm">
+        <div className="flex items-center gap-2">
+          <div className="size-5 rounded bg-muted animate-pulse" />
+          <div className="h-4 w-32 rounded bg-muted animate-pulse" />
+        </div>
+      </div>
+    );
+  }
+
+  // No department set
+  if (!department || !shippingInfo) {
+    return (
+      <div className="w-full rounded-xl border border-border bg-card p-4 shadow-sm space-y-2">
+        <div className="flex items-center gap-2 text-foreground font-medium">
+          <Truck className="size-5 text-[#21645d]" />
+          <h3 className="text-sm">Opciones de Env&iacute;o</h3>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Seleccion&aacute; tu ubicaci&oacute;n para calcular el env&iacute;o
+        </p>
+        <button
+          onClick={handleChangeLocation}
+          className="text-sm font-medium text-[#21645d] hover:text-[#1a4f4a] transition-colors"
+        >
+          Seleccionar ubicaci&oacute;n
+        </button>
+      </div>
+    );
+  }
+
+  const isFreeShipping = shippingInfo.rate === 0;
+  const amountForFree = FREE_SHIPPING_THRESHOLD - cartTotal;
 
   return (
-    <div className="w-full rounded-xl border border-border bg-card p-4 space-y-4 shadow-sm">
-      <div className="flex items-center gap-2 text-foreground font-medium">
-        <Truck className="size-5 text-primary" />
-        <h3 className="text-sm">Opciones de Envío</h3>
+    <div className="w-full rounded-xl border border-border bg-card p-4 shadow-sm space-y-3">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 text-foreground font-medium">
+          <Truck className="size-5 text-[#21645d]" />
+          <h3 className="text-sm">Opciones de Env&iacute;o</h3>
+        </div>
+        <button
+          onClick={handleChangeLocation}
+          className="text-xs font-medium text-[#21645d] hover:text-[#1a4f4a] transition-colors"
+        >
+          Cambiar ubicaci&oacute;n
+        </button>
       </div>
 
-      <form onSubmit={handleSubmit} className="flex gap-2">
-        <div className="relative flex-1">
-          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-          <Input
-            type="text"
-            placeholder="Ingresa tu CP (ej: 11000)"
-            value={cp}
-            onChange={(e) => setCp(e.target.value)}
-            className="pl-9 bg-background h-10 w-full"
-            maxLength={8}
-          />
+      <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-background">
+        <div className="flex flex-col gap-1">
+          <span className="text-sm font-medium text-foreground flex items-center gap-1.5">
+            <MapPin className="size-3.5 text-muted-foreground" />
+            {department}
+          </span>
+          <span className="text-xs text-muted-foreground ml-5 flex items-center gap-1">
+            <Clock className="size-3" />
+            {shippingInfo.estimate}
+          </span>
         </div>
-        <Button 
-          type="submit" 
-          disabled={status === "loading" || !cp} 
-          isLoading={status === "loading"}
-          className="h-10 px-4"
-        >
-          {status !== "loading" && <Search className="size-4 mr-2" />}
-          Calcular
-        </Button>
-      </form>
+        <div className="text-sm font-semibold">
+          {isFreeShipping ? (
+            <span className="text-green-600 dark:text-green-500">Env&iacute;o gratis</span>
+          ) : (
+            <span className="text-foreground">${shippingInfo.rate}</span>
+          )}
+        </div>
+      </div>
 
-      {/* Loading State */}
-      {status === "loading" && (
-        <div className="space-y-3 mt-4">
-          <Skeleton className="h-12 w-full rounded-lg" />
-          <Skeleton className="h-12 w-full rounded-lg" />
-        </div>
-      )}
-
-      {/* Error State */}
-      {status === "error" && (
-        <div className="flex items-center gap-2 p-3 text-sm text-destructive bg-destructive/10 rounded-lg mt-4 border border-destructive/20">
-          <AlertCircle className="size-4 shrink-0" />
-          <p>{errorMessage}</p>
-        </div>
-      )}
-
-      {/* Success State */}
-      {status === "success" && options.length > 0 && (
-        <div className="space-y-3 mt-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
-          {options.map((option) => (
-            <div
-              key={option.id}
-              className="flex items-center justify-between p-3 rounded-lg border border-border bg-background hover:border-primary/50 transition-colors"
-            >
-              <div className="flex flex-col gap-1">
-                <span className="text-sm font-medium flex items-center gap-1.5 text-foreground">
-                  <CheckCircle2 className="size-3.5 text-green-500" />
-                  {option.name}
-                </span>
-                <span className="text-xs text-muted-foreground ml-5">
-                  {option.estimatedTime}
-                </span>
-              </div>
-              <div className="text-sm font-semibold text-foreground">
-                {option.price === 0 ? (
-                  <span className="text-green-600 dark:text-green-500">Gratis</span>
-                ) : (
-                  `$${option.price}`
-                )}
-              </div>
-            </div>
-          ))}
-          <div className="text-xs text-center text-muted-foreground pt-2">
-            Tarifas calculadas para el CP: <strong className="text-foreground">{cp}</strong>
-          </div>
-        </div>
+      {!isFreeShipping && amountForFree > 0 && (
+        <p className="text-xs text-muted-foreground text-center">
+          Agreg&aacute; <span className="font-semibold text-[#21645d]">${amountForFree.toLocaleString("es-UY")}</span> m&aacute;s para env&iacute;o gratis
+        </p>
       )}
     </div>
   );

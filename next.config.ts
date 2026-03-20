@@ -39,7 +39,7 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob: https://cdn.shopify.com https://images.unsplash.com",
-              "connect-src 'self' https://*.shopify.com https://www.google-analytics.com https://*.googleapis.com",
+              "connect-src 'self' https://*.shopify.com https://*.myshopify.com https://www.google-analytics.com https://*.googleapis.com",
               "frame-src 'self' https://www.googletagmanager.com",
               "media-src 'self' https://cdn.shopify.com",
             ].join("; "),

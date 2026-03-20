@@ -5,10 +5,12 @@ import Image from "next/image";
 import { useScroll, useMotionValueEvent, AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ShoppingBag, Search, Menu, ChevronDown, User, ChevronRight, Home, Tag, Clock, Store, List, X } from "lucide-react";
+import { ShoppingBag, Search, Menu, ChevronDown, User, ChevronRight, Home, Tag, Clock, Store, List, X, Heart } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetClose } from "@/components/ui/sheet";
 import { CartDrawer } from "@/components/cart/CartSheet";
 import { useCart } from "@/components/cart/CartProvider";
+import { useWishlist } from "@/components/shop/WishlistProvider";
+import { FavoritesSheet } from "@/components/shop/FavoritesSheet";
 
 import { PredictiveSearch } from "@/components/shared/PredictiveSearch";
 import { LocationSelector } from "@/components/shop/LocationSelector";
@@ -32,6 +34,8 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
     const mobileSearchRef = useRef<HTMLInputElement>(null);
     const { totalQuantity, isCartOpen, setIsCartOpen } = useCart();
+    const { count: wishlistCount } = useWishlist();
+    const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
 
     useEffect(() => {
         if (mobileSearchOpen && mobileSearchRef.current) {
@@ -71,7 +75,7 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
                                         </div>
                                         <button
                                             onClick={() => setMobileSearchOpen(false)}
-                                            className="p-2 -mr-2 text-slate-600 active:bg-slate-100 rounded-full transition-colors shrink-0"
+                                            className="p-2.5 -mr-2 text-slate-600 active:bg-slate-100 rounded-full transition-colors shrink-0"
                                         >
                                             <X className="w-5 h-5" strokeWidth={2} />
                                         </button>
@@ -119,8 +123,13 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
                                                                 </Link>
                                                             </SheetClose>
                                                             <SheetClose asChild>
-                                                                <Link href="/cuenta" className="flex items-center gap-4 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg font-medium text-[15px] transition-colors">
+                                                                <Link href="/cuenta/mis-compras" className="flex items-center gap-4 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg font-medium text-[15px] transition-colors">
                                                                     <Clock className="w-5 h-5 text-slate-400" /> Mis Compras
+                                                                </Link>
+                                                            </SheetClose>
+                                                            <SheetClose asChild>
+                                                                <Link href="/cuenta/favoritos" className="flex items-center gap-4 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg font-medium text-[15px] transition-colors">
+                                                                    <Heart className="w-5 h-5 text-slate-400" /> Favoritos
                                                                 </Link>
                                                             </SheetClose>
                                                             <SheetClose asChild>
@@ -158,12 +167,12 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
                                         <div className="flex items-center shrink-0 gap-1">
                                             <button
                                                 onClick={() => setMobileSearchOpen(true)}
-                                                className="p-2 text-slate-700 active:bg-slate-100 rounded-full transition-colors"
+                                                className="p-2.5 text-slate-700 active:bg-slate-100 rounded-full transition-colors"
                                             >
                                                 <Search className="w-5 h-5" strokeWidth={1.5} />
                                             </button>
                                             <button
-                                                className="relative p-2 -mr-2 text-slate-700 active:bg-slate-100 rounded-full transition-colors"
+                                                className="relative p-2.5 -mr-2 text-slate-700 active:bg-slate-100 rounded-full transition-colors"
                                                 onClick={() => setIsCartOpen(true)}
                                             >
                                                 <ShoppingBag className="w-5 h-5" strokeWidth={1.5} />
@@ -226,9 +235,22 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
                                     <User className="w-4 h-4 opacity-80" />
                                     <span className="hidden lg:block">Mi cuenta</span>
                                 </Link>
-                                <Link href="/cuenta" className="hidden lg:flex items-center font-medium hover:bg-black/10 px-3 h-11 rounded-sm transition-colors">
+                                <Link href="/cuenta/mis-compras" className="hidden lg:flex items-center font-medium hover:bg-black/10 px-3 h-11 rounded-sm transition-colors">
                                     Mis compras
                                 </Link>
+
+                                <button
+                                    className="relative flex items-center justify-center w-11 h-11 hover:bg-black/10 rounded-full transition-colors"
+                                    onClick={() => setIsFavoritesOpen(true)}
+                                    aria-label="Favoritos"
+                                >
+                                    <Heart className="w-5 h-5" />
+                                    {wishlistCount > 0 && (
+                                        <span className="absolute top-0 right-0 w-4 h-4 bg-white text-[#21645d] text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm border border-[#21645d]">
+                                            {wishlistCount}
+                                        </span>
+                                    )}
+                                </button>
 
                                 <button
                                     className="relative flex items-center justify-center w-11 h-11 mx-1 hover:bg-black/10 rounded-full transition-colors"
@@ -258,6 +280,7 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
 
             {/* Render CartDrawer once directly in the main layout tree instead of inside conditional hidden divs */}
             <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+            <FavoritesSheet isOpen={isFavoritesOpen} onClose={() => setIsFavoritesOpen(false)} />
         </div>
     );
 }

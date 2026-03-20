@@ -13,9 +13,10 @@ export interface ModalProps {
   description?: string
   children: React.ReactNode
   className?: string
+  hideCloseButton?: boolean
 }
 
-export function Modal({ isOpen, onClose, title, description, children, className }: ModalProps) {
+export function Modal({ isOpen, onClose, title, description, children, className, hideCloseButton }: ModalProps) {
   const [mounted, setMounted] = React.useState(false)
 
   React.useEffect(() => {
@@ -53,18 +54,20 @@ export function Modal({ isOpen, onClose, title, description, children, className
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
             className={cn(
-              "relative z-50 w-full max-w-lg overflow-hidden rounded-xl bg-background p-6 text-left align-middle shadow-xl",
+              "relative z-50 w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-xl bg-background p-6 text-left align-middle shadow-xl",
               className
             )}
-            onClick={(e) => e.stopPropagation()} // Prevent closing on clicking inside
+            onClick={(e) => e.stopPropagation()}
           >
-            <button
-              onClick={onClose}
-              className="absolute right-4 top-4 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-            >
-              <X className="h-4 w-4" />
-              <span className="sr-only">Cerrar</span>
-            </button>
+            {!hideCloseButton && (
+              <button
+                onClick={onClose}
+                className="absolute right-4 top-4 z-10 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+              >
+                <X className="h-4 w-4" />
+                <span className="sr-only">Cerrar</span>
+              </button>
+            )}
 
             {title && (
               <h3 className="text-xl font-semibold leading-6 text-foreground mb-2">
@@ -77,7 +80,7 @@ export function Modal({ isOpen, onClose, title, description, children, className
               </p>
             )}
 
-            <div className="mt-4">{children}</div>
+            <div>{children}</div>
           </motion.div>
         </div>
       )}

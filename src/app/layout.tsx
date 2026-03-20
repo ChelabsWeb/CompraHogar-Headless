@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -70,6 +71,15 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             }}
           />
         )}
+        <Script
+          src="https://cdn.judge.me/widget_preloader.js"
+          strategy="lazyOnload"
+          data-shop-domain="comprahogaruy.myshopify.com"
+        />
+        <Script
+          src="https://cdn.judge.me/assets/installed.js"
+          strategy="lazyOnload"
+        />
       </head>
       <body vaul-drawer-wrapper="" className={`${inter.variable} font-sans min-h-screen bg-background text-foreground antialiased selection:bg-brand-teal/20 selection:text-brand-teal flex flex-col`}>
         {gtmId && (
@@ -83,7 +93,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           </noscript>
         )}
         <CartProvider customerAccessToken={customerAccessToken}>
-          <WishlistProvider>
+          <WishlistProvider isLoggedIn={isLoggedIn}>
             <Header collections={collections} isLoggedIn={isLoggedIn} />
             <main className="flex-1 w-full pt-[96px] lg:pt-[116px]">
               {children}

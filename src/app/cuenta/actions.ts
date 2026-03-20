@@ -8,12 +8,14 @@ import {
   customerAddressCreateMutation,
   customerAddressUpdateMutation,
   customerAddressDeleteMutation,
+  customerDefaultAddressUpdateMutation,
   type CustomerUpdateInput,
   type MailingAddressInput,
   type CustomerUpdateResponse,
   type CustomerAddressCreateResponse,
   type CustomerAddressUpdateResponse,
-  type CustomerAddressDeleteResponse
+  type CustomerAddressDeleteResponse,
+  type CustomerDefaultAddressUpdateResponse
 } from "@/lib/customer";
 
 export async function logout() {
@@ -97,4 +99,23 @@ export async function deleteCustomerAddress(addressId: string) {
   }) as { body: CustomerAddressDeleteResponse };
 
   return body.data.customerAddressDelete;
+}
+
+export async function setDefaultAddress(addressId: string) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("customerAccessToken")?.value;
+
+  if (!token) {
+    throw new Error("No estás autenticado");
+  }
+
+  const { body } = await shopifyFetch({
+    query: customerDefaultAddressUpdateMutation,
+    variables: {
+      customerAccessToken: token,
+      addressId
+    }
+  }) as { body: CustomerDefaultAddressUpdateResponse };
+
+  return body.data.customerDefaultAddressUpdate;
 }
