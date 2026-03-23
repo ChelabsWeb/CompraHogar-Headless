@@ -24,10 +24,10 @@ export function Drawer({ isOpen, onClose, title, children, className, side = "ri
       shouldScaleBackground={false}
     >
       <VaulDrawer.Portal>
-        <VaulDrawer.Overlay className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50" />
+        <VaulDrawer.Overlay className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[110]" />
         <VaulDrawer.Content
           className={cn(
-            "fixed bottom-0 top-0 z-50 flex h-full w-[400px] max-w-[85vw] flex-col bg-background shadow-2xl outline-none",
+            "fixed bottom-0 top-0 z-[110] flex h-full w-[400px] max-w-[85vw] flex-col bg-background shadow-2xl outline-none",
             side === "right" ? "right-0 rounded-l-2xl" : "left-0 rounded-r-2xl",
             className
           )}

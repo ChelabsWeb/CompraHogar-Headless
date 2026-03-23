@@ -83,7 +83,7 @@ export function ProductGrid({
                         : [];
 
                 return (
-                    <Card key={node.handle} className="group bg-white rounded-lg border-none shadow-[0_1px_2px_0_rgba(0,0,0,0.15)] transition-shadow duration-300 overflow-hidden flex flex-col cursor-pointer">
+                    <Card key={node.handle} className="group bg-white rounded-lg border-none shadow-[0_1px_2px_0_rgba(0,0,0,0.15)] transition-shadow duration-300 overflow-hidden flex flex-col cursor-pointer p-0">
                         <Link href={`/products/${node.handle}`} className="flex-1 flex flex-col outline-none">
 
                             {/* Image Carousel Container - CSS Snap */}
@@ -156,6 +156,14 @@ export function ProductGrid({
                                 <h3 className="text-[13px] sm:text-[14px] text-slate-800 font-normal leading-snug line-clamp-2 mt-auto group-hover:text-primary transition-colors">
                                     {node.title}
                                 </h3>
+
+                                {/* Judge.me Star Badge */}
+                                <div
+                                    className="jdgm-widget jdgm-preview-badge"
+                                    data-id={node.id.split("/").pop()}
+                                    data-handle={node.handle}
+                                    style={{ minHeight: '18px' }}
+                                />
                             </div>
                         </Link>
                     </Card>

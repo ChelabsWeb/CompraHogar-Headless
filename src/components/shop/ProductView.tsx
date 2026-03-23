@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { ChevronLeft, ChevronRight, ShieldCheck, Ruler, ArrowRight, X, Zap, Play, Box, Loader2, ShoppingCart } from "lucide-react";
 import { FavoriteButton } from "@/components/shop/FavoriteButton";
 import { motion } from "framer-motion";
@@ -18,6 +19,7 @@ import { MaterialsCalculator } from "./MaterialsCalculator";
 import { ShippingCalculator } from "@/components/shop/ShippingCalculator";
 import { InfoDrawer } from "@/components/shared/InfoDrawer";
 import type { ShopifyProduct, ShopifyMediaNode, ShopifyMediaSource, ShopifySelectedOption, ShopifyProductOption, ShopifyVariant } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 interface ProductViewProps {
     product: ShopifyProduct;
@@ -27,11 +29,24 @@ interface ProductViewProps {
 
 export function ProductView({ product, isQuickView = false, onClose }: ProductViewProps) {
     const { addToCart, isCartLoading, checkoutUrl } = useCart();
-    const media = product.media?.edges || [];
+    // Use media.edges if available, otherwise fallback to images.edges or featuredImage (e.g. in QuickView from grid data)
+    const mediaRaw = product.media?.edges || [];
+    const media: { node: ShopifyMediaNode }[] = mediaRaw.length > 0
+        ? mediaRaw
+        : ((product as any).images?.edges?.length > 0)
+            ? (product as any).images.edges.map(({ node }: { node: any }) => ({
+                node: { mediaContentType: 'IMAGE' as const, image: node, previewImage: node, alt: node.altText }
+            }))
+            : (product as any).featuredImage
+                ? [{ node: { mediaContentType: 'IMAGE' as const, image: (product as any).featuredImage, previewImage: (product as any).featuredImage, alt: (product as any).featuredImage?.altText } }]
+                : [];
     const price = product.priceRange?.minVariantPrice;
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [quantity, setQuantity] = useState(1);
     const [isVariantChanging, setIsVariantChanging] = useState(false);
+    const [isZoomed, setIsZoomed] = useState(false);
+    const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
+    const galleryRef = useRef<HTMLDivElement>(null);
 
     const options = product.options || [];
     const variants = product.variants?.edges || [];
@@ -56,18 +71,40 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
 
     const activeMedia = media[activeImageIndex]?.node;
 
+    // Gallery navigation
+    const goToImage = useCallback((index: number) => {
+        if (index < 0 || index >= media.length) return;
+        setActiveImageIndex(index);
+        if (galleryRef.current) {
+            const child = galleryRef.current.children[index] as HTMLElement;
+            child?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+    }, [media.length]);
+
+    const goNext = useCallback(() => goToImage(activeImageIndex + 1), [activeImageIndex, goToImage]);
+    const goPrev = useCallback(() => goToImage(activeImageIndex - 1), [activeImageIndex, goToImage]);
+
+    // Zoom on hover (desktop only, not QuickView)
+    const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+        if (isQuickView) return;
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        setZoomPos({ x, y });
+    }, [isQuickView]);
+
     const renderMedia = (node: ShopifyMediaNode | undefined) => {
         if (!node) return <div className="text-slate-400 text-sm font-bold uppercase tracking-widest">Sin Media</div>;
 
         if (node.mediaContentType === 'VIDEO') {
             const videoSource = node.sources?.find((s: ShopifyMediaSource) => s.format === 'mp4') || node.sources?.[0];
             return (
-                <video 
-                    src={videoSource?.url} 
+                <video
+                    src={videoSource?.url}
                     title={node.alt || product.title}
-                    playsInline 
-                    muted 
-                    loop 
+                    playsInline
+                    muted
+                    loop
                     controls
                     className="w-full h-full object-contain bg-white"
                 />
@@ -103,7 +140,11 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                 alt={node.alt || node.previewImage?.altText || product.title}
                 fill
                 priority
-                className="object-contain transition-transform duration-700 ease-out z-0 pointer-events-none"
+                className={cn(
+                    "object-contain z-0 pointer-events-none transition-transform duration-300 ease-out",
+                    !isQuickView && isZoomed ? "scale-[2]" : "scale-100"
+                )}
+                style={!isQuickView && isZoomed ? { transformOrigin: `${zoomPos.x}% ${zoomPos.y}%` } : undefined}
                 sizes="(max-width: 1024px) 100vw, 55vw"
             />
         );
@@ -140,31 +181,42 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
         } catch {}
     };
 
+    const productExternalId = product.id.split("/").pop();
+
     const isM2Product = product.tags?.some((tag: string) => tag.toLowerCase() === "m2" || tag.toLowerCase() === "rendimiento");
     const yieldPerUnit = parseFloat(product.rendimiento?.value ?? '') || 1.44;
     const unitName = product.tags?.some((tag: string) => tag.toLowerCase() === "rendimiento") ? "Litros" : "m²";
     const packagingName = product.tags?.some((tag: string) => tag.toLowerCase() === "rendimiento") ? "Lata" : "Caja";
 
     return (
-        <div className="w-full flex flex-col lg:flex-row bg-transparent text-slate-900 pb-32 lg:pb-8">
+        <div className={cn("w-full flex flex-col lg:flex-row bg-transparent text-slate-900", isQuickView ? "pb-4" : "pb-32 lg:pb-8")}>
 
-            {/* LADO IZQUIERDO: Galería de Fotos Inmersiva */}
-            <div className="w-full lg:w-[55%] relative flex flex-col bg-transparent pb-6 lg:pb-0">
+            {/* LADO IZQUIERDO: Galeria de Fotos Inmersiva */}
+            <div className={cn("w-full lg:w-[55%] relative flex flex-col bg-transparent", isQuickView ? "p-5 pt-8 flex items-center justify-center" : "pb-6 lg:pb-0")}>
                 {/* Badge Superior */}
-                <div className="absolute top-6 lg:top-10 left-6 lg:left-10 z-20 flex flex-col gap-2 pointer-events-none">
+                <div className={cn("absolute top-6 lg:top-10 left-6 lg:left-10 z-20 flex flex-col gap-2 pointer-events-none", isQuickView && "hidden")}>
                     <Badge variant="default" className="shadow-lg backdrop-blur-md px-4 py-1.5 uppercase tracking-widest text-[10px]">
                         <ShieldCheck className="w-3.5 h-3.5 mr-2" /> Grado Premium
                     </Badge>
                 </div>
 
-                {/* Imagen Principal Pura */}
-                <div 
-                    className="relative flex items-center justify-center w-full aspect-square lg:aspect-[4/3] mx-auto mb-2 lg:mb-8 group bg-white lg:rounded-3xl border-b border-slate-100 lg:border-none overflow-x-auto snap-x snap-mandatory no-scrollbar"
+                {/* Imagen Principal */}
+                <div
+                    ref={galleryRef}
+                    className={cn(
+                        "relative flex items-center justify-center w-full mx-auto group overflow-x-auto snap-x snap-mandatory no-scrollbar",
+                        isQuickView
+                            ? "aspect-square rounded-2xl bg-slate-50/80 overflow-hidden"
+                            : "aspect-square lg:aspect-[4/3] mb-2 lg:mb-8 bg-slate-50/80 rounded-2xl lg:rounded-3xl border border-slate-100 overflow-hidden cursor-zoom-in"
+                    )}
                     onScroll={(e) => {
                         const { scrollLeft, clientWidth } = e.currentTarget;
                         const index = Math.round(scrollLeft / clientWidth);
                         if (index !== activeImageIndex) setActiveImageIndex(index);
                     }}
+                    onMouseEnter={() => !isQuickView && setIsZoomed(true)}
+                    onMouseLeave={() => { setIsZoomed(false); }}
+                    onMouseMove={handleMouseMove}
                 >
                     {media.length > 0 ? (
                         media.map((item: { node: ShopifyMediaNode }, idx: number) => (
@@ -177,23 +229,54 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                              <span className="text-slate-400 text-sm font-bold uppercase tracking-widest">Sin Media</span>
                         </div>
                     )}
+
+                    {/* Desktop Navigation Arrows */}
+                    {media.length > 1 && (
+                        <>
+                            <button
+                                onClick={(e) => { e.stopPropagation(); goPrev(); }}
+                                className={cn(
+                                    "hidden lg:flex absolute left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm shadow-md border border-slate-200 items-center justify-center text-slate-600 hover:bg-white hover:text-slate-900 transition-all",
+                                    activeImageIndex === 0 && "opacity-0 pointer-events-none"
+                                )}
+                            >
+                                <ChevronLeft className="w-5 h-5" />
+                            </button>
+                            <button
+                                onClick={(e) => { e.stopPropagation(); goNext(); }}
+                                className={cn(
+                                    "hidden lg:flex absolute right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm shadow-md border border-slate-200 items-center justify-center text-slate-600 hover:bg-white hover:text-slate-900 transition-all",
+                                    activeImageIndex === media.length - 1 && "opacity-0 pointer-events-none"
+                                )}
+                            >
+                                <ChevronRight className="w-5 h-5" />
+                            </button>
+                        </>
+                    )}
+
+                    {/* Image Counter */}
+                    {media.length > 1 && (
+                        <div className="absolute bottom-3 right-3 z-20 bg-black/50 backdrop-blur-sm text-white text-xs font-medium px-2.5 py-1 rounded-full">
+                            {activeImageIndex + 1}/{media.length}
+                        </div>
+                    )}
                 </div>
-                
+
                 {/* Mobile Indicator Dots */}
                 {media.length > 1 && (
                     <div className="flex lg:hidden justify-center gap-1.5 mt-2 mb-4 w-full bg-transparent items-center">
                         {media.map((_: { node: ShopifyMediaNode }, idx: number) => {
                             const isActive = activeImageIndex === idx;
                             return (
-                                <motion.div 
-                                    key={idx} 
+                                <motion.div
+                                    key={idx}
                                     initial={false}
                                     animate={{
                                         width: isActive ? 16 : 6,
                                         backgroundColor: isActive ? "#f97316" : "#cbd5e1"
                                     }}
                                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                                    className="h-1.5 rounded-full" 
+                                    className="h-1.5 rounded-full"
                                 />
                             );
                         })}
@@ -207,11 +290,11 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                             const isVideo = node.mediaContentType === 'VIDEO';
                             const is3D = node.mediaContentType === 'MODEL_3D';
                             const thumbnailUrl = node.previewImage?.url || node.image?.url;
-                            
+
                             return (
                                 <button
                                     key={i}
-                                    onClick={() => setActiveImageIndex(i)}
+                                    onClick={() => goToImage(i)}
                                     className={`relative w-20 h-20 rounded-xl overflow-hidden shrink-0 transition-all duration-300 ${activeImageIndex === i ? "ring-2 ring-primary ring-offset-2 scale-105 shadow-md" : "border border-slate-200 opacity-60 hover:opacity-100 hover:scale-105"} bg-white flex items-center justify-center`}
                                 >
                                     {thumbnailUrl && (
@@ -241,7 +324,10 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
             </div>
 
             {/* LADO DERECHO: Especificaciones & Compra (Buy Box ML Style) */}
-            <div className="w-full lg:w-[45%] flex flex-col bg-transparent p-5 lg:px-12 lg:py-6">
+            <div className={cn(
+                "w-full lg:w-[45%] flex flex-col bg-transparent p-5 lg:px-12 lg:py-6",
+                !isQuickView && "lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto"
+            )}>
 
                 {/* Meta info & Title */}
                 <div className="mb-2 text-[12px] text-slate-500 font-medium tracking-wide flex items-center justify-between">
@@ -273,8 +359,8 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                         en 12x ${(Number(displayPrice?.amount || 0) / 12).toLocaleString("es-UY", { maximumFractionDigits: 0 })} sin interés
                     </span>
                     <div className="mt-2 flex items-center justify-start">
-                        <InfoDrawer 
-                            title="Medios de Pago" 
+                        <InfoDrawer
+                            title="Medios de Pago"
                             triggerText="Ver los medios de pago"
                             className="text-[14px] text-primary hover:text-primary/80 font-medium p-0 h-auto justify-start no-underline hover:underline"
                         >
@@ -382,10 +468,10 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
 
                     {!isOutOfStock && isM2Product && (
                         <div className="py-2 border-b border-slate-100 mb-2">
-                           <MaterialsCalculator 
-                             yieldPerUnit={yieldPerUnit} 
-                             unitName={unitName} 
-                             packagingName={packagingName} 
+                           <MaterialsCalculator
+                             yieldPerUnit={yieldPerUnit}
+                             unitName={unitName}
+                             packagingName={packagingName}
                              onAddToCart={async (calcQuantity) => {
                                  if (currentVariant?.id) {
                                      pushDatalayerEvent({
@@ -405,7 +491,7 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                                      await addToCart(currentVariant.id, calcQuantity);
                                      setIsCartOpen(true);
                                  }
-                             }} 
+                             }}
                            />
                         </div>
                     )}
@@ -413,8 +499,8 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                     {!isOutOfStock ? (
                         <div className="hidden lg:flex flex-col gap-2 relative">
                             {/* Desktop ML Style Buttons */}
-                            <Button 
-                                size={isQuickView ? "default" : "lg"} 
+                            <Button
+                                size={isQuickView ? "default" : "lg"}
                                 className={`w-full text-base font-semibold h-[48px] rounded-md transition-all duration-300 bg-orange-500 hover:bg-orange-600 text-white ${isVariantChanging ? 'opacity-80' : ''}`}
                                 onClick={async () => {
                                     if (currentVariant?.id) {
@@ -428,9 +514,9 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                             >
                                 {isVariantChanging ? <Loader2 className="w-5 h-5 animate-spin" /> : "Comprar ahora"}
                             </Button>
-                            <Button 
-                                variant="secondary" 
-                                size={isQuickView ? "default" : "lg"} 
+                            <Button
+                                variant="secondary"
+                                size={isQuickView ? "default" : "lg"}
                                 className={`w-full text-base font-semibold h-[48px] rounded-md transition-all duration-300 bg-orange-50 hover:bg-orange-100 text-orange-600 border-0 ${isVariantChanging ? 'opacity-80' : ''}`}
                                 onClick={async () => {
                                     if (currentVariant?.id) {
@@ -476,16 +562,30 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                             )}
                         </div>
                     )}
+
+                    {/* QuickView: Link to full product page */}
+                    {isQuickView && (
+                        <Link
+                            href={`/products/${product.handle}`}
+                            className="flex items-center justify-center gap-2 text-sm text-primary font-medium hover:underline mt-2 py-2"
+                            onClick={onClose}
+                        >
+                            Ver producto completo <ArrowRight className="w-4 h-4" />
+                        </Link>
+                    )}
+
                     <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
                 </div>
 
                 {/* Shipping Calculator */}
+                {!isQuickView && (
                 <div className="mb-6 mt-4 relative z-10 w-full">
                     <ShippingCalculator />
                 </div>
+                )}
 
                 {/* Returns Highlight ML Style */}
-                <div className="mb-5 flex flex-col gap-2 mt-4 pt-4 border-t border-slate-200">
+                <div className={cn("mb-5 flex flex-col gap-2 mt-4 pt-4 border-t border-slate-200", isQuickView && "hidden")}>
                     <div className="flex items-start gap-3">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-slate-400 mt-0.5 shrink-0">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
@@ -515,15 +615,25 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                     </div>
                 </div>
 
+                {/* Judge.me Reviews */}
+                <div className={cn("mt-12 pt-8 border-t border-slate-200", isQuickView && "hidden")}>
+                    <h2 className="text-xl font-bold text-slate-900 mb-6">Opiniones de clientes</h2>
+                    <div
+                        className="jdgm-widget jdgm-review-widget"
+                        data-id={productExternalId}
+                        data-handle={product.handle}
+                    />
+                </div>
+
                 {/* Tabs: Description, Specs, Warranty */}
-                <div className="mb-6">
+                <div className={cn("mb-6", isQuickView && "hidden")}>
                     <Tabs defaultValue="description">
                         <TabsList className="flex w-full overflow-x-auto no-scrollbar justify-start border-b border-slate-200 rounded-none bg-transparent p-0 h-auto">
                             <TabsTrigger value="description" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-2.5 px-4">Descripción</TabsTrigger>
                             <TabsTrigger value="specs" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-2.5 px-4">Ficha Técnica</TabsTrigger>
                             <TabsTrigger value="warranty" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-2.5 px-4">Garantía</TabsTrigger>
                         </TabsList>
-                        
+
                         <TabsContent value="description" className="p-4 bg-slate-50 rounded-b-xl border border-t-0 border-slate-100 text-sm text-slate-700 leading-relaxed mt-0">
                             {product.descriptionHtml ? (
                                 <div dangerouslySetInnerHTML={{ __html: product.descriptionHtml }} className="prose prose-sm max-w-none prose-slate" />
@@ -539,8 +649,8 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                                         <div className="flex justify-between pb-2 border-b border-slate-200/60 last:border-0 last:pb-0">
                                             <dt className="text-slate-500 font-medium">Material</dt>
                                             <dd className="text-slate-900 text-right">
-                                                {product.material.value.trim().startsWith('[') 
-                                                    ? (() => { try { return JSON.parse(product.material.value).join(', '); } catch { return product.material.value; } })() 
+                                                {product.material.value.trim().startsWith('[')
+                                                    ? (() => { try { return JSON.parse(product.material.value).join(', '); } catch { return product.material.value; } })()
                                                     : product.material.value}
                                             </dd>
                                         </div>
@@ -549,8 +659,8 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                                         <div className="flex justify-between pb-2 border-b border-slate-200/60 last:border-0 last:pb-0">
                                             <dt className="text-slate-500 font-medium">Cuidado</dt>
                                             <dd className="text-slate-900 text-right">
-                                                {product.instruccionesLavado.value.trim().startsWith('[') 
-                                                    ? (() => { try { return JSON.parse(product.instruccionesLavado.value).join(', '); } catch { return product.instruccionesLavado.value; } })() 
+                                                {product.instruccionesLavado.value.trim().startsWith('[')
+                                                    ? (() => { try { return JSON.parse(product.instruccionesLavado.value).join(', '); } catch { return product.instruccionesLavado.value; } })()
                                                     : product.instruccionesLavado.value}
                                             </dd>
                                         </div>
@@ -584,16 +694,16 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
 
             </div>
 
-            {/* Sticky Buy Box Móvil (App Native Style ML) */}
+            {/* Sticky Buy Box Movil (App Native Style ML) */}
             {!isQuickView && !isOutOfStock && (
-                <motion.div 
+                <motion.div
                     initial={{ y: 100 }}
                     animate={{ y: 0 }}
                     transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                     className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-slate-200/60 p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] z-[100] shadow-[0_-4px_16px_rgba(0,0,0,0.08)] flex flex-col gap-2"
                 >
-                    <Button 
-                        size="lg" 
+                    <Button
+                        size="lg"
                         className={`w-full h-[48px] text-base font-semibold rounded-md bg-orange-500 hover:bg-orange-600 text-white transition-all duration-300 ${isVariantChanging ? 'opacity-80' : ''}`}
                         onClick={async () => {
                             if (currentVariant?.id) {
@@ -607,8 +717,8 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                     >
                         {isVariantChanging ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Comprar ahora"}
                     </Button>
-                    <Button 
-                        size="lg" 
+                    <Button
+                        size="lg"
                         variant="secondary"
                         className={`w-full h-[48px] text-base font-semibold rounded-md bg-orange-50 hover:bg-orange-100 text-orange-600 border-0 transition-all duration-300 ${isVariantChanging ? 'opacity-80' : ''}`}
                         onClick={async () => {

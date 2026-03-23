@@ -35,6 +35,7 @@ export function ProductQuickView({ product, triggerText = "Vista Rápida", trigg
       <Modal
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
+        hideCloseButton
         className="max-w-5xl p-0 overflow-hidden bg-transparent shadow-2xl border-none"
       >
         {/* We reuse the actual ProductView inside a Modal! */}

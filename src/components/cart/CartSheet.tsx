@@ -20,7 +20,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
     const [isApplyingCode, setIsApplyingCode] = useState(false);
     const [discountStatus, setDiscountStatus] = useState<{ message: string; isError: boolean } | null>(null);
 
-    const freeShippingGoal = 300000;
+    const freeShippingGoal = 4000;
     const progress = Math.min((subtotal / freeShippingGoal) * 100, 100);
     const amountLeft = freeShippingGoal - subtotal;
 
@@ -69,9 +69,9 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                                 }
                             </span>
                         </div>
-                        <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
+                        <div className="w-full h-2 bg-white rounded-full overflow-hidden">
                             <div
-                                className="h-full bg-primary transition-all duration-500 ease-out"
+                                className="h-full bg-[#21645d] transition-all duration-500 ease-out"
                                 style={{ width: `${progress}%` }}
                             />
                         </div>

@@ -2,8 +2,17 @@
 
 import { shopifyFetch } from "@/lib/shopify";
 import { customerRecoverMutation } from "@/lib/customer";
+import { headers } from "next/headers";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function forgotPasswordAction(prevState: any, formData: FormData) {
+  const headerStore = await headers();
+  const ip = headerStore.get("x-forwarded-for")?.split(",")[0]?.trim() || headerStore.get("x-real-ip") || "unknown";
+  const { success: allowed } = rateLimit(`forgot:${ip}`, 3, 60000);
+  if (!allowed) {
+    return { error: "Demasiados intentos. Esperá un minuto antes de volver a intentar." };
+  }
+
   const email = formData.get("email") as string;
 
   if (!email || !email.includes("@")) {

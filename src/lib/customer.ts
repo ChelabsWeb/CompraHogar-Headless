@@ -47,7 +47,10 @@ export const getCustomerQuery = `
       email
       phone
       acceptsMarketing
-      orders(first: 10, sortKey: PROCESSED_AT, reverse: true) {
+      metafield(namespace: "custom", key: "wishlist") {
+        value
+      }
+      orders(first: 20, sortKey: PROCESSED_AT, reverse: true) {
         edges {
           node {
             id
@@ -60,6 +63,22 @@ export const getCustomerQuery = `
               amount
               currencyCode
             }
+            subtotalPrice {
+              amount
+              currencyCode
+            }
+            totalShippingPrice {
+              amount
+              currencyCode
+            }
+            shippingAddress {
+              address1
+              address2
+              city
+              province
+              country
+              zip
+            }
             lineItems(first: 50) {
               edges {
                 node {
@@ -68,6 +87,10 @@ export const getCustomerQuery = `
                   variant {
                     id
                     title
+                    price {
+                      amount
+                      currencyCode
+                    }
                     image {
                       url
                       altText
@@ -85,7 +108,25 @@ export const getCustomerQuery = `
           }
         }
       }
+      addresses(first: 10) {
+        edges {
+          node {
+            id
+            address1
+            address2
+            city
+            company
+            country
+            firstName
+            lastName
+            phone
+            province
+            zip
+          }
+        }
+      }
       defaultAddress {
+        id
         address1
         address2
         city
@@ -107,6 +148,10 @@ export interface OrderLineItem {
   variant: {
     id: string;
     title: string;
+    price?: {
+      amount: string;
+      currencyCode: string;
+    };
     image?: {
       url: string;
       altText?: string;
@@ -133,6 +178,22 @@ export interface Order {
   totalPrice: {
     amount: string;
     currencyCode: string;
+  };
+  subtotalPrice?: {
+    amount: string;
+    currencyCode: string;
+  };
+  totalShippingPrice?: {
+    amount: string;
+    currencyCode: string;
+  };
+  shippingAddress?: {
+    address1: string;
+    address2?: string;
+    city: string;
+    province: string;
+    country: string;
+    zip: string;
   };
   lineItems: {
     edges: {
@@ -360,6 +421,70 @@ export const customerResetMutation = `
         code
         field
         message
+      }
+    }
+  }
+`;
+
+// ==========================================
+// DEFAULT ADDRESS UPDATE MUTATION
+// ==========================================
+
+export interface CustomerDefaultAddressUpdateResponse {
+  data: {
+    customerDefaultAddressUpdate: {
+      customer: {
+        id: string;
+      } | null;
+      customerUserErrors: CustomerUserError[];
+    };
+  };
+}
+
+export const customerDefaultAddressUpdateMutation = `
+  mutation customerDefaultAddressUpdate($customerAccessToken: String!, $addressId: ID!) {
+    customerDefaultAddressUpdate(customerAccessToken: $customerAccessToken, addressId: $addressId) {
+      customer {
+        id
+      }
+      customerUserErrors {
+        code
+        field
+        message
+      }
+    }
+  }
+`;
+
+// ==========================================
+// PRODUCT QUERIES (for favorites/wishlist)
+// ==========================================
+
+export const getProductsByIdsQuery = `
+  query getProductsByIds($ids: [ID!]!) {
+    nodes(ids: $ids) {
+      ... on Product {
+        id
+        title
+        handle
+        availableForSale
+        priceRange {
+          minVariantPrice {
+            amount
+            currencyCode
+          }
+        }
+        featuredImage {
+          url
+          altText
+        }
+        variants(first: 1) {
+          edges {
+            node {
+              id
+            }
+          }
+        }
       }
     }
   }
