@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { shopifyFetch } from "@/lib/shopify";
+import { shopifyFetch, getDealOfTheDay } from "@/lib/shopify";
 import { getProductsQuery } from "@/lib/queries";
 import { ProductGrid } from "@/components/shop/ProductGrid";
 import { ProductGridSkeleton } from "@/components/shop/ProductCardSkeleton";
@@ -36,7 +36,13 @@ async function FeaturedProducts() {
   }
 }
 
-export default function Home() {
+export default async function Home() {
+  const deal = await getDealOfTheDay();
+  const dealPrice = deal ? parseFloat(deal.priceRange.minVariantPrice.amount) : 0;
+  const dealOriginalPrice = deal?.compareAtPriceRange?.maxVariantPrice
+    ? parseFloat(deal.compareAtPriceRange.maxVariantPrice.amount)
+    : null;
+  const dealDiscount = dealOriginalPrice ? Math.round((1 - dealPrice / dealOriginalPrice) * 100) : null;
 
   const categories = [
     { label: "Obra Gruesa", href: "/collections/obra-gruesa", icon: "Home" },
@@ -45,7 +51,7 @@ export default function Home() {
     { label: "Sanitaria", href: "/collections/sanitaria-y-griferia", icon: "Droplet" },
     { label: "Pinturas", href: "/collections/pinturas-y-acabados", icon: "Paintbrush" },
     { label: "Decoración", href: "/collections/hogar-y-decoracion", icon: "Home" }, // Reusing home
-    { label: "Servicios", href: "/collections/servicios-y-alquileres", icon: "ShieldCheck" },
+    { label: "Alquileres", href: "/collections/servicios-y-alquileres", icon: "Wrench" },
   ];
 
   return (
@@ -148,29 +154,34 @@ export default function Home() {
             <CategoryShortcutsList categories={categories} />
           </div>
             {/* SECTION: Oferta del Día */}
+          {deal && (
           <div className="mt-8">
             <div className="flex justify-between items-center mb-3">
               <h2 className="text-lg md:text-2xl font-bold tracking-tight text-slate-900">Oferta del día</h2>
               <Link href="/collections/ofertas" className="text-[13px] font-semibold text-primary hover:text-primary/80 transition-colors">Ver todas</Link>
             </div>
 
-            <Link href="/" className="block bg-white rounded-xl shadow-[0_2px_12px_rgba(0,0,0,0.06)] overflow-hidden hover:shadow-[0_4px_20px_rgba(0,0,0,0.1)] border border-slate-100 transition-all cursor-pointer group">
+            <Link href={`/product/${deal.handle}`} className="block bg-white rounded-xl shadow-[0_2px_12px_rgba(0,0,0,0.06)] overflow-hidden hover:shadow-[0_4px_20px_rgba(0,0,0,0.1)] border border-slate-100 transition-all cursor-pointer group">
                 <div className="flex flex-row items-stretch min-h-[140px] lg:min-h-[220px]">
                     {/* Image — left side, compact */}
                     <div className="w-[140px] sm:w-[180px] md:w-1/2 relative bg-slate-50 flex items-center justify-center shrink-0">
+                        {dealDiscount && (
                         <Badge className="absolute top-2 left-2 z-10 bg-secondary text-white border-none font-bold px-2 py-0.5 text-[10px] uppercase tracking-wider">
-                            -50%
+                            -{dealDiscount}%
                         </Badge>
+                        )}
                         <div className="relative w-full h-full transition-transform duration-500 group-hover:scale-105">
-                            <Image src="https://images.unsplash.com/photo-1572981779307-38b8cabb2407?auto=format&fit=crop&q=80" alt="Oferta del día" fill className="object-contain p-3" sizes="(max-width: 768px) 140px, 50vw" />
+                            <Image src={deal.featuredImage?.url || "/placeholder.png"} alt={deal.featuredImage?.altText || deal.title} fill className="object-contain p-3" sizes="(max-width: 768px) 140px, 50vw" />
                         </div>
                     </div>
                     {/* Info — right side */}
                     <div className="flex-1 p-4 md:p-6 lg:p-8 flex flex-col justify-center">
-                        <h3 className="text-[13px] md:text-[15px] lg:text-lg text-slate-700 font-medium leading-snug line-clamp-2 mb-2 group-hover:text-primary transition-colors">Taladro Percutor Inalámbrico 18V con Batería Extra</h3>
-                        <span className="text-[11px] text-slate-400 line-through font-medium">$ 4.590</span>
+                        <h3 className="text-[13px] md:text-[15px] lg:text-lg text-slate-700 font-medium leading-snug line-clamp-2 mb-2 group-hover:text-primary transition-colors">{deal.title}</h3>
+                        {dealOriginalPrice && (
+                        <span className="text-[11px] text-slate-400 line-through font-medium">$ {dealOriginalPrice.toLocaleString("es-UY")}</span>
+                        )}
                         <div className="flex items-center gap-2 mt-0.5">
-                            <span className="text-[22px] sm:text-[26px] lg:text-[32px] font-normal text-slate-900 leading-none tracking-tight">$ 2.290</span>
+                            <span className="text-[22px] sm:text-[26px] lg:text-[32px] font-normal text-slate-900 leading-none tracking-tight">$ {dealPrice.toLocaleString("es-UY")}</span>
                         </div>
                         <div className="flex items-center gap-2 mt-2">
                             <span className="inline-flex items-center text-[11px] text-[#00a650] font-bold">
@@ -181,6 +192,7 @@ export default function Home() {
                 </div>
             </Link>
           </div>
+          )}
 
           <div className="mt-8 px-2 md:px-0">
             <div className="flex justify-between items-center mb-4 md:mb-6 px-4 md:px-0">

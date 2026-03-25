@@ -57,3 +57,45 @@ export async function shopifyFetch<T = any>({
         throw error;
     }
 }
+
+export async function getDealOfTheDay() {
+  const query = `
+    query getDealOfTheDay {
+      collectionByHandle(handle: "oferta-del-dia") {
+        products(first: 1) {
+          edges {
+            node {
+              id
+              title
+              handle
+              featuredImage {
+                url
+                altText
+              }
+              compareAtPriceRange {
+                maxVariantPrice {
+                  amount
+                  currencyCode
+                }
+              }
+              priceRange {
+                minVariantPrice {
+                  amount
+                  currencyCode
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  try {
+    const response = await shopifyFetch({ query, tags: ['products'] });
+    const product = response.body?.data?.collectionByHandle?.products?.edges?.[0]?.node;
+    return product || null;
+  } catch {
+    return null;
+  }
+}
