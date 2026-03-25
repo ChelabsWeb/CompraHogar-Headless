@@ -51,7 +51,11 @@ export const COLLECTION_HIERARCHY: CollectionHierarchy = {
   ],
   "servicios-y-alquileres": [
     { name: "Alquiler de Maquinaria", handle: "alquiler-de-maquinaria" },
-    { name: "Fletes y Envíos", handle: "fletes-y-envios" }
+    { name: "Andamios y Estructuras", handle: "andamios-y-estructuras" },
+    { name: "Herramientas Especializadas", handle: "herramientas-especializadas-alquiler" },
+    { name: "Fletes y Transporte", handle: "fletes-y-transporte" },
+    { name: "Servicios de Mano de Obra", handle: "servicios-mano-de-obra" },
+    { name: "Contenedores y Limpieza", handle: "contenedores-y-limpieza" },
   ]
 };
 
