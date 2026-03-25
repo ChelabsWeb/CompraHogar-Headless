@@ -26,8 +26,16 @@ export default function EnviosYEntregas() {
             </div>
             <h2 className="text-2xl font-bold text-primary">Envíos en Montevideo</h2>
             <p className="text-muted-foreground leading-relaxed">
-              Realizamos entregas dentro de Montevideo mediante cadetería propia o privada. Las zonas de cobertura y los costos aproximados de envío se calcularán y detallarán al momento de completar el checkout (checkout en desarrollo).
+              Realizamos entregas dentro de Montevideo y zona metropolitana mediante cadetería propia o privada.
             </p>
+            <div className="bg-muted p-4 rounded-lg border border-border space-y-2">
+              <h3 className="font-semibold text-foreground">Tarifas de envío:</h3>
+              <ul className="list-disc pl-5 text-muted-foreground text-sm space-y-1">
+                <li><strong>Montevideo:</strong> $250</li>
+                <li><strong>Zona metropolitana (Ciudad de la Costa, Las Piedras, La Paz, Barros Blancos, Pando):</strong> $350</li>
+              </ul>
+              <p className="text-sm text-primary font-semibold pt-1">Envío gratis en compras superiores a $4.000</p>
+            </div>
             <ul className="list-disc pl-5 text-muted-foreground leading-relaxed space-y-1">
               <li><strong>Plazo estimado:</strong> 24 a 48 horas hábiles tras la confirmación del pago.</li>
               <li><strong>Horarios de entrega:</strong> Lunes a Viernes de 9:00 a 18:00 hs. (Se coordinarán tramos horarios aproximados).</li>
@@ -41,11 +49,19 @@ export default function EnviosYEntregas() {
             </div>
             <h2 className="text-2xl font-bold text-primary">Envíos al Interior</h2>
             <p className="text-muted-foreground leading-relaxed">
-              Despachamos tu compra <strong>sin costo adicional</strong> hasta la terminal de Tres Cruces en la agencia de tu preferencia (DAC, Mirtrans, DePunta, entre otras). 
+              Llegamos a los 19 departamentos del país. Despachamos tu compra hasta la terminal de Tres Cruces en la agencia de tu preferencia (DAC, Mirtrans, DePunta, entre otras).
             </p>
+            <div className="bg-muted p-4 rounded-lg border border-border space-y-2">
+              <h3 className="font-semibold text-foreground">Tarifas de envío al interior:</h3>
+              <ul className="list-disc pl-5 text-muted-foreground text-sm space-y-1">
+                <li><strong>Canelones, San José, Colonia, Maldonado, Florida:</strong> $400</li>
+                <li><strong>Resto del interior (Salto, Paysandú, Rivera, Tacuarembó, Cerro Largo, Rocha, Lavalleja, Durazno, Flores, Soriano, Río Negro, Treinta y Tres, Artigas):</strong> $550</li>
+              </ul>
+              <p className="text-sm text-primary font-semibold pt-1">Envío gratis en compras superiores a $4.000</p>
+            </div>
             <ul className="list-disc pl-5 text-muted-foreground leading-relaxed space-y-1">
-              <li>El costo del flete interdepartamental corre <strong>por cuenta del cliente</strong> y se abona al recibir o retirar el paquete en la agencia destino.</li>
-              <li><strong>Plazo de despacho:</strong> 24 a 48 horas hábiles tras la confirmación del pago. El tiempo de llegada final depende del cronograma de cadetería de la agencia seleccionada.</li>
+              <li>El despacho hasta la terminal en Montevideo no tiene costo adicional. El flete interdepartamental de la agencia se abona al recibir o retirar el paquete en destino.</li>
+              <li><strong>Plazo de despacho:</strong> 24 a 48 horas hábiles tras la confirmación del pago. El tiempo de llegada final depende del cronograma de la agencia seleccionada.</li>
               <li>Al ser despachado, recibirás el número de rastreo correspondiente.</li>
             </ul>
           </div>
