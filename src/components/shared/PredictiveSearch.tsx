@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Search, Loader2, X } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { predictiveSearchAction, PredictiveSearchResult } from "@/app/actions/search";
 
 // Hook para detectar clics fuera del componente
@@ -129,8 +128,9 @@ export function PredictiveSearch({ placeholder = "Buscar productos, marcas y má
 
   return (
     <div className={`relative ${className}`} ref={containerRef}>
-      <div className="relative w-full">
-        <Input
+      <div className={`relative w-full h-full flex items-center ${hideBorder ? '' : 'bg-white rounded-xl border border-slate-300'}`}>
+        <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+        <input
           ref={inputRef}
           type="text"
           placeholder={placeholder}
@@ -146,10 +146,8 @@ export function PredictiveSearch({ placeholder = "Buscar productos, marcas y má
               setIsOpen(true);
             }
           }}
-          className={`w-full h-full pl-10 pr-12 text-slate-900 focus-visible:ring-0 ${hideBorder ? 'border-0 bg-transparent shadow-none rounded-none' : 'h-10 rounded-full bg-white shadow-sm border-slate-200'}`}
+          className="w-full h-full bg-transparent pl-11 pr-12 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none"
         />
-        <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
-        
         <div className="absolute right-0 top-0 h-full flex items-center pr-3 gap-2">
           {isLoading ? (
             <Loader2 className="w-4 h-4 text-slate-400 animate-spin" />

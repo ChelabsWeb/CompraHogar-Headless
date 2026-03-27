@@ -5,7 +5,8 @@ import { ProductGrid } from "@/components/shop/ProductGrid";
 import { ProductGridSkeleton } from "@/components/shop/ProductCardSkeleton";
 import Image from "next/image";
 import Link from "next/link";
-import { ShieldCheck, Truck, CreditCard, AlertCircle, Tag, ArrowRight } from "lucide-react";
+import { ShieldCheck, Truck, CreditCard, AlertCircle, Tag } from "lucide-react";
+import { HeroCarousel } from "@/components/home/HeroCarousel";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Container } from "@/components/ui/container";
@@ -45,65 +46,21 @@ export default async function Home() {
   const dealDiscount = dealOriginalPrice ? Math.round((1 - dealPrice / dealOriginalPrice) * 100) : null;
 
   const categories = [
-    { label: "Obra Gruesa", href: "/collections/obra-gruesa", icon: "Home" },
-    { label: "Herramientas", href: "/collections/herramientas-y-maquinaria", icon: "Drill" },
-    { label: "Electricidad", href: "/collections/electricidad-e-iluminacion", icon: "Zap" },
-    { label: "Sanitaria", href: "/collections/sanitaria-y-griferia", icon: "Droplet" },
-    { label: "Pinturas", href: "/collections/pinturas-y-acabados", icon: "Paintbrush" },
-    { label: "Decoración", href: "/collections/hogar-y-decoracion", icon: "Home" }, // Reusing home
-    { label: "Alquileres", href: "/collections/servicios-y-alquileres", icon: "Wrench" },
+    { label: "Obra Gruesa", href: "/collections/obra-gruesa", icon: "🏗️" },
+    { label: "Herramientas", href: "/collections/herramientas-y-maquinaria", icon: "🛠️" },
+    { label: "Electricidad", href: "/collections/electricidad-e-iluminacion", icon: "⚡" },
+    { label: "Sanitaria", href: "/collections/sanitaria-y-griferia", icon: "🚿" },
+    { label: "Pinturas", href: "/collections/pinturas-y-acabados", icon: "🎨" },
+    { label: "Decoración", href: "/collections/hogar-y-decoracion", icon: "🛋️" },
+    { label: "Alquileres", href: "/collections/servicios-y-alquileres", icon: "🔧" },
   ];
 
   return (
     <div className="flex flex-col w-full min-h-screen bg-white text-slate-800 overflow-x-hidden">
       {/* SECTION: Hero & Payment Bar */}
       <section className="relative w-full pb-6">
-        {/* Hero Banner — background-image approach for maximum reliability */}
-        <Link href="/collections/ofertas" className="block w-full relative overflow-hidden group h-[65svh] min-h-[420px] lg:h-[75vh] lg:min-h-[540px]">
-          {/* Hero image — mobile version */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/hero-1.png"
-            alt="Temporada de Obra — Hasta 40% OFF en herramientas"
-            className="absolute inset-0 w-full h-full object-cover object-right lg:hidden"
-            fetchPriority="high"
-          />
-          {/* Hero image — desktop version (higher resolution) */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/hero-desktop.png"
-            alt="Temporada de Obra — Hasta 40% OFF en herramientas"
-            className="absolute inset-0 w-full h-full object-cover object-center hidden lg:block"
-            fetchPriority="high"
-          />
-
-          {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-tr from-black/90 via-black/50 to-black/10 sm:bg-gradient-to-r sm:from-black/85 sm:via-black/40 sm:to-transparent" />
-
-          {/* Content */}
-          <div className="absolute inset-0 z-10 flex flex-col justify-end p-5 pb-7 sm:justify-center sm:p-8 md:p-16 lg:p-20 xl:p-24">
-            {/* Trust badge */}
-            <span className="inline-flex items-center gap-1.5 w-fit mb-3 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 text-white text-[11px] sm:text-xs font-semibold">
-              <Truck className="w-3.5 h-3.5" strokeWidth={2} />
-              Envío gratis en compras +$300k
-            </span>
-
-            <h1 className="text-[30px] sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-white leading-[1.05] tracking-tight mb-2 sm:mb-3 max-w-[300px] sm:max-w-md lg:max-w-lg xl:max-w-xl drop-shadow-[0_2px_8px_rgba(0,0,0,0.4)]">
-              Hasta <span className="text-secondary drop-shadow-[0_2px_16px_rgba(243,132,62,0.5)]">40% OFF</span> en Refacciones
-            </h1>
-
-            <p className="text-white/90 text-[13px] sm:text-base md:text-lg lg:text-xl mb-5 sm:mb-6 font-medium leading-snug max-w-[260px] sm:max-w-sm lg:max-w-md drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)]">
-              Equipamiento profesional de alto rendimiento.
-            </p>
-
-            {/* CTA — orange pill with shimmer */}
-            <span className="relative inline-flex items-center gap-2 w-fit bg-secondary text-white font-bold text-[13px] sm:text-base lg:text-lg px-6 lg:px-8 py-3 sm:py-3.5 lg:py-4 rounded-full shadow-[0_4px_24px_rgba(243,132,62,0.4)] overflow-hidden">
-              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_3s_infinite]" />
-              Comprar Ahora
-              <ArrowRight className="w-4 h-4" />
-            </span>
-          </div>
-        </Link>
+        {/* Hero Carousel */}
+        <HeroCarousel />
 
         <Container>
           {/* Trust Bar — compact horizontal strip on mobile, grid on desktop */}
