@@ -44,7 +44,9 @@ export interface ShopifyInventoryLevelPayload {
 // --- Handlers ---
 
 async function handleOrderWebhook(topic: string, payload: ShopifyOrderPayload, shopDomain: string) {
-  // TODO: Integrate ERP, CRM (Klaviyo), and transactional email (Resend) when ready
+  revalidate('orders');
+  revalidate('customers');
+  console.log(`[Webhook] Order event: ${topic} for order ${payload.id || 'unknown'} from ${shopDomain}`);
 }
 
 async function handleInventoryLevelWebhook(topic: string, payload: ShopifyInventoryLevelPayload, shopDomain: string) {

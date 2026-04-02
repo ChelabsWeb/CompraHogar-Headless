@@ -3,7 +3,6 @@ import { getProductByHandleQuery, getProductRecommendationsQuery } from "@/lib/q
 import { notFound } from "next/navigation";
 import { ProductView } from "@/components/shop/ProductView";
 import { ProductCarousel } from "@/components/shop/ProductCarousel";
-import VendorReviews from "@/components/shop/VendorReviews";
 import { ProductPageTracker } from "@/components/analytics/ProductPageTracker";
 import { Container } from "@/components/ui/container";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
@@ -102,8 +101,7 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
                         <ProductCarousel title="Quienes vieron esto también compraron" products={recommendations} />
                     </div>
                 )}
-                
-                <VendorReviews productHandle={resolvedParams.handle} />
+
             </Container>
         </div>
     );

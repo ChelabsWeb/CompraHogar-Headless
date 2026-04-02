@@ -182,9 +182,7 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
 
                         {/* Search bar — fills all available space */}
                         <div className="flex-1 min-w-0">
-                            <div className="bg-white rounded-xl border border-slate-300 overflow-hidden h-12 flex items-center">
-                                <PredictiveSearch hideBorder />
-                            </div>
+                            <PredictiveSearch className="h-12" />
                         </div>
 
                         {/* Right Actions — selectors unified */}

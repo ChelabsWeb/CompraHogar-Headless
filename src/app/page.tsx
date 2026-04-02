@@ -1,11 +1,12 @@
 import { Suspense } from "react";
-import { shopifyFetch } from "@/lib/shopify";
+import { shopifyFetch, getDealOfTheDay } from "@/lib/shopify";
 import { getProductsQuery } from "@/lib/queries";
 import { ProductGrid } from "@/components/shop/ProductGrid";
 import { ProductGridSkeleton } from "@/components/shop/ProductCardSkeleton";
 import Image from "next/image";
 import Link from "next/link";
-import { ShieldCheck, Truck, CreditCard, AlertCircle, Tag, ArrowRight } from "lucide-react";
+import { ShieldCheck, Truck, CreditCard, AlertCircle, Tag } from "lucide-react";
+import { HeroCarousel } from "@/components/home/HeroCarousel";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Container } from "@/components/ui/container";
@@ -36,68 +37,30 @@ async function FeaturedProducts() {
   }
 }
 
-export default function Home() {
+export default async function Home() {
+  const deal = await getDealOfTheDay();
+  const dealPrice = deal ? parseFloat(deal.priceRange.minVariantPrice.amount) : 0;
+  const dealOriginalPrice = deal?.compareAtPriceRange?.maxVariantPrice
+    ? parseFloat(deal.compareAtPriceRange.maxVariantPrice.amount)
+    : null;
+  const dealDiscount = dealOriginalPrice ? Math.round((1 - dealPrice / dealOriginalPrice) * 100) : null;
 
   const categories = [
-    { label: "Obra Gruesa", href: "/collections/obra-gruesa", icon: "Home" },
-    { label: "Herramientas", href: "/collections/herramientas-y-maquinaria", icon: "Drill" },
-    { label: "Electricidad", href: "/collections/electricidad-e-iluminacion", icon: "Zap" },
-    { label: "Sanitaria", href: "/collections/sanitaria-y-griferia", icon: "Droplet" },
-    { label: "Pinturas", href: "/collections/pinturas-y-acabados", icon: "Paintbrush" },
-    { label: "Decoración", href: "/collections/hogar-y-decoracion", icon: "Home" }, // Reusing home
-    { label: "Servicios", href: "/collections/servicios-y-alquileres", icon: "ShieldCheck" },
+    { label: "Obra Gruesa", href: "/collections/obra-gruesa", icon: "🏗️" },
+    { label: "Herramientas", href: "/collections/herramientas-y-maquinaria", icon: "🛠️" },
+    { label: "Electricidad", href: "/collections/electricidad-e-iluminacion", icon: "⚡" },
+    { label: "Sanitaria", href: "/collections/sanitaria-y-griferia", icon: "🚿" },
+    { label: "Pinturas", href: "/collections/pinturas-y-acabados", icon: "🎨" },
+    { label: "Decoración", href: "/collections/hogar-y-decoracion", icon: "🛋️" },
+    { label: "Alquileres", href: "/collections/servicios-y-alquileres", icon: "🔧" },
   ];
 
   return (
     <div className="flex flex-col w-full min-h-screen bg-white text-slate-800 overflow-x-hidden">
       {/* SECTION: Hero & Payment Bar */}
       <section className="relative w-full pb-6">
-        {/* Hero Banner — background-image approach for maximum reliability */}
-        <Link href="/collections/ofertas" className="block w-full relative overflow-hidden group h-[65svh] min-h-[420px] lg:h-[75vh] lg:min-h-[540px]">
-          {/* Hero image — mobile version */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/hero-1.png"
-            alt="Temporada de Obra — Hasta 40% OFF en herramientas"
-            className="absolute inset-0 w-full h-full object-cover object-right lg:hidden"
-            fetchPriority="high"
-          />
-          {/* Hero image — desktop version (higher resolution) */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/hero-desktop.png"
-            alt="Temporada de Obra — Hasta 40% OFF en herramientas"
-            className="absolute inset-0 w-full h-full object-cover object-center hidden lg:block"
-            fetchPriority="high"
-          />
-
-          {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-tr from-black/90 via-black/50 to-black/10 sm:bg-gradient-to-r sm:from-black/85 sm:via-black/40 sm:to-transparent" />
-
-          {/* Content */}
-          <div className="absolute inset-0 z-10 flex flex-col justify-end p-5 pb-7 sm:justify-center sm:p-8 md:p-16 lg:p-20 xl:p-24">
-            {/* Trust badge */}
-            <span className="inline-flex items-center gap-1.5 w-fit mb-3 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 text-white text-[11px] sm:text-xs font-semibold">
-              <Truck className="w-3.5 h-3.5" strokeWidth={2} />
-              Envío gratis en compras +$300k
-            </span>
-
-            <h1 className="text-[30px] sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-white leading-[1.05] tracking-tight mb-2 sm:mb-3 max-w-[300px] sm:max-w-md lg:max-w-lg xl:max-w-xl drop-shadow-[0_2px_8px_rgba(0,0,0,0.4)]">
-              Hasta <span className="text-secondary drop-shadow-[0_2px_16px_rgba(243,132,62,0.5)]">40% OFF</span> en Refacciones
-            </h1>
-
-            <p className="text-white/90 text-[13px] sm:text-base md:text-lg lg:text-xl mb-5 sm:mb-6 font-medium leading-snug max-w-[260px] sm:max-w-sm lg:max-w-md drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)]">
-              Equipamiento profesional de alto rendimiento.
-            </p>
-
-            {/* CTA — orange pill with shimmer */}
-            <span className="relative inline-flex items-center gap-2 w-fit bg-secondary text-white font-bold text-[13px] sm:text-base lg:text-lg px-6 lg:px-8 py-3 sm:py-3.5 lg:py-4 rounded-full shadow-[0_4px_24px_rgba(243,132,62,0.4)] overflow-hidden">
-              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_3s_infinite]" />
-              Comprar Ahora
-              <ArrowRight className="w-4 h-4" />
-            </span>
-          </div>
-        </Link>
+        {/* Hero Carousel */}
+        <HeroCarousel />
 
         <Container>
           {/* Trust Bar — compact horizontal strip on mobile, grid on desktop */}
@@ -148,29 +111,34 @@ export default function Home() {
             <CategoryShortcutsList categories={categories} />
           </div>
             {/* SECTION: Oferta del Día */}
+          {deal && (
           <div className="mt-8">
             <div className="flex justify-between items-center mb-3">
               <h2 className="text-lg md:text-2xl font-bold tracking-tight text-slate-900">Oferta del día</h2>
               <Link href="/collections/ofertas" className="text-[13px] font-semibold text-primary hover:text-primary/80 transition-colors">Ver todas</Link>
             </div>
 
-            <Link href="/" className="block bg-white rounded-xl shadow-[0_2px_12px_rgba(0,0,0,0.06)] overflow-hidden hover:shadow-[0_4px_20px_rgba(0,0,0,0.1)] border border-slate-100 transition-all cursor-pointer group">
+            <Link href={`/product/${deal.handle}`} className="block bg-white rounded-xl shadow-[0_2px_12px_rgba(0,0,0,0.06)] overflow-hidden hover:shadow-[0_4px_20px_rgba(0,0,0,0.1)] border border-slate-100 transition-all cursor-pointer group">
                 <div className="flex flex-row items-stretch min-h-[140px] lg:min-h-[220px]">
                     {/* Image — left side, compact */}
                     <div className="w-[140px] sm:w-[180px] md:w-1/2 relative bg-slate-50 flex items-center justify-center shrink-0">
+                        {dealDiscount && (
                         <Badge className="absolute top-2 left-2 z-10 bg-secondary text-white border-none font-bold px-2 py-0.5 text-[10px] uppercase tracking-wider">
-                            -50%
+                            -{dealDiscount}%
                         </Badge>
+                        )}
                         <div className="relative w-full h-full transition-transform duration-500 group-hover:scale-105">
-                            <Image src="https://images.unsplash.com/photo-1572981779307-38b8cabb2407?auto=format&fit=crop&q=80" alt="Oferta del día" fill className="object-contain p-3" sizes="(max-width: 768px) 140px, 50vw" />
+                            <Image src={deal.featuredImage?.url || "/placeholder.png"} alt={deal.featuredImage?.altText || deal.title} fill className="object-contain p-3" sizes="(max-width: 768px) 140px, 50vw" />
                         </div>
                     </div>
                     {/* Info — right side */}
                     <div className="flex-1 p-4 md:p-6 lg:p-8 flex flex-col justify-center">
-                        <h3 className="text-[13px] md:text-[15px] lg:text-lg text-slate-700 font-medium leading-snug line-clamp-2 mb-2 group-hover:text-primary transition-colors">Taladro Percutor Inalámbrico 18V con Batería Extra</h3>
-                        <span className="text-[11px] text-slate-400 line-through font-medium">$ 4.590</span>
+                        <h3 className="text-[13px] md:text-[15px] lg:text-lg text-slate-700 font-medium leading-snug line-clamp-2 mb-2 group-hover:text-primary transition-colors">{deal.title}</h3>
+                        {dealOriginalPrice && (
+                        <span className="text-[11px] text-slate-400 line-through font-medium">$ {dealOriginalPrice.toLocaleString("es-UY")}</span>
+                        )}
                         <div className="flex items-center gap-2 mt-0.5">
-                            <span className="text-[22px] sm:text-[26px] lg:text-[32px] font-normal text-slate-900 leading-none tracking-tight">$ 2.290</span>
+                            <span className="text-[22px] sm:text-[26px] lg:text-[32px] font-normal text-slate-900 leading-none tracking-tight">$ {dealPrice.toLocaleString("es-UY")}</span>
                         </div>
                         <div className="flex items-center gap-2 mt-2">
                             <span className="inline-flex items-center text-[11px] text-[#00a650] font-bold">
@@ -181,6 +149,7 @@ export default function Home() {
                 </div>
             </Link>
           </div>
+          )}
 
           <div className="mt-8 px-2 md:px-0">
             <div className="flex justify-between items-center mb-4 md:mb-6 px-4 md:px-0">

@@ -48,14 +48,24 @@ export default function PoliticaPrivacidad() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold mb-4 text-primary">4. Protección y Seguridad (SSL)</h2>
+            <h2 className="text-2xl font-bold mb-4 text-primary">4. Plataforma de Comercio y Procesamiento de Datos</h2>
+            <p className="text-muted-foreground leading-relaxed mb-4">
+              Nuestra tienda online opera sobre la plataforma <strong>Shopify</strong>, un servicio de comercio electrónico de reconocimiento internacional. Al realizar una compra, ciertos datos personales (nombre, dirección, correo electrónico y datos del pedido) son almacenados y procesados en los servidores de Shopify de acuerdo con su propia <a href="https://www.shopify.com/legal/privacy" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:no-underline">Política de Privacidad</a>. Shopify cumple con los estándares de seguridad PCI-DSS para el manejo de datos de tarjetas de pago.
+            </p>
+            <p className="text-muted-foreground leading-relaxed">
+              Los datos financieros de tarjetas de crédito o débito son procesados directamente por las pasarelas de pago integradas en Shopify y <strong>no se almacenan en servidores propios de CompraHogar</strong>.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-bold mb-4 text-primary">5. Protección y Seguridad (SSL)</h2>
             <p className="text-muted-foreground leading-relaxed">
               Toda la información personal suministrada se encuentra protegida mediante certificados de seguridad SSL (Secure Sockets Layer), garantizando que los datos introducidos se transmiten encriptados. Implementamos las medidas físicas, electrónicas y administrativas necesarias para evitar el acceso, pérdida, alteración o uso no autorizado de su información.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold mb-4 text-primary">5. Derechos ARCO</h2>
+            <h2 className="text-2xl font-bold mb-4 text-primary">6. Derechos ARCO</h2>
             <p className="text-muted-foreground leading-relaxed mb-4">
               Usted tiene derecho a ejercer sus derechos de Acceso, Rectificación, Cancelación u Oposición (Derechos ARCO) respecto a sus datos personales. 
             </p>
