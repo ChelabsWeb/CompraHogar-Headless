@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ChevronLeft, ChevronRight, Truck } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Slide {
   headline: string;
@@ -17,39 +17,39 @@ interface Slide {
 
 const slides: Slide[] = [
   {
-    headline: "Hasta",
-    highlight: "40% OFF",
-    subtitle: "en Herramientas Profesionales",
-    cta: "Ver Ofertas",
-    href: "/collections/herramientas-y-maquinaria",
-    badge: "Envío gratis en compras +$300k",
-    image: "https://images.unsplash.com/photo-1426927308491-6380b6a9936f?w=1600&q=75&auto=format&fit=crop",
+    headline: "Creado por uruguayos,",
+    highlight: "para uruguayos.",
+    subtitle: "Todo lo que necesitás para tu hogar, al alcance de un click",
+    cta: "Conocé CompraHogar",
+    href: "/collections",
+    badge: "100% uruguayo",
+    image: "/hero-uruguay.jpg",
   },
   {
     headline: "Nueva Temporada",
     highlight: "Obra 2026",
     subtitle: "Cemento, hierro y bloques al mejor precio",
-    cta: "Comprar Ahora",
+    cta: "Ver Materiales",
     href: "/collections/obra-gruesa",
-    badge: "Precios mayoristas",
+    badge: "💰 Precios de obra",
     image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1600&q=75&auto=format&fit=crop",
   },
   {
     headline: "Alquilá",
     highlight: "Equipos",
     subtitle: "Hormigoneras, andamios y más — por día, semana o mes",
-    cta: "Ver Alquileres",
+    cta: "Consultá Disponibilidad",
     href: "/collections/servicios-y-alquileres",
-    badge: "Sin depósito previo",
+    badge: "📦 Sin depósito",
     image: "https://images.unsplash.com/photo-1580901368919-7738efb0f87e?w=1600&q=75&auto=format&fit=crop",
   },
   {
     headline: "Renovación",
     highlight: "Total",
     subtitle: "Pinturas, grifería e iluminación con descuentos exclusivos",
-    cta: "Descubrir",
+    cta: "Renovar Mi Hogar",
     href: "/collections/pinturas-y-acabados",
-    badge: "Cuotas sin interés",
+    badge: "🏠 Cuotas sin interés",
     image: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1600&q=75&auto=format&fit=crop",
   },
 ];
@@ -104,8 +104,7 @@ export function HeroCarousel() {
       {/* Content */}
       <div className="absolute inset-0 z-10 flex flex-col justify-end p-5 pb-16 sm:justify-center sm:p-8 md:p-16 lg:p-20 xl:p-24">
         {/* Badge */}
-        <span className="inline-flex items-center gap-1.5 w-fit mb-3 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/15 text-white text-[11px] sm:text-xs font-semibold transition-all duration-500">
-          <Truck className="w-3.5 h-3.5" strokeWidth={2} />
+        <span className="inline-flex items-center gap-1.5 w-fit mb-3 px-3 py-1.5 rounded-lg bg-white/8 border border-white/10 text-white/80 text-[11px] sm:text-xs font-medium tracking-wide">
           {slide.badge}
         </span>
 
@@ -132,9 +131,8 @@ export function HeroCarousel() {
         <Link
           href={slide.href}
           key={`c-${current}`}
-          className="relative inline-flex items-center gap-2 w-fit bg-secondary text-white font-bold text-[13px] sm:text-base lg:text-lg px-6 lg:px-8 py-3 sm:py-3.5 lg:py-4 rounded-full shadow-[0_4px_24px_rgba(243,132,62,0.4)] overflow-hidden hover:brightness-110 transition-all animate-[fadeUp_0.5s_ease-out_0.2s_both]"
+          className="inline-flex items-center gap-2 w-fit bg-secondary text-white font-semibold text-[13px] sm:text-sm lg:text-base px-5 lg:px-7 py-2.5 sm:py-3 lg:py-3.5 rounded-lg hover:bg-secondary/90 transition-colors duration-200 animate-[fadeUp_0.5s_ease-out_0.2s_both]"
         >
-          <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_3s_infinite]" />
           {slide.cta}
           <ArrowRight className="w-4 h-4" />
         </Link>
