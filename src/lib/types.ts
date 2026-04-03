@@ -76,6 +76,7 @@ export interface ShopifyProduct {
     edges: Array<{ node: ShopifyImage }>;
   };
   priceRange?: ShopifyPriceRange;
+  compareAtPriceRange?: ShopifyPriceRange;
   options?: ShopifyProductOption[];
   variants?: {
     edges: Array<{ node: ShopifyVariant }>;

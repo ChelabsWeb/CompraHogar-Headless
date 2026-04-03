@@ -10,6 +10,8 @@ import { shopifyFetch } from "@/lib/shopify";
 import { getCollectionsQuery } from "@/lib/queries";
 import { cookies } from "next/headers";
 import type { ShopifyCollection, ShopifyCollectionEdge } from "@/lib/types";
+import { ExitIntentPopup } from "@/components/shared/ExitIntentPopup";
+import { WhatsAppButton } from "@/components/shared/WhatsAppButton";
 
 // Pure clean geometry: Single highly readable sans-serif
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
@@ -19,10 +21,10 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Compra Hogar | Tienda Oficial",
-    template: "%s | Compra Hogar",
+    default: "CompraHogar Uruguay — Materiales, Herramientas y Equipamiento | Envíos en 24-48hs",
+    template: "%s | CompraHogar Uruguay",
   },
-  description: "Equipamiento premium para construcción y hogar. Envíos a todo Uruguay.",
+  description: "Tu ferretería online en Uruguay. Materiales de construcción, herramientas, sanitaria, electricidad y más. Envíos a todo el país en 24-48hs. Hasta 12 cuotas sin interés.",
   openGraph: {
     type: "website",
     locale: "es_UY",
@@ -57,9 +59,34 @@ export default async function RootLayout({
   const rawGtmId = process.env.NEXT_PUBLIC_GTM_ID;
   const gtmId = rawGtmId && /^GTM-[A-Z0-9]+$/.test(rawGtmId) ? rawGtmId : null;
 
+  const rawFbPixelId = process.env.NEXT_PUBLIC_FB_PIXEL_ID;
+  const fbPixelId = rawFbPixelId && /^\d{15,16}$/.test(rawFbPixelId) ? rawFbPixelId : null;
+
   return (
     <html lang="es" className="scroll-smooth">
       <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "CompraHogar",
+              url: siteUrl,
+              logo: `${siteUrl}/logo.png`,
+              description: "Tu ferretería online en Uruguay. Materiales de construcción, herramientas, sanitaria, electricidad y más.",
+              address: {
+                "@type": "PostalAddress",
+                addressCountry: "UY",
+              },
+              contactPoint: {
+                "@type": "ContactPoint",
+                contactType: "customer service",
+                availableLanguage: "Spanish",
+              },
+            }),
+          }}
+        />
         {gtmId && (
           <script
             dangerouslySetInnerHTML={{
@@ -70,6 +97,33 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','${gtmId}');`,
             }}
           />
+        )}
+        {fbPixelId && (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '${fbPixelId}');
+fbq('track', 'PageView');`,
+            }}
+          />
+        )}
+        {fbPixelId && (
+          <noscript>
+            <img
+              height="1"
+              width="1"
+              style={{ display: "none" }}
+              src={`https://www.facebook.com/tr?id=${fbPixelId}&ev=PageView&noscript=1`}
+              alt=""
+            />
+          </noscript>
         )}
         <Script
           src="https://cdn.judge.me/widget_preloader.js"
@@ -99,6 +153,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
               {children}
             </main>
             <Footer />
+            <ExitIntentPopup />
+            <WhatsAppButton />
           </WishlistProvider>
         </CartProvider>
       </body>

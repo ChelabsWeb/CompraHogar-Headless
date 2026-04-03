@@ -58,6 +58,57 @@ export async function shopifyFetch<T = any>({
     }
 }
 
+export async function getCollectionProducts(handle: string, first: number = 10) {
+  const query = `
+    query getCollectionProducts($handle: String!, $first: Int!) {
+      collection(handle: $handle) {
+        id
+        title
+        handle
+        description
+        image {
+          url
+          altText
+        }
+        products(first: $first) {
+          edges {
+            node {
+              id
+              title
+              handle
+              priceRange {
+                minVariantPrice {
+                  amount
+                  currencyCode
+                }
+              }
+              compareAtPriceRange {
+                maxVariantPrice {
+                  amount
+                  currencyCode
+                }
+              }
+              featuredImage {
+                url
+                altText
+                width
+                height
+              }
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  try {
+    const response = await shopifyFetch({ query, variables: { handle, first }, tags: ['products'] });
+    return response.body?.data?.collection || null;
+  } catch {
+    return null;
+  }
+}
+
 export async function getDealOfTheDay() {
   const query = `
     query getDealOfTheDay {

@@ -1,8 +1,9 @@
 import { Suspense } from "react";
-import { shopifyFetch, getDealOfTheDay } from "@/lib/shopify";
+import { shopifyFetch, getDealOfTheDay, getCollectionProducts } from "@/lib/shopify";
 import { getProductsQuery } from "@/lib/queries";
 import { ProductGrid } from "@/components/shop/ProductGrid";
 import { ProductGridSkeleton } from "@/components/shop/ProductCardSkeleton";
+import { CollectionShowcase } from "@/components/home/CollectionShowcase";
 import Image from "next/image";
 import Link from "next/link";
 import { ShieldCheck, Truck, CreditCard, AlertCircle, Tag } from "lucide-react";
@@ -38,7 +39,12 @@ async function FeaturedProducts() {
 }
 
 export default async function Home() {
-  const deal = await getDealOfTheDay();
+  const [deal, herramientas, sanitaria, electricidad] = await Promise.all([
+    getDealOfTheDay(),
+    getCollectionProducts("herramientas-y-maquinaria", 8),
+    getCollectionProducts("sanitaria-y-griferia", 8),
+    getCollectionProducts("electricidad-e-iluminacion", 8),
+  ]);
   const dealPrice = deal ? parseFloat(deal.priceRange.minVariantPrice.amount) : 0;
   const dealOriginalPrice = deal?.compareAtPriceRange?.maxVariantPrice
     ? parseFloat(deal.compareAtPriceRange.maxVariantPrice.amount)
@@ -200,6 +206,39 @@ export default async function Home() {
             <div className="absolute right-0 top-0 bottom-4 w-6 bg-gradient-to-l from-white to-transparent pointer-events-none md:hidden" />
             </div>
           </div>
+          {/* SECTION: Collection Showcases */}
+          <div className="mt-10 flex flex-col gap-8 md:gap-10">
+            {herramientas && herramientas.products?.edges?.length > 0 && (
+              <CollectionShowcase
+                title={herramientas.title}
+                handle={herramientas.handle}
+                description={herramientas.description}
+                bannerImage="/hero-1.png"
+                bannerColor="from-amber-700 to-amber-900"
+                products={herramientas.products.edges}
+              />
+            )}
+            {sanitaria && sanitaria.products?.edges?.length > 0 && (
+              <CollectionShowcase
+                title={sanitaria.title}
+                handle={sanitaria.handle}
+                description={sanitaria.description}
+                bannerImage="/hero-2.png"
+                bannerColor="from-sky-700 to-sky-900"
+                products={sanitaria.products.edges}
+              />
+            )}
+            {electricidad && electricidad.products?.edges?.length > 0 && (
+              <CollectionShowcase
+                title={electricidad.title}
+                handle={electricidad.handle}
+                description={electricidad.description}
+                bannerColor="from-yellow-600 to-yellow-800"
+                products={electricidad.products.edges}
+              />
+            )}
+          </div>
+
         </Container>
       </section>
 

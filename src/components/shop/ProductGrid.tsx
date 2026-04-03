@@ -68,9 +68,11 @@ export function ProductGrid({
             <ActiveFilters />
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4 lg:gap-5 xl:gap-6">
                 {products.map(({ node }, i) => {
-                const currency = node.priceRange?.minVariantPrice?.currencyCode || "USD";
                 const priceAmount = Number(node.priceRange?.minVariantPrice?.amount || 0);
                 const price = priceAmount.toLocaleString("es-UY");
+                const compareAtPrice = Number(node.compareAtPriceRange?.maxVariantPrice?.amount || 0);
+                const hasDiscount = compareAtPrice > priceAmount;
+                const discountPercent = hasDiscount ? Math.round((1 - priceAmount / compareAtPrice) * 100) : 0;
 
                 // ML specific logic: if price is over a certain amount, show installments
                 const installments = (priceAmount / 12).toLocaleString("es-UY", { maximumFractionDigits: 0 });
@@ -118,6 +120,12 @@ export function ProductGrid({
                                     </div>
                                 )}
 
+                                {hasDiscount && (
+                                    <span className="absolute top-2 left-2 z-10 bg-secondary text-white text-[10px] sm:text-[11px] font-bold px-1.5 py-0.5 rounded">
+                                        -{discountPercent}%
+                                    </span>
+                                )}
+
                                 <FavoriteButton productId={node.id} className="absolute top-2 right-2" />
 
                                 <ProductQuickView product={node} />
@@ -128,9 +136,16 @@ export function ProductGrid({
 
                                 {/* Price */}
                                 {priceAmount > 0 ? (
-                                    <div className="flex items-start gap-0.5 sm:gap-1 mb-1 sm:mb-2">
-                                        <span className="text-[11px] sm:text-sm font-normal text-slate-800 mt-0.5 sm:mt-1">$</span>
-                                        <span className="text-[18px] sm:text-[24px] lg:text-[26px] font-normal text-slate-800 leading-none">{price}</span>
+                                    <div className="mb-1 sm:mb-2">
+                                        {hasDiscount && (
+                                            <span className="text-[11px] sm:text-[13px] text-slate-400 line-through font-normal">
+                                                $ {compareAtPrice.toLocaleString("es-UY")}
+                                            </span>
+                                        )}
+                                        <div className="flex items-start gap-0.5 sm:gap-1">
+                                            <span className="text-[11px] sm:text-sm font-normal text-slate-800 mt-0.5 sm:mt-1">$</span>
+                                            <span className="text-[18px] sm:text-[24px] lg:text-[26px] font-normal text-slate-800 leading-none">{price}</span>
+                                        </div>
                                     </div>
                                 ) : (
                                     <div className="flex items-start gap-1 mb-1">
