@@ -28,6 +28,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "es_UY",
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "CompraHogar Uruguay" }],
     siteName: "Compra Hogar",
   },
   robots: {
@@ -65,6 +66,9 @@ export default async function RootLayout({
   return (
     <html lang="es" className="scroll-smooth">
       <head>
+        <link rel="preconnect" href="https://cdn.shopify.com" />
+        <link rel="dns-prefetch" href="https://cdn.shopify.com" />
+        <link rel="preconnect" href="https://cdn.judge.me" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
