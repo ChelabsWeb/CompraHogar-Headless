@@ -22,6 +22,22 @@ const SEARCH_PRODUCTS_QUERY = `
               currencyCode
             }
           }
+          compareAtPriceRange {
+            maxVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+          images(first: 5) {
+            edges {
+              node {
+                url
+                altText
+                width
+                height
+              }
+            }
+          }
           featuredImage {
             url
             altText
@@ -33,13 +49,13 @@ const SEARCH_PRODUCTS_QUERY = `
 `;
 
 interface SearchPageProps {
-  searchParams: {
+  searchParams: Promise<{
     q?: string;
-  };
+  }>;
 }
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
-  const { q } = searchParams;
+  const { q } = await searchParams;
   const searchTerm = typeof q === 'string' ? q : '';
 
   let products = [];
@@ -90,7 +106,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto px-4">
               <Link 
-                href="/colecciones/todas" 
+                href="/collections" 
                 className="inline-flex justify-center items-center px-6 py-3 border border-transparent text-sm font-medium rounded-md text-white bg-orange-500 hover:bg-orange-600 transition-colors shadow-sm w-full sm:w-auto"
               >
                 Ver todo el catálogo

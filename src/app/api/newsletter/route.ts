@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { shopifyFetch } from "@/lib/shopify";
+import { rateLimit } from "@/lib/rate-limit";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -20,6 +21,12 @@ const customerCreateMutation = `
 `;
 
 export async function POST(request: NextRequest) {
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const { success: allowed } = rateLimit(`newsletter:${ip}`, 5, 60000);
+  if (!allowed) {
+    return NextResponse.json({ error: "Too many requests." }, { status: 429 });
+  }
+
   try {
     const body = await request.json();
     const { email } = body;
