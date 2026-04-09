@@ -141,6 +141,28 @@ export function Footer() {
           </div>
         </div>
 
+        {/* Payment Methods */}
+        <div className="flex flex-col items-center gap-3 mb-8 md:mb-12">
+          <h4 className="text-[11px] font-bold text-slate-400 tracking-widest uppercase">Medios de pago</h4>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            {[
+              { name: "Visa", bg: "bg-[#1A1F71]", text: "text-white" },
+              { name: "Mastercard", bg: "bg-[#EB001B]", text: "text-white" },
+              { name: "OCA", bg: "bg-[#00529B]", text: "text-white" },
+              { name: "Abitab", bg: "bg-[#E31937]", text: "text-white" },
+              { name: "RedPagos", bg: "bg-[#004B93]", text: "text-white" },
+              { name: "Transferencia", bg: "bg-slate-700", text: "text-white" },
+            ].map((method) => (
+              <div
+                key={method.name}
+                className={`${method.bg} ${method.text} px-3 py-1.5 rounded-md text-[10px] font-bold tracking-wide shadow-sm`}
+              >
+                {method.name}
+              </div>
+            ))}
+          </div>
+        </div>
+
         <Separator className="bg-slate-200 mb-8" />
 
         {/* Bottom Section */}

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { rateLimit } from "@/lib/rate-limit";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_ENTRIES = 500;
@@ -58,6 +59,12 @@ const setMetafieldMutation = `
 `;
 
 export async function POST(request: NextRequest) {
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const { success: allowed } = rateLimit(`back-in-stock:${ip}`, 5, 60000);
+  if (!allowed) {
+    return NextResponse.json({ error: "Too many requests." }, { status: 429 });
+  }
+
   try {
     if (!adminToken) {
       return NextResponse.json({ error: "Server configuration error." }, { status: 500 });
@@ -71,6 +78,9 @@ export async function POST(request: NextRequest) {
     }
     if (!variantId || typeof variantId !== "string") {
       return NextResponse.json({ error: "Variant ID is required." }, { status: 400 });
+    }
+    if (!variantId.startsWith("gid://shopify/ProductVariant/")) {
+      return NextResponse.json({ error: "Invalid variant ID format." }, { status: 400 });
     }
 
     const trimmedEmail = email.trim().toLowerCase();

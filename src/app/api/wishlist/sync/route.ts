@@ -1,7 +1,8 @@
 import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { shopifyFetch } from "@/lib/shopify";
 import { getCustomerQuery } from "@/lib/customer";
+import { rateLimit } from "@/lib/rate-limit";
 
 // ---------------------------------------------------------------------------
 // Admin API configuration
@@ -81,7 +82,13 @@ export async function GET() {
 // ---------------------------------------------------------------------------
 // POST /api/wishlist/sync — write wishlist to customer metafield (Admin API)
 // ---------------------------------------------------------------------------
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const { success: allowed } = rateLimit(`wishlist:${ip}`, 10, 60000);
+  if (!allowed) {
+    return NextResponse.json({ error: "Too many requests." }, { status: 429 });
+  }
+
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("customerAccessToken")?.value;
@@ -98,12 +105,16 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { productIds } = body;
 
-    if (!Array.isArray(productIds)) {
+    if (!Array.isArray(productIds) || productIds.length > 200) {
       return NextResponse.json(
-        { error: "productIds must be an array" },
+        { error: "Invalid wishlist data" },
         { status: 400 }
       );
     }
+
+    const validIds = productIds.filter(
+      (id: unknown) => typeof id === "string" && id.startsWith("gid://shopify/Product/")
+    );
 
     const result = await adminFetch(metafieldsSetMutation, {
       metafields: [
@@ -112,7 +123,7 @@ export async function POST(request: Request) {
           namespace: "custom",
           key: "wishlist",
           type: "json",
-          value: JSON.stringify(productIds),
+          value: JSON.stringify(validIds),
         },
       ],
     });

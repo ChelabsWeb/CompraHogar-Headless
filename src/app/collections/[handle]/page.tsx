@@ -158,8 +158,19 @@ export default async function CollectionPage(props: {
     const subcollections = getSubcollections(resolvedParams.handle);
     const isMainCategory = (subcollections && subcollections.length > 0);
 
+    const breadcrumbJsonLd = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Inicio", item: SITE_URL },
+            { "@type": "ListItem", position: 2, name: "Catálogo", item: `${SITE_URL}/products` },
+            { "@type": "ListItem", position: 3, name: collection.title },
+        ],
+    };
+
     return (
         <div className="flex flex-col w-full bg-[#ebebeb] min-h-screen pt-4 pb-16">
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
             <div className="container mx-auto max-w-[1200px] px-4 md:px-0">
 
                 {/* Breadcrumbs */}

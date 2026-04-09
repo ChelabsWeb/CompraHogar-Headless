@@ -30,10 +30,11 @@ export interface AddToCartEvent {
 // Unión de tipos permitidos en la capa de comercio
 export type EcommerceEventPayload = ViewItemEvent | AddToCartEvent;
 
-// Extendemos globalmente el Objeto Window para soportar GTM
+// Extendemos globalmente el Objeto Window para soportar GTM y Meta Pixel
 declare global {
   interface Window {
     dataLayer: any[];
+    fbq?: (...args: any[]) => void;
   }
 }
 
@@ -50,4 +51,23 @@ export function pushDatalayerEvent(payload: EcommerceEventPayload): void {
   
   // Irrogar el nuevo payload capturable por el Trigger de GTM
   window.dataLayer.push(payload);
+
+  // Meta Pixel: enviar eventos equivalentes
+  if (typeof window.fbq === 'function') {
+    if (payload.event === 'view_item') {
+      window.fbq('track', 'ViewContent', {
+        content_ids: payload.ecommerce.items.map(i => i.item_id),
+        content_type: 'product',
+        value: payload.ecommerce.value,
+        currency: payload.ecommerce.currency,
+      });
+    } else if (payload.event === 'add_to_cart') {
+      window.fbq('track', 'AddToCart', {
+        content_ids: payload.ecommerce.items.map(i => i.item_id),
+        content_type: 'product',
+        value: payload.ecommerce.value,
+        currency: payload.ecommerce.currency,
+      });
+    }
+  }
 }

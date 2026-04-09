@@ -161,10 +161,11 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
                                     >
                                         <ShoppingBag className="w-5 h-5" strokeWidth={1.5} />
                                         {totalQuantity > 0 && (
-                                            <span className="absolute top-1 right-0 w-4 h-4 bg-[#ef7c1c] text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm">
+                                            <span className="absolute top-1 right-0 w-4 h-4 bg-[#ef7c1c] text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm" aria-live="polite" aria-atomic="true" role="status">
                                                 {totalQuantity}
                                             </span>
                                         )}
+                                        <span className="sr-only">Carrito{totalQuantity > 0 ? `, ${totalQuantity} productos` : ''}</span>
                                     </button>
                                 </div>
                             </div>
@@ -238,10 +239,11 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
                                 >
                                     <ShoppingBag className="w-5 h-5" />
                                     {totalQuantity > 0 && (
-                                        <span className="absolute top-0 right-0 w-4 h-4 bg-white text-[#21645d] text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm border border-[#21645d]">
+                                        <span className="absolute top-0 right-0 w-4 h-4 bg-white text-[#21645d] text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm border border-[#21645d]" aria-live="polite" aria-atomic="true" role="status">
                                             {totalQuantity}
                                         </span>
                                     )}
+                                    <span className="sr-only">Carrito{totalQuantity > 0 ? `, ${totalQuantity} productos` : ''}</span>
                                 </button>
                             </div>
                         </div>

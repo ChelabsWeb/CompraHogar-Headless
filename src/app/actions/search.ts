@@ -22,16 +22,19 @@ export interface PredictiveSearchResult {
 }
 
 export async function predictiveSearchAction(query: string, limit: number = 5): Promise<PredictiveSearchResult[]> {
-  if (!query || query.trim().length === 0) {
-    return [];
-  }
+  if (!query || typeof query !== "string") return [];
+
+  const sanitized = query.trim().slice(0, 200);
+  if (sanitized.length === 0) return [];
+
+  const clampedLimit = Math.min(Math.max(1, limit), 10);
 
   try {
     const response = await shopifyFetch({
       query: predictiveSearchQuery,
       variables: {
-        query,
-        limit,
+        query: sanitized,
+        limit: clampedLimit,
       },
     });
 

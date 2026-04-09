@@ -1,8 +1,9 @@
 import { Suspense } from "react";
-import { shopifyFetch, getDealOfTheDay } from "@/lib/shopify";
+import { shopifyFetch, getDealOfTheDay, getCollectionProducts } from "@/lib/shopify";
 import { getProductsQuery } from "@/lib/queries";
 import { ProductGrid } from "@/components/shop/ProductGrid";
 import { ProductGridSkeleton } from "@/components/shop/ProductCardSkeleton";
+import { CollectionShowcase } from "@/components/home/CollectionShowcase";
 import Image from "next/image";
 import Link from "next/link";
 import { ShieldCheck, Truck, CreditCard, AlertCircle, Tag } from "lucide-react";
@@ -38,7 +39,12 @@ async function FeaturedProducts() {
 }
 
 export default async function Home() {
-  const deal = await getDealOfTheDay();
+  const [deal, herramientas, sanitaria, electricidad] = await Promise.all([
+    getDealOfTheDay(),
+    getCollectionProducts("herramientas-y-maquinaria", 8),
+    getCollectionProducts("sanitaria-y-griferia", 8),
+    getCollectionProducts("electricidad-e-iluminacion", 8),
+  ]);
   const dealPrice = deal ? parseFloat(deal.priceRange.minVariantPrice.amount) : 0;
   const dealOriginalPrice = deal?.compareAtPriceRange?.maxVariantPrice
     ? parseFloat(deal.compareAtPriceRange.maxVariantPrice.amount)
@@ -118,7 +124,7 @@ export default async function Home() {
               <Link href="/collections/ofertas" className="text-[13px] font-semibold text-primary hover:text-primary/80 transition-colors">Ver todas</Link>
             </div>
 
-            <Link href={`/product/${deal.handle}`} className="block bg-white rounded-xl shadow-[0_2px_12px_rgba(0,0,0,0.06)] overflow-hidden hover:shadow-[0_4px_20px_rgba(0,0,0,0.1)] border border-slate-100 transition-all cursor-pointer group">
+            <Link href={`/products/${deal.handle}`} className="block bg-white rounded-xl shadow-[0_2px_12px_rgba(0,0,0,0.06)] overflow-hidden hover:shadow-[0_4px_20px_rgba(0,0,0,0.1)] border border-slate-100 transition-all cursor-pointer group">
                 <div className="flex flex-row items-stretch min-h-[140px] lg:min-h-[220px]">
                     {/* Image — left side, compact */}
                     <div className="w-[140px] sm:w-[180px] md:w-1/2 relative bg-slate-50 flex items-center justify-center shrink-0">
@@ -196,10 +202,41 @@ export default async function Home() {
                 </div>
               </div>
             </div>
-            {/* Fade indicator for horizontal scroll on mobile */}
-            <div className="absolute right-0 top-0 bottom-4 w-6 bg-gradient-to-l from-white to-transparent pointer-events-none md:hidden" />
             </div>
           </div>
+          {/* SECTION: Collection Showcases */}
+          <div className="mt-10 flex flex-col gap-8 md:gap-10">
+            {herramientas && herramientas.products?.edges?.length > 0 && (
+              <CollectionShowcase
+                title={herramientas.title}
+                handle={herramientas.handle}
+                description={herramientas.description}
+                bannerImage="/hero-1.png"
+                bannerColor="from-amber-700 to-amber-900"
+                products={herramientas.products.edges}
+              />
+            )}
+            {sanitaria && sanitaria.products?.edges?.length > 0 && (
+              <CollectionShowcase
+                title={sanitaria.title}
+                handle={sanitaria.handle}
+                description={sanitaria.description}
+                bannerImage="/hero-2.png"
+                bannerColor="from-sky-700 to-sky-900"
+                products={sanitaria.products.edges}
+              />
+            )}
+            {electricidad && electricidad.products?.edges?.length > 0 && (
+              <CollectionShowcase
+                title={electricidad.title}
+                handle={electricidad.handle}
+                description={electricidad.description}
+                bannerColor="from-yellow-600 to-yellow-800"
+                products={electricidad.products.edges}
+              />
+            )}
+          </div>
+
         </Container>
       </section>
 

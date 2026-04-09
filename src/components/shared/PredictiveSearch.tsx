@@ -172,43 +172,63 @@ export function PredictiveSearch({ placeholder = "Buscar productos, marcas y má
               <span>Buscando resultados...</span>
             </div>
           ) : results && results.length > 0 ? (
-            <ul className="py-2 overflow-y-auto">
-              {results.map((product) => (
-                <li key={product.id}>
-                  <Link
-                    href={`/products/${product.handle}`}
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-4 px-4 py-2.5 hover:bg-slate-50 transition-colors group"
-                  >
-                    <div className="relative w-12 h-12 rounded-md overflow-hidden bg-slate-100 shrink-0">
-                      {product.featuredImage?.url ? (
-                        <Image
-                          src={product.featuredImage.url}
-                          alt={product.featuredImage.altText || product.title}
-                          fill
-                          className="object-cover"
-                          sizes="48px"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-slate-300">
-                          <Search className="w-4 h-4" />
+            <>
+              <ul className="py-2 overflow-y-auto">
+                {results.map((product) => {
+                  const resultPrice = parseFloat(product.priceRange?.minVariantPrice?.amount || "0");
+                  const resultInstallments = resultPrice > 1000 ? (resultPrice / 12).toLocaleString("es-UY", { maximumFractionDigits: 0 }) : null;
+
+                  return (
+                    <li key={product.id}>
+                      <Link
+                        href={`/products/${product.handle}`}
+                        onClick={() => setIsOpen(false)}
+                        className="flex items-center gap-4 px-4 py-2.5 hover:bg-slate-50 transition-colors group"
+                      >
+                        <div className="relative w-14 h-14 rounded-lg overflow-hidden bg-slate-50 shrink-0 border border-slate-100">
+                          {product.featuredImage?.url ? (
+                            <Image
+                              src={product.featuredImage.url}
+                              alt={product.featuredImage.altText || product.title}
+                              fill
+                              className="object-contain p-1"
+                              sizes="56px"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-slate-300">
+                              <Search className="w-4 h-4" />
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-slate-900 truncate group-hover:text-primary transition-colors">
-                        {product.title}
-                      </p>
-                      <p className="text-sm font-semibold text-[#21645d] mt-0.5">
-                        {product.priceRange?.minVariantPrice ? 
-                          formatPrice(product.priceRange.minVariantPrice.amount, product.priceRange.minVariantPrice.currencyCode)
-                          : null}
-                      </p>
-                    </div>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-slate-900 truncate group-hover:text-primary transition-colors">
+                            {product.title}
+                          </p>
+                          <p className="text-[15px] font-semibold text-slate-800 mt-0.5">
+                            {product.priceRange?.minVariantPrice ?
+                              formatPrice(product.priceRange.minVariantPrice.amount, product.priceRange.minVariantPrice.currencyCode)
+                              : null}
+                          </p>
+                          {resultInstallments && (
+                            <p className="text-[11px] text-green-600 font-medium">
+                              12x ${resultInstallments} sin interés
+                            </p>
+                          )}
+                        </div>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+              <Link
+                href={`/search?q=${encodeURIComponent(query.trim())}`}
+                onClick={() => setIsOpen(false)}
+                className="flex items-center justify-center gap-2 px-4 py-3 border-t border-slate-100 text-sm font-semibold text-primary hover:bg-primary/5 transition-colors"
+              >
+                Ver todos los resultados
+                <Search className="w-3.5 h-3.5" />
+              </Link>
+            </>
           ) : !isTyping && debouncedQuery === query ? (
             <div className="p-8 text-center text-sm text-slate-500">
               No se encontraron resultados para "{query}"

@@ -13,6 +13,22 @@ export const getProductsQuery = `
               currencyCode
             }
           }
+          compareAtPriceRange {
+            maxVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+          images(first: 5) {
+            edges {
+              node {
+                url
+                altText
+                width
+                height
+              }
+            }
+          }
           featuredImage {
             url
             altText
@@ -35,6 +51,12 @@ export const getProductByHandleQuery = `
       description
       priceRange {
         minVariantPrice {
+          amount
+          currencyCode
+        }
+      }
+      compareAtPriceRange {
+        maxVariantPrice {
           amount
           currencyCode
         }
@@ -137,6 +159,22 @@ export const getProductRecommendationsQuery = `
           currencyCode
         }
       }
+      compareAtPriceRange {
+        maxVariantPrice {
+          amount
+          currencyCode
+        }
+      }
+      images(first: 5) {
+        edges {
+          node {
+            url
+            altText
+            width
+            height
+          }
+        }
+      }
       featuredImage {
         url
         altText
@@ -221,6 +259,22 @@ export const getCollectionWithProductsQuery = `
                 currencyCode
               }
             }
+            compareAtPriceRange {
+              maxVariantPrice {
+                amount
+                currencyCode
+              }
+            }
+            images(first: 5) {
+              edges {
+                node {
+                  url
+                  altText
+                  width
+                  height
+                }
+              }
+            }
             featuredImage {
               url
               altText
@@ -283,6 +337,22 @@ export const getCollectionWithProductsPrevQuery = `
               minVariantPrice {
                 amount
                 currencyCode
+              }
+            }
+            compareAtPriceRange {
+              maxVariantPrice {
+                amount
+                currencyCode
+              }
+            }
+            images(first: 5) {
+              edges {
+                node {
+                  url
+                  altText
+                  width
+                  height
+                }
               }
             }
             featuredImage {

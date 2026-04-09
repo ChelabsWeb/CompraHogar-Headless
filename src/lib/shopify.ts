@@ -1,6 +1,13 @@
 const domain = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN || process.env.SHOPIFY_STORE_DOMAIN;
 const storefrontAccessToken = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN || process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
 
+if (!domain) {
+  console.error("Missing SHOPIFY_STORE_DOMAIN environment variable");
+}
+if (!storefrontAccessToken) {
+  console.error("Missing SHOPIFY_STOREFRONT_ACCESS_TOKEN environment variable");
+}
+
 export async function shopifyFetch<T = any>({
     cache = "force-cache",
     headers,
@@ -56,6 +63,57 @@ export async function shopifyFetch<T = any>({
         console.error("Error connecting to Shopify:", error);
         throw error;
     }
+}
+
+export async function getCollectionProducts(handle: string, first: number = 10) {
+  const query = `
+    query getCollectionProducts($handle: String!, $first: Int!) {
+      collection(handle: $handle) {
+        id
+        title
+        handle
+        description
+        image {
+          url
+          altText
+        }
+        products(first: $first) {
+          edges {
+            node {
+              id
+              title
+              handle
+              priceRange {
+                minVariantPrice {
+                  amount
+                  currencyCode
+                }
+              }
+              compareAtPriceRange {
+                maxVariantPrice {
+                  amount
+                  currencyCode
+                }
+              }
+              featuredImage {
+                url
+                altText
+                width
+                height
+              }
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  try {
+    const response = await shopifyFetch({ query, variables: { handle, first }, tags: ['products'] });
+    return response.body?.data?.collection || null;
+  } catch {
+    return null;
+  }
 }
 
 export async function getDealOfTheDay() {
