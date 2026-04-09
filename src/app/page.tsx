@@ -202,8 +202,6 @@ export default async function Home() {
                 </div>
               </div>
             </div>
-            {/* Fade indicator for horizontal scroll on mobile */}
-            <div className="absolute right-0 top-0 bottom-4 w-6 bg-gradient-to-l from-white to-transparent pointer-events-none md:hidden" />
             </div>
           </div>
           {/* SECTION: Collection Showcases */}

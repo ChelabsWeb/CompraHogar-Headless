@@ -57,6 +57,8 @@ const slides: Slide[] = [
 export function HeroCarousel() {
   const [current, setCurrent] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [touchEndX, setTouchEndX] = useState<number | null>(null);
 
   const next = useCallback(() => {
     setCurrent((prev) => (prev + 1) % slides.length);
@@ -65,6 +67,25 @@ export function HeroCarousel() {
   const prev = useCallback(() => {
     setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
   }, []);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchEndX(null);
+    setTouchStartX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEndX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartX === null || touchEndX === null) return;
+    const distance = touchStartX - touchEndX;
+    const minSwipeDistance = 50;
+    if (distance > minSwipeDistance) next();
+    else if (distance < -minSwipeDistance) prev();
+    setTouchStartX(null);
+    setTouchEndX(null);
+  };
 
   useEffect(() => {
     if (isHovered) return;
@@ -79,6 +100,9 @@ export function HeroCarousel() {
       className="relative w-full overflow-hidden h-[60svh] min-h-[380px] lg:h-[70vh] lg:min-h-[500px]"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
     >
       {/* Background images with transition */}
       {slides.map((s, i) => (
@@ -141,14 +165,14 @@ export function HeroCarousel() {
       {/* Navigation arrows */}
       <button
         onClick={prev}
-        className="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/10 backdrop-blur-sm border border-white/15 flex items-center justify-center text-white hover:bg-white/20 transition-all cursor-pointer"
+        className="hidden sm:flex absolute left-5 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/10 backdrop-blur-sm border border-white/15 items-center justify-center text-white hover:bg-white/20 transition-all cursor-pointer"
         aria-label="Anterior"
       >
         <ChevronLeft className="w-5 h-5" />
       </button>
       <button
         onClick={next}
-        className="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/10 backdrop-blur-sm border border-white/15 flex items-center justify-center text-white hover:bg-white/20 transition-all cursor-pointer"
+        className="hidden sm:flex absolute right-5 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/10 backdrop-blur-sm border border-white/15 items-center justify-center text-white hover:bg-white/20 transition-all cursor-pointer"
         aria-label="Siguiente"
       >
         <ChevronRight className="w-5 h-5" />
