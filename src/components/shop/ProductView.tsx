@@ -18,6 +18,7 @@ import { Info } from "lucide-react";
 import { MaterialsCalculator } from "./MaterialsCalculator";
 import { ShippingCalculator } from "@/components/shop/ShippingCalculator";
 import { InfoDrawer } from "@/components/shared/InfoDrawer";
+import { ProductImageLightbox } from "@/components/shop/ProductImageLightbox";
 import type { ShopifyProduct, ShopifyMediaNode, ShopifyMediaSource, ShopifySelectedOption, ShopifyProductOption, ShopifyVariant } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -44,6 +45,7 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [quantity, setQuantity] = useState(1);
     const [isVariantChanging, setIsVariantChanging] = useState(false);
+    const [lightboxOpen, setLightboxOpen] = useState(false);
     const galleryRef = useRef<HTMLDivElement>(null);
     // Prevent onScroll from updating activeImageIndex mid-flight during a
     // programmatic smooth scroll (triggered by thumbnail click or arrows).
@@ -216,13 +218,28 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                     instead of drifting with scrollLeft. Absolute-positioned children of an
                     overflow:auto element get laid out relative to the full scrollable area, not
                     the visible viewport, so they scroll with the content. Lifting them to a
-                    non-scrolling parent keeps them fixed on screen. */}
-                <div className={cn(
-                    "relative w-full mx-auto group",
-                    isQuickView
-                        ? "aspect-square rounded-2xl bg-slate-50/80 overflow-hidden"
-                        : "aspect-square lg:aspect-[4/3] mb-2 lg:mb-8 bg-slate-50/80 rounded-2xl lg:rounded-3xl border border-slate-100 overflow-hidden"
-                )}>
+                    non-scrolling parent keeps them fixed on screen.
+
+                    Click on the frame (not on a button/thumbnail) opens the fullscreen lightbox.
+                    Only when not in QuickView — QuickView already IS a modal, nesting lightboxes
+                    would be confusing. */}
+                <div
+                    className={cn(
+                        "relative w-full mx-auto group",
+                        isQuickView
+                            ? "aspect-square rounded-2xl bg-slate-50/80 overflow-hidden"
+                            : "aspect-square lg:aspect-[4/3] mb-2 lg:mb-8 bg-slate-50/80 rounded-2xl lg:rounded-3xl border border-slate-100 overflow-hidden",
+                        // Cursor hints "click to zoom" only when the active slide is an image
+                        // — videos and 3D models have their own controls and shouldn't open the
+                        // lightbox.
+                        !isQuickView && activeMedia?.mediaContentType === "IMAGE" && "cursor-zoom-in"
+                    )}
+                    onClick={() => {
+                        if (isQuickView) return;
+                        const node = media[activeImageIndex]?.node;
+                        if (node?.mediaContentType === "IMAGE") setLightboxOpen(true);
+                    }}
+                >
                     {/* Scrollable track. No `justify-center` here — with horizontal overflow it
                         would center the total children width inside the viewport and split the
                         first slide in half at scrollLeft=0. Default flex-start is what we want. */}
@@ -757,6 +774,24 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                         {isVariantChanging ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Agregar al carrito"}
                     </Button>
                 </motion.div>
+            )}
+
+            {/* Fullscreen image lightbox — opens when the user clicks the gallery frame.
+                Only mounted for the full product page, not inside QuickView. */}
+            {!isQuickView && (
+                <ProductImageLightbox
+                    isOpen={lightboxOpen}
+                    onClose={() => setLightboxOpen(false)}
+                    media={media}
+                    activeIndex={activeImageIndex}
+                    onIndexChange={(i) => {
+                        setActiveImageIndex(i);
+                        // Keep the underlying gallery in sync so closing the lightbox
+                        // doesn't leave the strip on a different slide.
+                        goToImage(i);
+                    }}
+                    productTitle={product.title}
+                />
             )}
         </div>
     );
