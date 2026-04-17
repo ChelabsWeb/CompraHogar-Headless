@@ -159,7 +159,7 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
 
                 {recommendations.length > 0 && (
                     <div className="mt-8 lg:mt-12">
-                        <ProductCarousel title="Quienes vieron esto también compraron" products={recommendations} />
+                        <ProductCarousel title="También te puede interesar" products={recommendations} />
                     </div>
                 )}
 
