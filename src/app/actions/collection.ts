@@ -14,8 +14,9 @@ export async function loadMoreCollectionProducts(
   try {
      const { body } = await shopifyFetch({
         query: getCollectionWithProductsQuery,
-        variables: { 
-            handle, 
+        tags: ['collections', 'products', `collection:${handle}`],
+        variables: {
+            handle,
             first,
             filters: filters && filters.length > 0 ? filters : undefined,
             sortKey,

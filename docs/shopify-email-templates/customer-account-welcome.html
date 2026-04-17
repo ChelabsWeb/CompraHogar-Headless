@@ -1,0 +1,169 @@
+<!--
+  CompraHogar — Customer Account Welcome
+  Pegar en: Shopify Admin → Settings → Notifications → Customer account welcome → Edit code
+  Reemplaza TODO el contenido del template (HTML) por esto.
+-->
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bienvenido a CompraHogar</title>
+    <!--[if mso]>
+    <xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml>
+    <![endif]-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+      * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+      body, table, td, p, a, h1, h2, h3, h4, div, span, li {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif !important;
+      }
+      @media only screen and (max-width: 600px) {
+        .container { width: 100% !important; }
+        .px-40 { padding-left: 24px !important; padding-right: 24px !important; }
+        .py-40 { padding-top: 28px !important; padding-bottom: 28px !important; }
+        .h1 { font-size: 24px !important; line-height: 30px !important; }
+        .btn { display: block !important; width: 100% !important; box-sizing: border-box; }
+      }
+    </style>
+    <!--[if mso]>
+    <style type="text/css">
+      body, table, td, p, a, h1, h2, h3, div, span { font-family: Arial, Helvetica, sans-serif !important; }
+    </style>
+    <![endif]-->
+  </head>
+  <body style="margin:0; padding:0; background-color:#f4f4f5; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; color:#09090b;">
+    <!-- Preheader (hidden preview text) -->
+    <div style="display:none; max-height:0; overflow:hidden; mso-hide:all;">
+      Tu cuenta en CompraHogar ya está lista. Comprá más rápido y seguí tus pedidos.
+    </div>
+
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f4f4f5;">
+      <tr>
+        <td align="center" style="padding: 32px 16px;">
+          <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px; max-width:600px; background-color:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+
+            <!-- Header / Logo bar -->
+            <tr>
+              <td align="center" style="background-color:#ffffff; padding: 28px 24px; border-bottom:1px solid #e4e4e7;">
+                <a href="https://www.comprahogar.com.uy/" style="text-decoration:none; display:inline-block;">
+                  <img src="https://www.comprahogar.com.uy/logocomprahogar.png" alt="CompraHogar" width="180" style="display:block; border:0; max-width:180px; height:auto;">
+                </a>
+              </td>
+            </tr>
+
+            <!-- Hero / Title -->
+            <tr>
+              <td class="px-40 py-40" style="padding: 40px 40px 16px 40px;">
+                <h1 class="h1" style="margin:0; font-size:28px; line-height:34px; font-weight:700; color:#09090b; letter-spacing:-0.3px;">
+                  ¡Hola, {{ customer.first_name }}! 👋
+                </h1>
+                <p style="margin:16px 0 0 0; font-size:16px; line-height:24px; color:#475569;">
+                  Tu cuenta en <strong style="color:#21645d;">CompraHogar</strong> ya está activa. Ahora podés comprar más rápido, seguir tus pedidos en tiempo real y acceder a ofertas exclusivas.
+                </p>
+                {% if custom_message != blank %}
+                <div style="margin:20px 0 0 0; padding:16px 18px; background-color:#f4f4f5; border-left:3px solid #f3843e; border-radius:8px; font-size:15px; line-height:22px; color:#334155;">
+                  {{ custom_message }}
+                </div>
+                {% endif %}
+              </td>
+            </tr>
+
+            <!-- CTA -->
+            <tr>
+              <td class="px-40" align="center" style="padding: 24px 40px 8px 40px;">
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td align="center" style="background-color:#f3843e; border-radius:12px;">
+                      <a class="btn" href="https://www.comprahogar.com.uy/cuenta" style="display:inline-block; padding:14px 32px; font-size:16px; font-weight:600; color:#ffffff; text-decoration:none; border-radius:12px;">
+                        Ir a mi cuenta
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- Secondary CTA -->
+            <tr>
+              <td class="px-40" align="center" style="padding: 8px 40px 32px 40px;">
+                <a href="https://www.comprahogar.com.uy/productos" style="font-size:14px; color:#21645d; text-decoration:underline; font-weight:500;">
+                  o seguí explorando productos →
+                </a>
+              </td>
+            </tr>
+
+            <!-- Divider -->
+            <tr>
+              <td class="px-40" style="padding: 0 40px;">
+                <hr style="border:0; border-top:1px solid #e4e4e7; margin:0;">
+              </td>
+            </tr>
+
+            <!-- Benefits -->
+            <tr>
+              <td class="px-40" style="padding: 28px 40px 8px 40px;">
+                <h2 style="margin:0 0 16px 0; font-size:16px; font-weight:600; color:#09090b;">
+                  Con tu cuenta podés:
+                </h2>
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td style="padding:8px 0; font-size:15px; line-height:22px; color:#334155;">
+                      <span style="color:#21645d; font-weight:700;">✓</span> &nbsp; Seguir tus pedidos y ver el historial completo
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding:8px 0; font-size:15px; line-height:22px; color:#334155;">
+                      <span style="color:#21645d; font-weight:700;">✓</span> &nbsp; Guardar productos como favoritos
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding:8px 0; font-size:15px; line-height:22px; color:#334155;">
+                      <span style="color:#21645d; font-weight:700;">✓</span> &nbsp; Comprar más rápido con direcciones guardadas
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding:8px 0; font-size:15px; line-height:22px; color:#334155;">
+                      <span style="color:#21645d; font-weight:700;">✓</span> &nbsp; Recibir ofertas exclusivas por email
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- Help -->
+            <tr>
+              <td class="px-40" style="padding: 24px 40px 40px 40px;">
+                <div style="background-color:#f4f4f5; border-radius:12px; padding:20px;">
+                  <p style="margin:0; font-size:14px; line-height:20px; color:#475569;">
+                    ¿Necesitás ayuda? Escribinos por <a href="https://wa.me/59896244003" style="color:#21645d; font-weight:600; text-decoration:none;">WhatsApp</a> o respondé este email y te contestamos en el día.
+                  </p>
+                </div>
+              </td>
+            </tr>
+
+          </table>
+
+          <!-- Footer -->
+          <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px; max-width:600px;">
+            <tr>
+              <td align="center" style="padding: 24px 16px; font-size:12px; line-height:18px; color:#94a3b8;">
+                <p style="margin:0 0 8px 0;">
+                  © {{ 'now' | date: '%Y' }} CompraHogar · Uruguay
+                </p>
+                <p style="margin:0;">
+                  Recibís este email porque creaste una cuenta en
+                  <a href="https://www.comprahogar.com.uy/" style="color:#21645d; text-decoration:none;">comprahogar.com.uy</a>
+                </p>
+              </td>
+            </tr>
+          </table>
+
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

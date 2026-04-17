@@ -17,6 +17,7 @@ async function FeaturedProducts() {
   try {
     const { body } = await shopifyFetch({
       query: getProductsQuery,
+      tags: ['products'],
       variables: { first: 8 },
     });
 

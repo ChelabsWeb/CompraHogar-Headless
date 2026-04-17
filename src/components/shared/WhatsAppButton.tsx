@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 
-const WHATSAPP_NUMBER = "59899000000"; // TODO: Reemplazar con número real
+const WHATSAPP_NUMBER = "59896244003";
 const DEFAULT_MESSAGE = "Hola! Tengo una consulta sobre un producto en CompraHogar.";
 
 export function WhatsAppButton() {

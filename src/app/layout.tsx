@@ -6,12 +6,15 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CartProvider } from "@/components/cart/CartProvider";
 import { WishlistProvider } from "@/components/shop/WishlistProvider";
+import { CompareProvider } from "@/components/shop/CompareProvider";
+import { CompareBar } from "@/components/shop/CompareBar";
 import { shopifyFetch } from "@/lib/shopify";
 import { getCollectionsQuery } from "@/lib/queries";
 import { cookies } from "next/headers";
 import type { ShopifyCollection, ShopifyCollectionEdge } from "@/lib/types";
 import { ExitIntentPopup } from "@/components/shared/ExitIntentPopup";
 import { WhatsAppButton } from "@/components/shared/WhatsAppButton";
+import { ServiceWorkerRegister } from "@/components/shared/ServiceWorkerRegister";
 
 // Pure clean geometry: Single highly readable sans-serif
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
@@ -25,6 +28,16 @@ export const metadata: Metadata = {
     template: "%s | CompraHogar Uruguay",
   },
   description: "Tu ferretería online en Uruguay. Materiales de construcción, herramientas, sanitaria, electricidad y más. Envíos a todo el país en 24-48hs. Hasta 12 cuotas sin interés.",
+  applicationName: "CompraHogar",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    title: "CompraHogar",
+    statusBarStyle: "default",
+  },
+  icons: {
+    apple: "/icons/apple-touch-icon.png",
+  },
   openGraph: {
     type: "website",
     locale: "es_UY",
@@ -37,6 +50,10 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport = {
+  themeColor: "#21645d",
+};
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -46,6 +63,7 @@ export default async function RootLayout({
   try {
     const { body } = await shopifyFetch({
       query: getCollectionsQuery,
+      tags: ['collections'],
       variables: { first: 20 },
     });
     collections = body?.data?.collections?.edges?.map((edge: ShopifyCollectionEdge) => edge.node) || [];
@@ -153,13 +171,17 @@ fbq('track', 'PageView');`,
         )}
         <CartProvider customerAccessToken={customerAccessToken}>
           <WishlistProvider isLoggedIn={isLoggedIn}>
-            <Header collections={collections} isLoggedIn={isLoggedIn} />
-            <main className="flex-1 w-full pt-[96px] lg:pt-[116px]">
-              {children}
-            </main>
-            <Footer />
-            <ExitIntentPopup />
-            <WhatsAppButton />
+            <CompareProvider>
+              <Header collections={collections} isLoggedIn={isLoggedIn} />
+              <main className="flex-1 w-full pt-[96px] lg:pt-[116px]">
+                {children}
+              </main>
+              <Footer />
+              <ExitIntentPopup />
+              <WhatsAppButton />
+              <CompareBar />
+              <ServiceWorkerRegister />
+            </CompareProvider>
           </WishlistProvider>
         </CartProvider>
       </body>
