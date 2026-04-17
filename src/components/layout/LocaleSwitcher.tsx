@@ -16,7 +16,6 @@ import { cn } from "@/lib/utils"
 const LOCALE_OPTIONS = [
   { value: "es-UY", label: "ES / UYU", flag: "🇺🇾" },
   { value: "en-US", label: "EN / USD", flag: "🇺🇸" },
-  { value: "es-AR", label: "ES / ARS", flag: "🇦🇷" },
 ]
 
 interface LocaleSwitcherProps {
