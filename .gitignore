@@ -33,6 +33,12 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# one-off debug/exploration scripts (NEVER commit — may contain hardcoded credentials)
+.check_*.js
+.check_*.ts
+.debug_*.js
+.debug_*.ts
+
 # vercel
 .vercel
 
