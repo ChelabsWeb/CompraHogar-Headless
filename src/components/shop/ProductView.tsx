@@ -252,7 +252,13 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                 >
                     {media.length > 0 ? (
                         media.map((item: { node: ShopifyMediaNode }, idx: number) => (
-                            <div key={idx} className="w-full h-full shrink-0 snap-start relative flex items-center justify-center">
+                            <div
+                                key={idx}
+                                // overflow-hidden is load-bearing: the image uses transform:scale(2)
+                                // on hover-zoom (see renderMedia). Without clipping the slide, the
+                                // scaled image bleeds into the adjacent slide and both appear at once.
+                                className="w-full h-full shrink-0 snap-start relative flex items-center justify-center overflow-hidden"
+                            >
                                 {renderMedia(item.node)}
                             </div>
                         ))

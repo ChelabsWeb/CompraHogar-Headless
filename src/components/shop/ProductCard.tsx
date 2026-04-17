@@ -45,7 +45,12 @@ function ProductCardInner({ product, priority = false }: ProductCardProps) {
                     {images.length > 0 ? (
                         <div className="flex w-full h-full overflow-x-auto snap-x snap-mandatory no-scrollbar overscroll-x-contain">
                             {images.map((img, index) => (
-                                <div key={index} className="w-full h-full shrink-0 snap-start relative">
+                                <div
+                                    key={index}
+                                    // overflow-hidden prevents the 1.03x hover scale from bleeding
+                                    // into the next slide inside the snap scroll container.
+                                    className="w-full h-full shrink-0 snap-start relative overflow-hidden"
+                                >
                                     <Image
                                         src={img.url}
                                         alt={img.altText || product.title}
