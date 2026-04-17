@@ -3,7 +3,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, ShieldCheck, Ruler, ArrowRight, X, Zap, Play, Box, Loader2, ShoppingCart } from "lucide-react";
+import { ChevronLeft, ChevronRight, ShieldCheck, ArrowRight, X, Zap, Play, Box, Loader2 } from "lucide-react";
 import { FavoriteButton } from "@/components/shop/FavoriteButton";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -44,8 +44,6 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [quantity, setQuantity] = useState(1);
     const [isVariantChanging, setIsVariantChanging] = useState(false);
-    const [isZoomed, setIsZoomed] = useState(false);
-    const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
     const galleryRef = useRef<HTMLDivElement>(null);
     // Prevent onScroll from updating activeImageIndex mid-flight during a
     // programmatic smooth scroll (triggered by thumbnail click or arrows).
@@ -105,17 +103,16 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
         };
     }, []);
 
-    const goNext = useCallback(() => goToImage(activeImageIndex + 1), [activeImageIndex, goToImage]);
-    const goPrev = useCallback(() => goToImage(activeImageIndex - 1), [activeImageIndex, goToImage]);
-
-    // Zoom on hover (desktop only, not QuickView)
-    const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-        if (isQuickView) return;
-        const rect = e.currentTarget.getBoundingClientRect();
-        const x = ((e.clientX - rect.left) / rect.width) * 100;
-        const y = ((e.clientY - rect.top) / rect.height) * 100;
-        setZoomPos({ x, y });
-    }, [isQuickView]);
+    // Cyclical navigation: prev from first → last, next from last → first.
+    // Arrows stay visible at all times so users never lose the affordance.
+    const goNext = useCallback(() => {
+        if (media.length === 0) return;
+        goToImage((activeImageIndex + 1) % media.length);
+    }, [activeImageIndex, goToImage, media.length]);
+    const goPrev = useCallback(() => {
+        if (media.length === 0) return;
+        goToImage(activeImageIndex === 0 ? media.length - 1 : activeImageIndex - 1);
+    }, [activeImageIndex, goToImage, media.length]);
 
     const renderMedia = (node: ShopifyMediaNode | undefined) => {
         if (!node) return <div className="text-slate-400 text-sm font-bold uppercase tracking-widest">Sin Media</div>;
@@ -164,11 +161,7 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                 alt={node.alt || node.previewImage?.altText || product.title}
                 fill
                 priority
-                className={cn(
-                    "object-contain z-0 pointer-events-none transition-transform duration-300 ease-out",
-                    !isQuickView && isZoomed ? "scale-[2]" : "scale-100"
-                )}
-                style={!isQuickView && isZoomed ? { transformOrigin: `${zoomPos.x}% ${zoomPos.y}%` } : undefined}
+                className="object-contain z-0 pointer-events-none"
                 sizes="(max-width: 1024px) 100vw, 55vw"
             />
         );
@@ -237,7 +230,7 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                         "relative flex items-center w-full mx-auto group overflow-x-auto snap-x snap-mandatory no-scrollbar",
                         isQuickView
                             ? "aspect-square rounded-2xl bg-slate-50/80 overflow-hidden"
-                            : "aspect-square lg:aspect-[4/3] mb-2 lg:mb-8 bg-slate-50/80 rounded-2xl lg:rounded-3xl border border-slate-100 overflow-hidden cursor-zoom-in"
+                            : "aspect-square lg:aspect-[4/3] mb-2 lg:mb-8 bg-slate-50/80 rounded-2xl lg:rounded-3xl border border-slate-100 overflow-hidden"
                     )}
                     onScroll={(e) => {
                         if (isProgrammaticScrollRef.current) return;
@@ -246,9 +239,6 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                         const index = Math.round(scrollLeft / clientWidth);
                         if (index !== activeImageIndex) setActiveImageIndex(index);
                     }}
-                    onMouseEnter={() => !isQuickView && setIsZoomed(true)}
-                    onMouseLeave={() => { setIsZoomed(false); }}
-                    onMouseMove={handleMouseMove}
                 >
                     {media.length > 0 ? (
                         media.map((item: { node: ShopifyMediaNode }, idx: number) => (
@@ -268,24 +258,23 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                         </div>
                     )}
 
-                    {/* Desktop Navigation Arrows */}
+                    {/* Desktop Navigation Arrows — always visible when there's more than 1 slide.
+                        goPrev/goNext wrap around (first ↔ last). */}
                     {media.length > 1 && (
                         <>
                             <button
+                                type="button"
+                                aria-label="Imagen anterior"
                                 onClick={(e) => { e.stopPropagation(); goPrev(); }}
-                                className={cn(
-                                    "hidden lg:flex absolute left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm shadow-md border border-slate-200 items-center justify-center text-slate-600 hover:bg-white hover:text-slate-900 transition-all",
-                                    activeImageIndex === 0 && "opacity-0 pointer-events-none"
-                                )}
+                                className="hidden lg:flex absolute left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm shadow-md border border-slate-200 items-center justify-center text-slate-600 hover:bg-white hover:text-slate-900 hover:scale-105 transition-all"
                             >
                                 <ChevronLeft className="w-5 h-5" />
                             </button>
                             <button
+                                type="button"
+                                aria-label="Imagen siguiente"
                                 onClick={(e) => { e.stopPropagation(); goNext(); }}
-                                className={cn(
-                                    "hidden lg:flex absolute right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm shadow-md border border-slate-200 items-center justify-center text-slate-600 hover:bg-white hover:text-slate-900 transition-all",
-                                    activeImageIndex === media.length - 1 && "opacity-0 pointer-events-none"
-                                )}
+                                className="hidden lg:flex absolute right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm shadow-md border border-slate-200 items-center justify-center text-slate-600 hover:bg-white hover:text-slate-900 hover:scale-105 transition-all"
                             >
                                 <ChevronRight className="w-5 h-5" />
                             </button>
