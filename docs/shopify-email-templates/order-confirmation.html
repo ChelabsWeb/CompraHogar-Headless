@@ -1,0 +1,237 @@
+<!--
+  CompraHogar — Order Confirmation
+  Pegar en: Shopify Admin → Settings → Notifications → Order confirmation → Edit code
+  Reemplaza TODO el contenido del template (HTML) por esto.
+
+  Subject sugerido:
+    Recibimos tu pedido #{{ order.order_number }} — ¡Gracias, {{ customer.first_name }}!
+-->
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pedido confirmado — CompraHogar</title>
+    <!--[if mso]>
+    <xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml>
+    <![endif]-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+      * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+      body, table, td, p, a, h1, h2, h3, h4, div, span, li {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif !important;
+      }
+      @media only screen and (max-width: 600px) {
+        .container { width: 100% !important; }
+        .px-40 { padding-left: 24px !important; padding-right: 24px !important; }
+        .h1 { font-size: 24px !important; line-height: 30px !important; }
+        .btn { display: block !important; width: 100% !important; box-sizing: border-box; }
+        .stack-col { display:block !important; width:100% !important; padding:0 !important; }
+        .stack-col + .stack-col { margin-top:20px; }
+      }
+    </style>
+    <!--[if mso]>
+    <style type="text/css">
+      body, table, td, p, a, h1, h2, h3, div, span { font-family: Arial, Helvetica, sans-serif !important; }
+    </style>
+    <![endif]-->
+  </head>
+  <body style="margin:0; padding:0; background-color:#f4f4f5; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; color:#09090b;">
+    <div style="display:none; max-height:0; overflow:hidden; mso-hide:all;">
+      Recibimos tu pedido #{{ order.order_number }}. Te avisamos cuando lo despachemos.
+    </div>
+
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f4f4f5;">
+      <tr>
+        <td align="center" style="padding: 32px 16px;">
+          <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px; max-width:600px; background-color:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+
+            <!-- Header -->
+            <tr>
+              <td align="center" style="background-color:#ffffff; padding: 28px 24px; border-bottom:1px solid #e4e4e7;">
+                <a href="https://www.comprahogar.com.uy/" style="text-decoration:none;">
+                  <img src="https://www.comprahogar.com.uy/logocomprahogar.png" alt="CompraHogar" width="180" style="display:block; border:0; max-width:180px; height:auto;">
+                </a>
+              </td>
+            </tr>
+
+            <!-- Title -->
+            <tr>
+              <td class="px-40" style="padding: 40px 40px 8px 40px;">
+                <p style="margin:0 0 8px 0; font-size:13px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:#f3843e;">
+                  Pedido confirmado
+                </p>
+                <h1 class="h1" style="margin:0; font-size:28px; line-height:34px; font-weight:700; color:#09090b; letter-spacing:-0.3px;">
+                  ¡Gracias por tu compra, {{ customer.first_name }}!
+                </h1>
+                <p style="margin:16px 0 0 0; font-size:16px; line-height:24px; color:#475569;">
+                  Recibimos tu pedido <strong style="color:#21645d;">#{{ order.order_number }}</strong> y ya estamos preparándolo. Te vamos a avisar por email cuando lo despachemos.
+                </p>
+                {% if custom_message != blank %}
+                <div style="margin:20px 0 0 0; padding:16px 18px; background-color:#f4f4f5; border-left:3px solid #f3843e; border-radius:8px; font-size:15px; line-height:22px; color:#334155;">
+                  {{ custom_message }}
+                </div>
+                {% endif %}
+              </td>
+            </tr>
+
+            <!-- CTA Ver pedido -->
+            <tr>
+              <td class="px-40" align="center" style="padding: 28px 40px 8px 40px;">
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td align="center" style="background-color:#f3843e; border-radius:12px;">
+                      <a class="btn" href="{{ order_status_url }}" style="display:inline-block; padding:14px 32px; font-size:16px; font-weight:600; color:#ffffff; text-decoration:none; border-radius:12px;">
+                        Ver estado del pedido
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- Divider -->
+            <tr><td class="px-40" style="padding: 32px 40px 0 40px;"><hr style="border:0; border-top:1px solid #e4e4e7; margin:0;"></td></tr>
+
+            <!-- Order summary -->
+            <tr>
+              <td class="px-40" style="padding: 28px 40px 8px 40px;">
+                <h2 style="margin:0 0 16px 0; font-size:16px; font-weight:600; color:#09090b;">Resumen del pedido</h2>
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                  {% for line in order.line_items %}
+                  <tr>
+                    <td style="padding:12px 0; border-bottom:1px solid #f1f5f9;">
+                      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                        <tr>
+                          <td width="64" valign="top" style="padding-right:14px;">
+                            {% if line.image %}
+                              <img src="{{ line | img_url: '120x120', crop: 'center' }}" alt="{{ line.title | escape }}" width="64" height="64" style="display:block; border-radius:8px; border:1px solid #e4e4e7; object-fit:cover;">
+                            {% endif %}
+                          </td>
+                          <td valign="top" style="font-size:14px; line-height:20px; color:#09090b;">
+                            <div style="font-weight:600;">{{ line.title }}</div>
+                            {% if line.variant.title != 'Default Title' %}
+                              <div style="color:#64748b; font-size:13px; margin-top:2px;">{{ line.variant.title }}</div>
+                            {% endif %}
+                            <div style="color:#64748b; font-size:13px; margin-top:4px;">Cantidad: {{ line.quantity }}</div>
+                          </td>
+                          <td valign="top" align="right" style="font-size:14px; font-weight:600; color:#09090b; white-space:nowrap;">
+                            {{ line.line_price | money }}
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </table>
+              </td>
+            </tr>
+
+            <!-- Totals -->
+            <tr>
+              <td class="px-40" style="padding: 20px 40px 0 40px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="font-size:14px; color:#334155;">
+                  <tr>
+                    <td style="padding:4px 0;">Subtotal</td>
+                    <td align="right" style="padding:4px 0;">{{ subtotal_price | money }}</td>
+                  </tr>
+                  {% if shipping_price > 0 %}
+                  <tr>
+                    <td style="padding:4px 0;">Envío</td>
+                    <td align="right" style="padding:4px 0;">{{ shipping_price | money }}</td>
+                  </tr>
+                  {% else %}
+                  <tr>
+                    <td style="padding:4px 0;">Envío</td>
+                    <td align="right" style="padding:4px 0; color:#16a34a; font-weight:600;">Gratis</td>
+                  </tr>
+                  {% endif %}
+                  {% if total_discounts > 0 %}
+                  <tr>
+                    <td style="padding:4px 0; color:#16a34a;">Descuento</td>
+                    <td align="right" style="padding:4px 0; color:#16a34a;">-{{ total_discounts | money }}</td>
+                  </tr>
+                  {% endif %}
+                  <tr>
+                    <td style="padding:14px 0 4px 0; border-top:1px solid #e4e4e7; font-weight:700; color:#09090b; font-size:16px;">Total</td>
+                    <td align="right" style="padding:14px 0 4px 0; border-top:1px solid #e4e4e7; font-weight:700; color:#21645d; font-size:18px;">{{ total_price | money }}</td>
+                  </tr>
+                  {% if payment_terms %}
+                  <tr>
+                    <td colspan="2" style="padding:6px 0; font-size:12px; color:#64748b;">
+                      Pagás en {{ payment_terms.installments_count }} cuotas sin interés.
+                    </td>
+                  </tr>
+                  {% endif %}
+                </table>
+              </td>
+            </tr>
+
+            <!-- Divider -->
+            <tr><td class="px-40" style="padding: 28px 40px 0 40px;"><hr style="border:0; border-top:1px solid #e4e4e7; margin:0;"></td></tr>
+
+            <!-- Addresses -->
+            <tr>
+              <td class="px-40" style="padding: 28px 40px 8px 40px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    {% if shipping_address %}
+                    <td class="stack-col" valign="top" width="50%" style="padding-right:16px; font-size:14px; line-height:20px; color:#334155;">
+                      <div style="font-weight:600; color:#09090b; margin-bottom:8px;">Dirección de envío</div>
+                      <div>{{ shipping_address.first_name }} {{ shipping_address.last_name }}</div>
+                      <div>{{ shipping_address.address1 }}</div>
+                      {% if shipping_address.address2 != blank %}<div>{{ shipping_address.address2 }}</div>{% endif %}
+                      <div>{{ shipping_address.city }}{% if shipping_address.province %}, {{ shipping_address.province }}{% endif %} {{ shipping_address.zip }}</div>
+                      <div>{{ shipping_address.country }}</div>
+                      {% if shipping_address.phone %}<div style="margin-top:4px; color:#64748b;">Tel: {{ shipping_address.phone }}</div>{% endif %}
+                    </td>
+                    {% endif %}
+                    {% if billing_address %}
+                    <td class="stack-col" valign="top" width="50%" style="padding-left:16px; font-size:14px; line-height:20px; color:#334155;">
+                      <div style="font-weight:600; color:#09090b; margin-bottom:8px;">Método de pago</div>
+                      {% for transaction in transactions %}
+                        {% if transaction.status == 'success' and transaction.kind != 'authorization' %}
+                        <div>{{ transaction.gateway_display_name }}</div>
+                        {% endif %}
+                      {% endfor %}
+                    </td>
+                    {% endif %}
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- Help -->
+            <tr>
+              <td class="px-40" style="padding: 28px 40px 40px 40px;">
+                <div style="background-color:#f4f4f5; border-radius:12px; padding:20px;">
+                  <p style="margin:0 0 6px 0; font-size:14px; font-weight:600; color:#09090b;">¿Tenés alguna duda sobre tu pedido?</p>
+                  <p style="margin:0; font-size:14px; line-height:20px; color:#475569;">
+                    Escribinos por <a href="https://wa.me/59896244003" style="color:#21645d; font-weight:600; text-decoration:none;">WhatsApp</a> o respondé este email y te contestamos en el día.
+                  </p>
+                </div>
+              </td>
+            </tr>
+
+          </table>
+
+          <!-- Footer -->
+          <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px; max-width:600px;">
+            <tr>
+              <td align="center" style="padding: 24px 16px; font-size:12px; line-height:18px; color:#94a3b8;">
+                <p style="margin:0 0 8px 0;">© {{ 'now' | date: '%Y' }} CompraHogar · Uruguay</p>
+                <p style="margin:0;">
+                  <a href="https://www.comprahogar.com.uy/" style="color:#21645d; text-decoration:none;">comprahogar.com.uy</a>
+                </p>
+              </td>
+            </tr>
+          </table>
+
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
