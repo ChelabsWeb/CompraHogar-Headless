@@ -217,48 +217,50 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                     </Badge>
                 </div>
 
-                {/* Imagen Principal
-                    NOTE: no `justify-center` on this container. A flex container with
-                    `justify-center` + horizontal overflow will try to center the total
-                    children width inside the viewport, so with 2 full-width slides the
-                    initial scroll shows the right half of slide 1 + left half of slide 2
-                    (half each, with a gap). Default (flex-start) aligns the first slide
-                    to the left edge, which is what snap-start expects. */}
-                <div
-                    ref={galleryRef}
-                    className={cn(
-                        "relative flex items-center w-full mx-auto group overflow-x-auto snap-x snap-mandatory no-scrollbar",
-                        isQuickView
-                            ? "aspect-square rounded-2xl bg-slate-50/80 overflow-hidden"
-                            : "aspect-square lg:aspect-[4/3] mb-2 lg:mb-8 bg-slate-50/80 rounded-2xl lg:rounded-3xl border border-slate-100 overflow-hidden"
-                    )}
-                    onScroll={(e) => {
-                        if (isProgrammaticScrollRef.current) return;
-                        const { scrollLeft, clientWidth } = e.currentTarget;
-                        if (clientWidth === 0) return;
-                        const index = Math.round(scrollLeft / clientWidth);
-                        if (index !== activeImageIndex) setActiveImageIndex(index);
-                    }}
-                >
-                    {media.length > 0 ? (
-                        media.map((item: { node: ShopifyMediaNode }, idx: number) => (
-                            <div
-                                key={idx}
-                                // overflow-hidden is load-bearing: the image uses transform:scale(2)
-                                // on hover-zoom (see renderMedia). Without clipping the slide, the
-                                // scaled image bleeds into the adjacent slide and both appear at once.
-                                className="w-full h-full shrink-0 snap-start relative flex items-center justify-center overflow-hidden"
-                            >
-                                {renderMedia(item.node)}
+                {/* Gallery frame: visual container (aspect ratio, border, rounded, overflow-hidden).
+                    Inside lives the scroll container. Arrows and counter live OUTSIDE the scroll
+                    container but inside this frame — that way they stay anchored to the viewport
+                    instead of drifting with scrollLeft. Absolute-positioned children of an
+                    overflow:auto element get laid out relative to the full scrollable area, not
+                    the visible viewport, so they scroll with the content. Lifting them to a
+                    non-scrolling parent keeps them fixed on screen. */}
+                <div className={cn(
+                    "relative w-full mx-auto group",
+                    isQuickView
+                        ? "aspect-square rounded-2xl bg-slate-50/80 overflow-hidden"
+                        : "aspect-square lg:aspect-[4/3] mb-2 lg:mb-8 bg-slate-50/80 rounded-2xl lg:rounded-3xl border border-slate-100 overflow-hidden"
+                )}>
+                    {/* Scrollable track. No `justify-center` here — with horizontal overflow it
+                        would center the total children width inside the viewport and split the
+                        first slide in half at scrollLeft=0. Default flex-start is what we want. */}
+                    <div
+                        ref={galleryRef}
+                        className="flex items-center w-full h-full overflow-x-auto snap-x snap-mandatory no-scrollbar"
+                        onScroll={(e) => {
+                            if (isProgrammaticScrollRef.current) return;
+                            const { scrollLeft, clientWidth } = e.currentTarget;
+                            if (clientWidth === 0) return;
+                            const index = Math.round(scrollLeft / clientWidth);
+                            if (index !== activeImageIndex) setActiveImageIndex(index);
+                        }}
+                    >
+                        {media.length > 0 ? (
+                            media.map((item: { node: ShopifyMediaNode }, idx: number) => (
+                                <div
+                                    key={idx}
+                                    className="w-full h-full shrink-0 snap-start relative flex items-center justify-center overflow-hidden"
+                                >
+                                    {renderMedia(item.node)}
+                                </div>
+                            ))
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                                <span className="text-slate-400 text-sm font-bold uppercase tracking-widest">Sin Media</span>
                             </div>
-                        ))
-                    ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                             <span className="text-slate-400 text-sm font-bold uppercase tracking-widest">Sin Media</span>
-                        </div>
-                    )}
+                        )}
+                    </div>
 
-                    {/* Desktop Navigation Arrows — always visible when there's more than 1 slide.
+                    {/* Desktop navigation arrows — always visible when there's more than 1 slide.
                         goPrev/goNext wrap around (first ↔ last). */}
                     {media.length > 1 && (
                         <>
@@ -281,9 +283,9 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                         </>
                     )}
 
-                    {/* Image Counter */}
+                    {/* Image counter */}
                     {media.length > 1 && (
-                        <div className="absolute bottom-3 right-3 z-20 bg-black/50 backdrop-blur-sm text-white text-xs font-medium px-2.5 py-1 rounded-full">
+                        <div className="absolute bottom-3 right-3 z-20 bg-black/50 backdrop-blur-sm text-white text-xs font-medium px-2.5 py-1 rounded-full pointer-events-none">
                             {activeImageIndex + 1}/{media.length}
                         </div>
                     )}
