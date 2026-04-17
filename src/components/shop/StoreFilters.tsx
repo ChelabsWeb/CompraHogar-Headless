@@ -28,9 +28,16 @@ export function StoreFilters({ filters }: StoreFiltersProps) {
   const searchParams = useSearchParams();
   const { toggleFilter } = useStoreFilters();
 
-  // Mantenemos el estado de qué grupos de filtros están expandidos
+  // Colapsamos por defecto los grupos con 6+ valores para que el sidebar no sea abrumador.
+  // Los filtros con valores activos en la URL se mantienen siempre expandidos.
   const [expanded, setExpanded] = useState<Record<string, boolean>>(
-    filters.reduce((acc, filter) => ({ ...acc, [filter.id]: true }), {})
+    filters.reduce((acc, filter) => {
+      const hasActiveValue = filter.values?.some((v) =>
+        searchParams.getAll("filter").includes(v.input)
+      );
+      const shouldCollapseByDefault = (filter.values?.length ?? 0) >= 6 && !hasActiveValue;
+      return { ...acc, [filter.id]: !shouldCollapseByDefault };
+    }, {})
   );
 
   const toggleExpanded = (id: string) => {

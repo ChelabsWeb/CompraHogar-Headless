@@ -2,16 +2,13 @@ import { shopifyFetch } from "@/lib/shopify";
 import { getCollectionWithProductsQuery, getCollectionWithProductsPrevQuery } from "@/lib/queries";
 import { ProductGrid } from "@/components/shop/ProductGrid";
 import { notFound } from "next/navigation";
-import Image from "next/image";
-import { Breadcrumbs } from "@/components/ui/breadcrumbs";
-import { FilterSection, FilterItem, PriceRangeFilter } from "@/components/shop/SidebarFilter";
 import { StoreFilters } from "@/components/shop/StoreFilters";
-import { ChevronDown } from "lucide-react";
 import { SortDropdown } from "@/components/shop/SortDropdown";
 import { MobileFilterDrawer } from "@/components/shop/MobileFilterDrawer";
 import type { Metadata } from "next";
 import { getSubcollections } from "@/lib/constants/collectionHierarchy";
 import { SubcategoryCarousel } from "@/components/shop/SubcategoryCarousel";
+import { CollectionHero } from "@/components/shop/CollectionHero";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
@@ -170,89 +167,81 @@ export default async function CollectionPage(props: {
     };
 
     return (
-        <div className="flex flex-col w-full bg-[#ebebeb] min-h-screen pt-4 pb-16">
+        <div className="flex flex-col w-full bg-[#f7f7f8] min-h-screen pb-16">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
-            <div className="container mx-auto max-w-[1200px] px-4 md:px-0">
 
-                {/* Breadcrumbs */}
-                <div className="mb-4">
-                    <Breadcrumbs 
-                        items={[
-                            { label: "Catálogo", href: "/products" },
-                            { label: collection.title, isLast: true }
-                        ]} 
-                    />
-                </div>
+            <CollectionHero
+                title={collection.title}
+                description={collection.description}
+                image={collection.image}
+                productCount={products.length}
+            />
+
+            <div className="container mx-auto max-w-[1200px] px-4 md:px-6 pt-6 md:pt-10">
 
                 {isMainCategory && subcollections && (
-                    <div className="-mx-4 md:mx-0">
-                        <SubcategoryCarousel 
-                            parentHandle={resolvedParams.handle} 
-                            subcollections={subcollections} 
+                    <div className="-mx-4 md:mx-0 mb-4 md:mb-6">
+                        <SubcategoryCarousel
+                            parentHandle={resolvedParams.handle}
+                            subcollections={subcollections}
                         />
                     </div>
                 )}
 
-                <div className="flex flex-col lg:flex-row gap-6">
+                <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
 
-                    {/* LADO IZQUIERDO: Sidebar ML Style */}
-                    <aside className="hidden lg:flex w-[260px] shrink-0 flex-col pr-4">
-                        <h1 className="text-[26px] font-semibold text-slate-900 capitalize leading-tight mb-2">
-                            {collection.title}
-                        </h1>
-                        <p className="text-[14px] text-slate-500 mb-8 font-light">
-                            {products.length} resultados
-                        </p>
-
-                        {/* Renderizamos el componente Cliente inyectando los filtros provistos por Shopify */}
-                        {shopifyFilters.length > 0 ? (
-                            <StoreFilters filters={shopifyFilters} />
-                        ) : (
-                            <p className="text-sm text-slate-500">No hay filtros disponibles.</p>
-                        )}
+                    {/* LADO IZQUIERDO: Sidebar sticky */}
+                    <aside className="hidden lg:block w-[260px] shrink-0">
+                        <div className="sticky top-[120px] max-h-[calc(100vh-140px)] overflow-y-auto pr-2 -mr-2">
+                            <h2 className="text-[15px] font-bold text-slate-900 uppercase tracking-wide mb-5">
+                                Filtros
+                            </h2>
+                            {shopifyFilters.length > 0 ? (
+                                <StoreFilters filters={shopifyFilters} />
+                            ) : (
+                                <p className="text-sm text-slate-500">No hay filtros disponibles.</p>
+                            )}
+                        </div>
                     </aside>
 
                     {/* LADO DERECHO: Product Grid Area */}
                     <main className="flex-1 min-w-0">
 
-                        {/* Right-Side Utility Bar */}
-                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 lg:mb-4 pt-2">
-                            {/* Mobile only title */}
-                            <div className="lg:hidden mb-4">
-                                <h1 className="text-[22px] font-semibold text-slate-900 capitalize leading-tight">
-                                    {collection.title}
-                                </h1>
-                                <p className="text-[13px] text-slate-500">{products.length} resultados</p>
-                            </div>
-
-                            <div className="hidden lg:block" /> {/* Spacer */}
-
-                            <div className="flex items-center gap-2 ml-auto lg:ml-0">
-                                <span className="text-[14px] font-semibold text-slate-900 hidden sm:inline">Ordenar por:</span>
-                                {/* Client Component hidratado con el currentSort desde la URL */}
-                                <SortDropdown currentSort={sortVal || "relevance"} />
+                        {/* Utility bar: sort + count — sticky on mobile */}
+                        <div className="sticky top-[80px] z-20 -mx-4 md:mx-0 px-4 md:px-0 bg-[#f7f7f8]/95 backdrop-blur-sm lg:static lg:bg-transparent lg:backdrop-blur-none">
+                            <div className="flex items-center justify-between gap-3 py-3 md:py-2 border-b border-slate-200 md:border-0">
+                                <p className="text-[13px] md:text-sm text-slate-600">
+                                    <span className="font-semibold text-slate-900">{products.length}</span>
+                                    <span className="ml-1">{products.length === 1 ? "resultado" : "resultados"}</span>
+                                </p>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[13px] font-medium text-slate-600 hidden sm:inline">Ordenar:</span>
+                                    <SortDropdown currentSort={sortVal || "relevance"} />
+                                </div>
                             </div>
                         </div>
 
-                        {products.length > 0 ? (
-                            <ProductGrid 
-                                products={products}
-                                pageInfo={pageInfo}
-                                collectionHandle={resolvedParams.handle}
-                                filters={filters.length > 0 ? filters : undefined}
-                                sortKey={sortKey}
-                                reverse={reverse}
-                            />
-                        ) : (
-                            <div className="py-24 text-center bg-white border rounded-md shadow-sm text-slate-600">
-                                <p className="text-xl font-medium text-slate-800 mb-2">No hay publicaciones que coincidan con tu búsqueda.</p>
-                                <ul className="text-slate-500 text-sm list-disc list-inside mt-4 inline-block text-left">
-                                    <li>Revisá la ortografía de la palabra.</li>
-                                    <li>Utilizá palabras más genéricas o menos palabras.</li>
-                                    <li>Navegá por las categorías para encontrar un producto similar.</li>
-                                </ul>
-                            </div>
-                        )}
+                        <div className="pt-4 md:pt-6">
+                            {products.length > 0 ? (
+                                <ProductGrid
+                                    products={products}
+                                    pageInfo={pageInfo}
+                                    collectionHandle={resolvedParams.handle}
+                                    filters={filters.length > 0 ? filters : undefined}
+                                    sortKey={sortKey}
+                                    reverse={reverse}
+                                />
+                            ) : (
+                                <div className="py-24 text-center bg-white border border-slate-200 rounded-2xl shadow-sm text-slate-600">
+                                    <p className="text-xl font-medium text-slate-800 mb-2">No hay publicaciones que coincidan con tu búsqueda.</p>
+                                    <ul className="text-slate-500 text-sm list-disc list-inside mt-4 inline-block text-left">
+                                        <li>Revisá la ortografía de la palabra.</li>
+                                        <li>Utilizá palabras más genéricas o menos palabras.</li>
+                                        <li>Navegá por las categorías para encontrar un producto similar.</li>
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
                     </main>
 
                 </div>

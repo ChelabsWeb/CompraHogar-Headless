@@ -55,9 +55,16 @@ function ProductCardInner({ product, priority = false }: ProductCardProps) {
                     )}
 
                     {images.length > 1 && (
-                        <div className="absolute bottom-1.5 left-0 right-0 flex justify-center gap-1.5 z-10 pointer-events-none">
+                        <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1 z-10 pointer-events-none">
                             {images.map((_, idx) => (
-                                <div key={idx} className="w-1 h-1 rounded-full bg-slate-300/80" />
+                                <span
+                                    key={idx}
+                                    className={`h-1.5 rounded-full transition-all duration-300 ${
+                                        idx === 0
+                                            ? "w-4 bg-primary/80 shadow-sm"
+                                            : "w-1.5 bg-slate-400/60"
+                                    }`}
+                                />
                             ))}
                         </div>
                     )}
