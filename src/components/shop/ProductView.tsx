@@ -71,13 +71,14 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
 
     const activeMedia = media[activeImageIndex]?.node;
 
-    // Gallery navigation
+    // Gallery navigation — use explicit scrollTo with exact pixel offset.
+    // scrollIntoView + snap-mandatory caused the scroll to land between two images.
     const goToImage = useCallback((index: number) => {
         if (index < 0 || index >= media.length) return;
         setActiveImageIndex(index);
-        if (galleryRef.current) {
-            const child = galleryRef.current.children[index] as HTMLElement;
-            child?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        const container = galleryRef.current;
+        if (container) {
+            container.scrollTo({ left: container.clientWidth * index, behavior: 'smooth' });
         }
     }, [media.length]);
 
@@ -220,7 +221,7 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                 >
                     {media.length > 0 ? (
                         media.map((item: { node: ShopifyMediaNode }, idx: number) => (
-                            <div key={idx} className="w-full h-full shrink-0 snap-center relative flex items-center justify-center">
+                            <div key={idx} className="w-full h-full shrink-0 snap-start relative flex items-center justify-center">
                                 {renderMedia(item.node)}
                             </div>
                         ))
