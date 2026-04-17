@@ -352,7 +352,7 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
             )}>
 
                 {/* Title row + actions */}
-                <div className="flex items-start justify-between gap-3 mb-3">
+                <div className="flex items-start justify-between gap-3 mb-2">
                     <h1 className="text-xl lg:text-[24px] font-semibold text-slate-900 leading-tight flex-1 min-w-0">
                         {product.title}
                     </h1>
@@ -365,6 +365,24 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                         )}
                     </div>
                 </div>
+
+                {/* Rating link → scrolls to reviews section. Shows Judge.me preview badge
+                    (stars + review count) if there are reviews, invisible otherwise.
+                    Only renders on the full product page, not QuickView. */}
+                {!isQuickView && (
+                    <a
+                        href="#reviews"
+                        className="inline-flex items-center mb-3 text-[13px] text-slate-500 hover:text-primary transition-colors cursor-pointer w-fit"
+                        aria-label="Ver opiniones de clientes"
+                    >
+                        <div
+                            className="jdgm-widget jdgm-preview-badge"
+                            data-id={productExternalId}
+                            data-handle={product.handle}
+                            style={{ minHeight: "18px" }}
+                        />
+                    </a>
+                )}
 
                 {/* Price Section ML Style */}
                 <div className={`mb-4 flex flex-col transition-all duration-300 ${isVariantChanging ? 'opacity-50 blur-sm' : 'opacity-100 blur-0'}`}>
@@ -514,10 +532,12 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                     )}
 
                     {/* Shipping calculator lives ABOVE the buy buttons on purpose: users decide
-                        whether to buy after knowing how much shipping adds and when it arrives. */}
+                        whether to buy after knowing how much shipping adds and when it arrives.
+                        Passing the current product price × quantity so the free-shipping progress
+                        bar reflects the actual cart for this product (not zero). */}
                     {!isQuickView && !isOutOfStock && (
                         <div className="w-full">
-                            <ShippingCalculator />
+                            <ShippingCalculator cartTotal={Number(displayPrice?.amount || 0) * quantity} />
                         </div>
                     )}
 
@@ -676,15 +696,20 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                     </Tabs>
                 </div>
 
-                {/* Judge.me Reviews — at the very bottom, after description */}
-                <div className={cn("mt-12 pt-8 border-t border-slate-200", isQuickView && "hidden")}>
+                {/* Judge.me Reviews — at the very bottom, after description.
+                    id="reviews" so the preview badge near the title can anchor-scroll here.
+                    scroll-mt-24 compensates for the sticky site header. */}
+                <section
+                    id="reviews"
+                    className={cn("mt-12 pt-8 border-t border-slate-200 scroll-mt-24", isQuickView && "hidden")}
+                >
                     <h2 className="text-xl font-bold text-slate-900 mb-6">Opiniones de clientes</h2>
                     <div
                         className="jdgm-widget jdgm-review-widget"
                         data-id={productExternalId}
                         data-handle={product.handle}
                     />
-                </div>
+                </section>
 
             </div>
 
