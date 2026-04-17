@@ -126,7 +126,7 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }} />
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
             <Container>
-                <div className="mb-6 hidden md:block">
+                <div className="mb-4 md:mb-6">
                     <Breadcrumbs
                         items={[
                             { label: "Catálogo", href: "/products" },

@@ -210,13 +210,6 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
 
             {/* LADO IZQUIERDO: Galeria de Fotos Inmersiva */}
             <div className={cn("w-full lg:w-[55%] relative flex flex-col bg-transparent", isQuickView ? "p-5 pt-8 flex items-center justify-center" : "pb-6 lg:pb-0")}>
-                {/* Badge Superior */}
-                <div className={cn("absolute top-6 lg:top-10 left-6 lg:left-10 z-20 flex flex-col gap-2 pointer-events-none", isQuickView && "hidden")}>
-                    <Badge variant="default" className="shadow-lg backdrop-blur-md px-4 py-1.5 uppercase tracking-widest text-[10px]">
-                        <ShieldCheck className="w-3.5 h-3.5 mr-2" /> Grado Premium
-                    </Badge>
-                </div>
-
                 {/* Gallery frame: visual container (aspect ratio, border, rounded, overflow-hidden).
                     Inside lives the scroll container. Arrows and counter live OUTSIDE the scroll
                     container but inside this frame — that way they stay anchored to the viewport
@@ -358,25 +351,20 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                 !isQuickView && "lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto"
             )}>
 
-                {/* Meta info & Title */}
-                <div className="mb-2 text-[12px] text-slate-500 font-medium tracking-wide flex items-center justify-between">
-                    <span>Nuevo</span>
-                    <div className="flex gap-2 items-center">
+                {/* Title row + actions */}
+                <div className="flex items-start justify-between gap-3 mb-3">
+                    <h1 className="text-xl lg:text-[24px] font-semibold text-slate-900 leading-tight flex-1 min-w-0">
+                        {product.title}
+                    </h1>
+                    <div className="flex gap-1 items-center shrink-0">
                         <FavoriteButton productId={product.id} size="md" />
                         {isQuickView && onClose && (
-                            <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full h-11 w-11 text-slate-400 hover:text-slate-900 hover:bg-slate-100">
+                            <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full h-10 w-10 text-slate-400 hover:text-slate-900 hover:bg-slate-100">
                                 <X className="w-5 h-5" />
                             </Button>
                         )}
                     </div>
                 </div>
-
-                <h1 className="text-xl lg:text-[22px] font-semibold text-slate-900 leading-tight mb-2">
-                    {product.title}
-                </h1>
-
-                {/* Stars placeholder — will be connected to real reviews */}
-                <div className="mb-4" />
 
                 {/* Price Section ML Style */}
                 <div className={`mb-4 flex flex-col transition-all duration-300 ${isVariantChanging ? 'opacity-50 blur-sm' : 'opacity-100 blur-0'}`}>
@@ -525,12 +513,22 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                         </div>
                     )}
 
+                    {/* Shipping calculator lives ABOVE the buy buttons on purpose: users decide
+                        whether to buy after knowing how much shipping adds and when it arrives. */}
+                    {!isQuickView && !isOutOfStock && (
+                        <div className="w-full">
+                            <ShippingCalculator />
+                        </div>
+                    )}
+
                     {!isOutOfStock ? (
                         <div className="hidden lg:flex flex-col gap-2 relative">
-                            {/* Desktop ML Style Buttons */}
                             <Button
                                 size={isQuickView ? "default" : "lg"}
-                                className={`w-full text-base font-semibold h-[48px] rounded-md transition-all duration-300 bg-orange-500 hover:bg-orange-600 text-white ${isVariantChanging ? 'opacity-80' : ''}`}
+                                className={cn(
+                                    "w-full text-base font-semibold h-[48px] rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm transition-all",
+                                    isVariantChanging && "opacity-80"
+                                )}
                                 onClick={async () => {
                                     if (currentVariant?.id) {
                                         const url = await addToCart(currentVariant.id, quantity);
@@ -544,9 +542,12 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                                 {isVariantChanging ? <Loader2 className="w-5 h-5 animate-spin" /> : "Comprar ahora"}
                             </Button>
                             <Button
-                                variant="secondary"
+                                variant="outline"
                                 size={isQuickView ? "default" : "lg"}
-                                className={`w-full text-base font-semibold h-[48px] rounded-md transition-all duration-300 bg-orange-50 hover:bg-orange-100 text-orange-600 border-0 ${isVariantChanging ? 'opacity-80' : ''}`}
+                                className={cn(
+                                    "w-full text-base font-semibold h-[48px] rounded-xl border-primary/30 text-primary hover:bg-primary/5 hover:text-primary hover:border-primary transition-all",
+                                    isVariantChanging && "opacity-80"
+                                )}
                                 onClick={async () => {
                                     if (currentVariant?.id) {
                                         await addToCart(currentVariant.id, quantity);
@@ -606,64 +607,37 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                     <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
                 </div>
 
-                {/* Shipping Calculator */}
-                {!isQuickView && (
-                <div className="mb-6 mt-4 relative z-10 w-full">
-                    <ShippingCalculator />
-                </div>
-                )}
-
-                {/* Returns Highlight ML Style */}
-                <div className={cn("mb-5 flex flex-col gap-2 mt-4 pt-4 border-t border-slate-200", isQuickView && "hidden")}>
-                    <div className="flex items-start gap-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-slate-400 mt-0.5 shrink-0">
+                {/* Trust row — compact two-column layout with icons; no marketing repetition */}
+                <div className={cn("mt-5 pt-5 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-3", isQuickView && "hidden")}>
+                    <div className="flex items-start gap-2.5 text-left">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.75} stroke="currentColor" className="w-5 h-5 text-primary shrink-0 mt-0.5">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
                         </svg>
-                        <div className="flex flex-col">
-                            <InfoDrawer title="Devoluciones" triggerText="Devolución gratis" className="text-[14px] text-primary hover:text-primary/80 font-medium p-0 h-auto justify-start no-underline hover:underline">
-                                <div className="space-y-4 text-sm text-slate-600">
-                                    <p>
-                                        Queremos que estés 100% satisfecho con tu compra. Si no es lo que esperabas, <span className="font-medium text-slate-900">puedes devolverlo de forma gratuita</span> dentro de los 30 días posteriores a la recepción.
-                                    </p>
-                                    <ul className="list-disc pl-5 space-y-2 mt-4">
-                                        <li>El producto debe estar en su embalaje original.</li>
-                                        <li>No debe presentar daños ni marcas de uso indebido.</li>
-                                        <li>Conservar recibo o factura de compra.</li>
-                                    </ul>
-                                </div>
-                            </InfoDrawer>
-                            <span className="text-[14px] font-normal text-slate-500 mt-0.5">Tenés 30 días desde que lo recibís.</span>
+                        <div className="min-w-0">
+                            <p className="text-[13px] font-semibold text-slate-900 leading-tight">Devolución gratis en 30 días</p>
+                            <Link href="/devoluciones-y-garantias" className="text-[12px] text-slate-500 hover:text-primary leading-snug mt-0.5 block underline-offset-2 hover:underline">
+                                Si no es lo que esperabas, lo devolvemos.
+                            </Link>
                         </div>
                     </div>
-                    <div className="flex items-start gap-3 mt-2">
-                        <ShieldCheck className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
-                        <div className="flex flex-col">
-                            <span className="text-[14px] text-primary font-medium cursor-pointer hover:underline">Compra Protegida</span>
-                            <span className="text-[14px] font-normal text-slate-500 mt-0.5">Recibí el producto que esperabas o te devolvemos tu dinero.</span>
+                    <div className="flex items-start gap-2.5 text-left">
+                        <ShieldCheck className="w-5 h-5 text-primary shrink-0 mt-0.5" strokeWidth={1.75} />
+                        <div className="min-w-0">
+                            <p className="text-[13px] font-semibold text-slate-900 leading-tight">Compra protegida</p>
+                            <p className="text-[12px] text-slate-500 leading-snug mt-0.5">Recibís lo que esperabas o te devolvemos el dinero.</p>
                         </div>
                     </div>
                 </div>
 
-                {/* Judge.me Reviews */}
-                <div className={cn("mt-12 pt-8 border-t border-slate-200", isQuickView && "hidden")}>
-                    <h2 className="text-xl font-bold text-slate-900 mb-6">Opiniones de clientes</h2>
-                    <div
-                        className="jdgm-widget jdgm-review-widget"
-                        data-id={productExternalId}
-                        data-handle={product.handle}
-                    />
-                </div>
-
-                {/* Tabs: Description, Specs, Warranty */}
-                <div className={cn("mb-6", isQuickView && "hidden")}>
+                {/* Tabs: Descripción + Ficha Técnica. Reviews go at the very bottom (below). */}
+                <div className={cn("mt-8", isQuickView && "hidden")}>
                     <Tabs defaultValue="description">
                         <TabsList className="flex w-full overflow-x-auto no-scrollbar justify-start border-b border-slate-200 rounded-none bg-transparent p-0 h-auto">
-                            <TabsTrigger value="description" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-2.5 px-4">Descripción</TabsTrigger>
-                            <TabsTrigger value="specs" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-2.5 px-4">Ficha Técnica</TabsTrigger>
-                            <TabsTrigger value="warranty" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-2.5 px-4">Garantía</TabsTrigger>
+                            <TabsTrigger value="description" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-2.5 px-4 text-[14px] font-semibold">Descripción</TabsTrigger>
+                            <TabsTrigger value="specs" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-2.5 px-4 text-[14px] font-semibold">Ficha técnica</TabsTrigger>
                         </TabsList>
 
-                        <TabsContent value="description" className="p-4 bg-slate-50 rounded-b-xl border border-t-0 border-slate-100 text-sm text-slate-700 leading-relaxed mt-0">
+                        <TabsContent value="description" className="pt-5 text-sm text-slate-700 leading-relaxed mt-0">
                             {product.descriptionHtml ? (
                                 <div dangerouslySetInnerHTML={{ __html: product.descriptionHtml }} className="prose prose-sm max-w-none prose-slate" />
                             ) : (
@@ -671,9 +645,9 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                             )}
                         </TabsContent>
 
-                        <TabsContent value="specs" className="p-4 bg-slate-50 rounded-b-xl border border-t-0 border-slate-100 mt-0 text-sm">
+                        <TabsContent value="specs" className="pt-5 mt-0 text-sm">
                             {(product?.material?.value || product?.instruccionesLavado?.value) ? (
-                                <dl className="space-y-2">
+                                <dl className="space-y-2 max-w-md">
                                     {product?.material?.value && (
                                         <div className="flex justify-between pb-2 border-b border-slate-200/60 last:border-0 last:pb-0">
                                             <dt className="text-slate-500 font-medium">Material</dt>
@@ -696,29 +670,20 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                                     )}
                                 </dl>
                             ) : (
-                                <p className="text-sm text-slate-500 text-center py-4">No hay especificaciones técnicas adicionales.</p>
+                                <p className="text-sm text-slate-500 py-2">No hay especificaciones técnicas adicionales.</p>
                             )}
                         </TabsContent>
-
-                        <TabsContent value="warranty" className="p-4 bg-slate-50 rounded-b-xl border border-t-0 border-slate-100 mt-0 text-sm text-slate-700 space-y-4">
-                            <div className="flex items-start gap-3">
-                                <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                                <div>
-                                    <p className="font-medium text-slate-900 leading-none mb-1">Compra Protegida</p>
-                                    <p className="text-slate-600 text-[13px]">Recibe el producto que esperabas o te devolvemos tu dinero.</p>
-                                </div>
-                            </div>
-                            <div className="flex items-start gap-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-slate-400 shrink-0 mt-0.5">
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-                                </svg>
-                                <div>
-                                    <p className="font-medium text-slate-900 leading-none mb-1">Garantía del vendedor</p>
-                                    <p className="text-slate-600 text-[13px]">6 meses de garantía de fábrica frente a defectos de manufactura.</p>
-                                </div>
-                            </div>
-                        </TabsContent>
                     </Tabs>
+                </div>
+
+                {/* Judge.me Reviews — at the very bottom, after description */}
+                <div className={cn("mt-12 pt-8 border-t border-slate-200", isQuickView && "hidden")}>
+                    <h2 className="text-xl font-bold text-slate-900 mb-6">Opiniones de clientes</h2>
+                    <div
+                        className="jdgm-widget jdgm-review-widget"
+                        data-id={productExternalId}
+                        data-handle={product.handle}
+                    />
                 </div>
 
             </div>
@@ -733,7 +698,10 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                 >
                     <Button
                         size="lg"
-                        className={`w-full h-[48px] text-base font-semibold rounded-md bg-orange-500 hover:bg-orange-600 text-white transition-all duration-300 ${isVariantChanging ? 'opacity-80' : ''}`}
+                        className={cn(
+                            "w-full h-[48px] text-base font-semibold rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-all",
+                            isVariantChanging && "opacity-80"
+                        )}
                         onClick={async () => {
                             if (currentVariant?.id) {
                                 const url = await addToCart(currentVariant.id, quantity);
@@ -748,8 +716,11 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                     </Button>
                     <Button
                         size="lg"
-                        variant="secondary"
-                        className={`w-full h-[48px] text-base font-semibold rounded-md bg-orange-50 hover:bg-orange-100 text-orange-600 border-0 transition-all duration-300 ${isVariantChanging ? 'opacity-80' : ''}`}
+                        variant="outline"
+                        className={cn(
+                            "w-full h-[48px] text-base font-semibold rounded-xl border-primary/30 text-primary hover:bg-primary/5 hover:text-primary hover:border-primary transition-all",
+                            isVariantChanging && "opacity-80"
+                        )}
                         onClick={async () => {
                             if (currentVariant?.id) {
                                 await addToCart(currentVariant.id, quantity);
