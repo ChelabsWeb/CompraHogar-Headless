@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { ProductQuickView } from "@/components/shop/ProductQuickView";
 import { FavoriteButton } from "@/components/shop/FavoriteButton";
+import { CompareButton } from "@/components/shop/CompareButton";
 import type { ShopifyProduct, ShopifyImage } from "@/lib/types";
 
 interface ProductCardProps {
@@ -67,7 +68,10 @@ function ProductCardInner({ product, priority = false }: ProductCardProps) {
                         </span>
                     )}
 
-                    <FavoriteButton productId={product.id} className="absolute top-2 right-2" />
+                    <div className="absolute top-2 right-2 flex flex-col gap-1.5">
+                        <FavoriteButton productId={product.id} />
+                        <CompareButton productId={product.id} />
+                    </div>
                     <ProductQuickView product={product} />
                 </div>
 
