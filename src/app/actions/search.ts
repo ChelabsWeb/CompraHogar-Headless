@@ -32,6 +32,7 @@ export async function predictiveSearchAction(query: string, limit: number = 5): 
   try {
     const response = await shopifyFetch({
       query: predictiveSearchQuery,
+      tags: ['products'],
       variables: {
         query: sanitized,
         limit: clampedLimit,

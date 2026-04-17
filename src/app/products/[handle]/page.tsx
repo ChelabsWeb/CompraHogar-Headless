@@ -19,6 +19,7 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
 
     const { body } = await shopifyFetch({
         query: getProductByHandleQuery,
+        tags: ['products', `product:${resolvedParams.handle}`],
         variables: { handle: resolvedParams.handle },
     });
 
@@ -59,6 +60,7 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
 
     const { body } = await shopifyFetch({
         query: getProductByHandleQuery,
+        tags: ['products', `product:${resolvedParams.handle}`],
         variables: { handle: resolvedParams.handle },
     });
 
@@ -68,6 +70,7 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
 
     const { body: recBody } = await shopifyFetch({
         query: getProductRecommendationsQuery,
+        tags: ['products'],
         variables: { productId: product.id },
     });
 

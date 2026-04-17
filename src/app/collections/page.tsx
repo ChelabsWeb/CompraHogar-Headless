@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { shopifyFetch } from "@/lib/shopify";
 
 // 1. Interfaces para el tipado de la respuesta de Shopify
 interface ShopifyImage {
@@ -12,19 +13,6 @@ interface CollectionNode {
   title: string;
   handle: string;
   image: ShopifyImage | null;
-}
-
-interface CollectionsData {
-  collections: {
-    edges: {
-      node: CollectionNode;
-    }[];
-  };
-}
-
-interface ShopifyResponse {
-  data?: CollectionsData;
-  errors?: any[];
 }
 
 // 2. Query de GraphQL para obtener las primeras 20 colecciones
@@ -46,40 +34,17 @@ const COLLECTIONS_QUERY = `
   }
 `;
 
-// 3. Función de fetching asíncrona hacia la Storefront API
+// 3. Función de fetching asíncrona hacia la Storefront API (con tags para invalidación vía webhooks)
 async function getCollections(): Promise<CollectionNode[]> {
-  const domain = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN || process.env.SHOPIFY_STORE_DOMAIN;
-  const storefrontAccessToken = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN || process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
-
-  if (!domain || !storefrontAccessToken) {
-    throw new Error("Faltan las variables de entorno de Shopify: SHOPIFY_STORE_DOMAIN o SHOPIFY_STOREFRONT_ACCESS_TOKEN.");
+  try {
+    const { body } = await shopifyFetch({
+      query: COLLECTIONS_QUERY,
+      tags: ['collections'],
+    });
+    return body?.data?.collections?.edges?.map((edge: { node: CollectionNode }) => edge.node) || [];
+  } catch {
+    return [];
   }
-
-  const endpoint = `https://${domain}/api/2024-04/graphql.json`;
-
-  const response = await fetch(endpoint, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Shopify-Storefront-Access-Token": storefrontAccessToken,
-    },
-    body: JSON.stringify({ query: COLLECTIONS_QUERY }),
-    // Aplicación de caché con revalidación cada 3600 segundos (1 hora)
-    next: { revalidate: 3600 },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Error en la petición a la red de Shopify: ${response.status}`);
-  }
-
-  const json: ShopifyResponse = await response.json();
-
-  if (json.errors) {
-    throw new Error("Error en la respuesta de la query GraphQL de Shopify.");
-  }
-
-  // Mapeamos los bordes (edges) para retornar directamente el array de nodos
-  return json.data?.collections.edges.map((edge) => edge.node) || [];
 }
 
 // 4. Server Component (RSC) para la página índice de colecciones

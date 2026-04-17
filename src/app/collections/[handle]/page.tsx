@@ -120,6 +120,7 @@ export default async function CollectionPage(props: {
     const isPrev = direction === 'prev';
     const { body } = await shopifyFetch({
         query: isPrev ? getCollectionWithProductsPrevQuery : getCollectionWithProductsQuery,
+        tags: ['collections', 'products', `collection:${resolvedParams.handle}`],
         variables: isPrev
             ? {
                 handle: resolvedParams.handle,
