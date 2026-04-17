@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, ShieldCheck, Ruler, ArrowRight, X, Zap, Play, Box, Loader2, ShoppingCart } from "lucide-react";
@@ -47,6 +47,12 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
     const [isZoomed, setIsZoomed] = useState(false);
     const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
     const galleryRef = useRef<HTMLDivElement>(null);
+    // Prevent onScroll from updating activeImageIndex mid-flight during a
+    // programmatic smooth scroll (triggered by thumbnail click or arrows).
+    // Without this the indicator flips through intermediate indices while
+    // the browser animates the scroll.
+    const isProgrammaticScrollRef = useRef(false);
+    const programmaticScrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const options = product.options || [];
     const variants = product.variants?.edges || [];
@@ -71,15 +77,33 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
 
     const activeMedia = media[activeImageIndex]?.node;
 
-    // Gallery navigation
+    // Gallery navigation — use explicit scrollTo with exact pixel offset.
+    // scrollIntoView + snap-mandatory caused the scroll to land between two images.
     const goToImage = useCallback((index: number) => {
         if (index < 0 || index >= media.length) return;
         setActiveImageIndex(index);
-        if (galleryRef.current) {
-            const child = galleryRef.current.children[index] as HTMLElement;
-            child?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        const container = galleryRef.current;
+        if (container) {
+            isProgrammaticScrollRef.current = true;
+            container.scrollTo({ left: container.clientWidth * index, behavior: 'smooth' });
+            if (programmaticScrollTimeoutRef.current) {
+                clearTimeout(programmaticScrollTimeoutRef.current);
+            }
+            // Smooth scroll typically settles within ~500ms; clear the flag
+            // slightly later so the final onScroll event doesn't re-trigger.
+            programmaticScrollTimeoutRef.current = setTimeout(() => {
+                isProgrammaticScrollRef.current = false;
+            }, 650);
         }
     }, [media.length]);
+
+    useEffect(() => {
+        return () => {
+            if (programmaticScrollTimeoutRef.current) {
+                clearTimeout(programmaticScrollTimeoutRef.current);
+            }
+        };
+    }, []);
 
     const goNext = useCallback(() => goToImage(activeImageIndex + 1), [activeImageIndex, goToImage]);
     const goPrev = useCallback(() => goToImage(activeImageIndex - 1), [activeImageIndex, goToImage]);
@@ -200,17 +224,25 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                     </Badge>
                 </div>
 
-                {/* Imagen Principal */}
+                {/* Imagen Principal
+                    NOTE: no `justify-center` on this container. A flex container with
+                    `justify-center` + horizontal overflow will try to center the total
+                    children width inside the viewport, so with 2 full-width slides the
+                    initial scroll shows the right half of slide 1 + left half of slide 2
+                    (half each, with a gap). Default (flex-start) aligns the first slide
+                    to the left edge, which is what snap-start expects. */}
                 <div
                     ref={galleryRef}
                     className={cn(
-                        "relative flex items-center justify-center w-full mx-auto group overflow-x-auto snap-x snap-mandatory no-scrollbar",
+                        "relative flex items-center w-full mx-auto group overflow-x-auto snap-x snap-mandatory no-scrollbar",
                         isQuickView
                             ? "aspect-square rounded-2xl bg-slate-50/80 overflow-hidden"
                             : "aspect-square lg:aspect-[4/3] mb-2 lg:mb-8 bg-slate-50/80 rounded-2xl lg:rounded-3xl border border-slate-100 overflow-hidden cursor-zoom-in"
                     )}
                     onScroll={(e) => {
+                        if (isProgrammaticScrollRef.current) return;
                         const { scrollLeft, clientWidth } = e.currentTarget;
+                        if (clientWidth === 0) return;
                         const index = Math.round(scrollLeft / clientWidth);
                         if (index !== activeImageIndex) setActiveImageIndex(index);
                     }}
@@ -220,7 +252,7 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                 >
                     {media.length > 0 ? (
                         media.map((item: { node: ShopifyMediaNode }, idx: number) => (
-                            <div key={idx} className="w-full h-full shrink-0 snap-center relative flex items-center justify-center">
+                            <div key={idx} className="w-full h-full shrink-0 snap-start relative flex items-center justify-center">
                                 {renderMedia(item.node)}
                             </div>
                         ))

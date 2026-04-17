@@ -35,11 +35,11 @@ export function ProductCardSkeleton() {
     );
 }
 
-// Envoltorio esqueleto para el grid completo
+// Envoltorio esqueleto para el grid completo — debe replicar la estructura de <ProductGrid />
 export function ProductGridSkeleton({ count = 8 }: { count?: number }) {
     return (
         <div className="flex flex-col w-full">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4 lg:gap-5 xl:gap-6">
                 {Array.from({ length: count }).map((_, i) => (
                     <ProductCardSkeleton key={i} />
                 ))}

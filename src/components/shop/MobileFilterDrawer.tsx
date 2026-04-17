@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Filter } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -17,49 +18,62 @@ interface MobileFilterDrawerProps {
   children: React.ReactNode;
 }
 
+const EXCLUDED_PARAMS = ["page", "sort", "q", "cursor", "direction", "after", "before", "first", "last"];
+
 export function MobileFilterDrawer({ children }: MobileFilterDrawerProps) {
   const [open, setOpen] = useState(false);
+  const searchParams = useSearchParams();
+
+  // Contar filtros activos (excluyendo paginación, sort, búsqueda)
+  let activeCount = 0;
+  searchParams.forEach((_, key) => {
+    if (!EXCLUDED_PARAMS.includes(key)) activeCount++;
+  });
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      {/* Gatillo Flotante (Floating Action Button) */}
+      {/* Gatillo Flotante (FAB) */}
       <SheetTrigger asChild>
         <Button
           size="lg"
-          className="fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2 rounded-full px-8 py-6 text-[15px] font-semibold bg-primary text-white shadow-xl transition-transform duration-300 ease-out hover:scale-105 active:scale-95 lg:hidden"
+          className="fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2 rounded-full px-6 py-5 text-[14px] font-semibold bg-primary text-white shadow-[0_8px_24px_rgba(33,100,93,0.35)] transition-transform duration-300 ease-out hover:scale-105 active:scale-95 lg:hidden"
         >
-          <Filter className="size-5" />
-          Filtrar Resultados
+          <SlidersHorizontal className="size-4" />
+          Filtros
+          {activeCount > 0 && (
+            <span
+              className="ml-1 inline-flex items-center justify-center min-w-[20px] h-[20px] px-1.5 rounded-full bg-white text-primary text-[11px] font-bold leading-none"
+              aria-label={`${activeCount} filtros activos`}
+            >
+              {activeCount}
+            </span>
+          )}
         </Button>
       </SheetTrigger>
 
-      {/* 
-        Drawer Inferior: Ocupa el 85% de la pantalla.
-        Se aplica `will-change-transform` por defecto en Radix para fluidez.
-        Usamos bordes redondeados en la parte superior para un "Native App Feel".
-      */}
       <SheetContent
         side="bottom"
-        className="flex h-[85vh] flex-col rounded-t-[20px] p-0"
+        className="flex h-[min(85vh,760px)] flex-col rounded-t-[20px] p-0"
       >
-        {/* Cabecera Fija */}
         <SheetHeader className="border-b px-6 py-4">
-          <SheetTitle className="text-xl font-bold">Filtros</SheetTitle>
+          <SheetTitle className="text-xl font-bold flex items-center gap-2">
+            Filtros
+            {activeCount > 0 && (
+              <span className="inline-flex items-center justify-center min-w-[22px] h-[22px] px-2 rounded-full bg-primary text-white text-[11px] font-bold leading-none">
+                {activeCount}
+              </span>
+            )}
+          </SheetTitle>
         </SheetHeader>
 
-        {/* 
-          Área de Contenido Scrolleable
-          Independiente del scroll de la página (overscroll-contain evita el 'scroll chaining' en móviles)
-        */}
         <div className="flex-1 overflow-y-auto overscroll-contain px-6 py-6">
           {children}
         </div>
 
-        {/* Footer Fijo con el Call to Action */}
         <SheetFooter className="sticky bottom-0 z-10 border-t bg-background p-4 pb-8 shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.1)]">
           <SheetClose asChild>
             <Button size="lg" className="w-full rounded-xl text-base shadow-md h-12">
-              Mostrar Resultados
+              Mostrar resultados
             </Button>
           </SheetClose>
         </SheetFooter>

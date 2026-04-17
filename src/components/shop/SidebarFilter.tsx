@@ -1,8 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useRouter, usePathname, useSearchParams } from "next/navigation"
-import { ChevronRight } from "lucide-react"
+import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
@@ -141,35 +140,48 @@ export function PriceRangeFilter({ onApply, minParamKey = "minPrice", maxParamKe
     }
   }
 
+  const hasChanges =
+    (min || "") !== (searchParams.get(minParamKey) || "") ||
+    (max || "") !== (searchParams.get(maxParamKey) || "");
+
   return (
-    <div className="flex items-center gap-2 mt-4">
-      <Input
-        type="number"
-        placeholder="Mín"
-        value={min}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMin(e.target.value)}
-        onKeyDown={handleKeyDown}
-        className="h-10 text-sm w-24 px-2"
-        min={0}
-      />
-      <span className="text-slate-300">-</span>
-      <Input
-        type="number"
-        placeholder="Máx"
-        value={max}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMax(e.target.value)}
-        onKeyDown={handleKeyDown}
-        className="h-10 text-sm w-24 px-2"
-        min={0}
-      />
+    <div className="flex flex-col gap-3">
+      <div className="grid grid-cols-2 gap-2">
+        <div className="relative">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">$</span>
+          <Input
+            type="number"
+            placeholder="Mín"
+            value={min}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMin(e.target.value)}
+            onKeyDown={handleKeyDown}
+            className="h-10 text-sm pl-6 pr-2 rounded-lg border-slate-200 focus-visible:border-primary"
+            min={0}
+            aria-label="Precio mínimo"
+          />
+        </div>
+        <div className="relative">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">$</span>
+          <Input
+            type="number"
+            placeholder="Máx"
+            value={max}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMax(e.target.value)}
+            onKeyDown={handleKeyDown}
+            className="h-10 text-sm pl-6 pr-2 rounded-lg border-slate-200 focus-visible:border-primary"
+            min={0}
+            aria-label="Precio máximo"
+          />
+        </div>
+      </div>
       <Button
         variant="outline"
-        size="icon"
+        size="sm"
         onClick={handleApply}
-        className="shrink-0 h-10 w-10 text-slate-500 rounded-full"
-        aria-label="Aplicar rango de precio"
+        disabled={!hasChanges}
+        className="w-full h-9 rounded-lg text-[13px] font-medium border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-slate-900 disabled:opacity-40 disabled:cursor-not-allowed"
       >
-        <ChevronRight className="w-4 h-4" />
+        Aplicar
       </Button>
     </div>
   )
