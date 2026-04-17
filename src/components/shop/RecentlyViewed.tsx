@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Truck } from "lucide-react";
+import { SnapCarousel } from "@/components/shop/SnapCarousel";
 
 interface RecentProduct {
     id: string;
@@ -48,13 +49,16 @@ export function RecentlyViewed({ excludeHandle }: { excludeHandle?: string }) {
     return (
         <div className="w-full mt-8 lg:mt-12">
             <h2 className="text-lg lg:text-xl font-semibold text-slate-800 mb-4">Visto recientemente</h2>
-            <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-4 no-scrollbar -mx-4 px-4 lg:mx-0 lg:px-0">
+            <SnapCarousel
+                ariaLabel="Productos vistos recientemente"
+                trackClassName="gap-3 pb-4 -mx-4 px-4 lg:mx-0 lg:px-0"
+            >
                 {products.map((product) => {
                     const price = product.price.toLocaleString("es-UY");
                     const installments = product.price > 1000 ? (product.price / 12).toLocaleString("es-UY", { maximumFractionDigits: 0 }) : null;
 
                     return (
-                        <Card key={product.id} className="min-w-[160px] max-w-[160px] md:min-w-[200px] md:max-w-[200px] snap-center shrink-0 group bg-white rounded-lg border border-slate-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col cursor-pointer p-0">
+                        <Card key={product.id} className="min-w-[160px] max-w-[160px] md:min-w-[200px] md:max-w-[200px] snap-start shrink-0 group bg-white rounded-lg border border-slate-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col cursor-pointer p-0">
                             <Link href={`/products/${product.handle}`} className="flex-1 flex flex-col outline-none">
                                 <div className="relative w-full aspect-square bg-white flex items-center justify-center">
                                     {product.image ? (
@@ -92,7 +96,7 @@ export function RecentlyViewed({ excludeHandle }: { excludeHandle?: string }) {
                         </Card>
                     );
                 })}
-            </div>
+            </SnapCarousel>
         </div>
     );
 }

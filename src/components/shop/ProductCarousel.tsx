@@ -6,6 +6,7 @@ import { Zap } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { ProductQuickView } from "@/components/shop/ProductQuickView";
 import { FavoriteButton } from "@/components/shop/FavoriteButton";
+import { SnapCarousel } from "@/components/shop/SnapCarousel";
 
 interface ProductCarouselProps {
     title: string;
@@ -21,7 +22,10 @@ export function ProductCarousel({ title, products }: ProductCarouselProps) {
                 <h2 className="text-xl lg:text-2xl font-semibold text-slate-900">{title}</h2>
             </div>
             
-            <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-6 no-scrollbar -mx-4 px-4 lg:mx-0 lg:px-0">
+            <SnapCarousel
+                ariaLabel={title}
+                trackClassName="gap-4 pb-6 -mx-4 px-4 lg:mx-0 lg:px-0"
+            >
                 {products.map((product) => {
                     // Extract data whether it's wrapped in a node or not
                     const node = product.node || product;
@@ -32,7 +36,7 @@ export function ProductCarousel({ title, products }: ProductCarouselProps) {
                     const installments = (priceAmount / 12).toLocaleString("es-UY", { maximumFractionDigits: 0 });
 
                     return (
-                        <Card key={node.id} className="min-w-[260px] max-w-[260px] lg:min-w-[280px] lg:max-w-[280px] snap-center shrink-0 group bg-white rounded-xl border border-slate-200 hover:shadow-lg transition-shadow duration-300 overflow-hidden flex flex-col cursor-pointer p-0">
+                        <Card key={node.id} className="min-w-[260px] max-w-[260px] lg:min-w-[280px] lg:max-w-[280px] snap-start shrink-0 group bg-white rounded-xl border border-slate-200 hover:shadow-lg transition-shadow duration-300 overflow-hidden flex flex-col cursor-pointer p-0">
                             <Link href={`/products/${node.handle}`} className="flex-1 flex flex-col outline-none">
                                 <div className="relative w-full aspect-[4/3] bg-white border-b border-slate-100 p-4 flex items-center justify-center">
                                     {node.featuredImage ? (
@@ -95,7 +99,7 @@ export function ProductCarousel({ title, products }: ProductCarouselProps) {
                         </Card>
                     );
                 })}
-            </div>
+            </SnapCarousel>
         </div>
     );
 }

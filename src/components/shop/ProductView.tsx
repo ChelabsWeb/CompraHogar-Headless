@@ -3,7 +3,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, ShieldCheck, Ruler, ArrowRight, X, Zap, Play, Box, Loader2, ShoppingCart } from "lucide-react";
+import { ChevronLeft, ChevronRight, ShieldCheck, ArrowRight, X, Zap, Play, Box, Loader2 } from "lucide-react";
 import { FavoriteButton } from "@/components/shop/FavoriteButton";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -44,8 +44,6 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [quantity, setQuantity] = useState(1);
     const [isVariantChanging, setIsVariantChanging] = useState(false);
-    const [isZoomed, setIsZoomed] = useState(false);
-    const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
     const galleryRef = useRef<HTMLDivElement>(null);
     // Prevent onScroll from updating activeImageIndex mid-flight during a
     // programmatic smooth scroll (triggered by thumbnail click or arrows).
@@ -105,17 +103,16 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
         };
     }, []);
 
-    const goNext = useCallback(() => goToImage(activeImageIndex + 1), [activeImageIndex, goToImage]);
-    const goPrev = useCallback(() => goToImage(activeImageIndex - 1), [activeImageIndex, goToImage]);
-
-    // Zoom on hover (desktop only, not QuickView)
-    const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-        if (isQuickView) return;
-        const rect = e.currentTarget.getBoundingClientRect();
-        const x = ((e.clientX - rect.left) / rect.width) * 100;
-        const y = ((e.clientY - rect.top) / rect.height) * 100;
-        setZoomPos({ x, y });
-    }, [isQuickView]);
+    // Cyclical navigation: prev from first → last, next from last → first.
+    // Arrows stay visible at all times so users never lose the affordance.
+    const goNext = useCallback(() => {
+        if (media.length === 0) return;
+        goToImage((activeImageIndex + 1) % media.length);
+    }, [activeImageIndex, goToImage, media.length]);
+    const goPrev = useCallback(() => {
+        if (media.length === 0) return;
+        goToImage(activeImageIndex === 0 ? media.length - 1 : activeImageIndex - 1);
+    }, [activeImageIndex, goToImage, media.length]);
 
     const renderMedia = (node: ShopifyMediaNode | undefined) => {
         if (!node) return <div className="text-slate-400 text-sm font-bold uppercase tracking-widest">Sin Media</div>;
@@ -164,11 +161,7 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                 alt={node.alt || node.previewImage?.altText || product.title}
                 fill
                 priority
-                className={cn(
-                    "object-contain z-0 pointer-events-none transition-transform duration-300 ease-out",
-                    !isQuickView && isZoomed ? "scale-[2]" : "scale-100"
-                )}
-                style={!isQuickView && isZoomed ? { transformOrigin: `${zoomPos.x}% ${zoomPos.y}%` } : undefined}
+                className="object-contain z-0 pointer-events-none"
                 sizes="(max-width: 1024px) 100vw, 55vw"
             />
         );
@@ -224,71 +217,75 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                     </Badge>
                 </div>
 
-                {/* Imagen Principal
-                    NOTE: no `justify-center` on this container. A flex container with
-                    `justify-center` + horizontal overflow will try to center the total
-                    children width inside the viewport, so with 2 full-width slides the
-                    initial scroll shows the right half of slide 1 + left half of slide 2
-                    (half each, with a gap). Default (flex-start) aligns the first slide
-                    to the left edge, which is what snap-start expects. */}
-                <div
-                    ref={galleryRef}
-                    className={cn(
-                        "relative flex items-center w-full mx-auto group overflow-x-auto snap-x snap-mandatory no-scrollbar",
-                        isQuickView
-                            ? "aspect-square rounded-2xl bg-slate-50/80 overflow-hidden"
-                            : "aspect-square lg:aspect-[4/3] mb-2 lg:mb-8 bg-slate-50/80 rounded-2xl lg:rounded-3xl border border-slate-100 overflow-hidden cursor-zoom-in"
-                    )}
-                    onScroll={(e) => {
-                        if (isProgrammaticScrollRef.current) return;
-                        const { scrollLeft, clientWidth } = e.currentTarget;
-                        if (clientWidth === 0) return;
-                        const index = Math.round(scrollLeft / clientWidth);
-                        if (index !== activeImageIndex) setActiveImageIndex(index);
-                    }}
-                    onMouseEnter={() => !isQuickView && setIsZoomed(true)}
-                    onMouseLeave={() => { setIsZoomed(false); }}
-                    onMouseMove={handleMouseMove}
-                >
-                    {media.length > 0 ? (
-                        media.map((item: { node: ShopifyMediaNode }, idx: number) => (
-                            <div key={idx} className="w-full h-full shrink-0 snap-start relative flex items-center justify-center">
-                                {renderMedia(item.node)}
+                {/* Gallery frame: visual container (aspect ratio, border, rounded, overflow-hidden).
+                    Inside lives the scroll container. Arrows and counter live OUTSIDE the scroll
+                    container but inside this frame — that way they stay anchored to the viewport
+                    instead of drifting with scrollLeft. Absolute-positioned children of an
+                    overflow:auto element get laid out relative to the full scrollable area, not
+                    the visible viewport, so they scroll with the content. Lifting them to a
+                    non-scrolling parent keeps them fixed on screen. */}
+                <div className={cn(
+                    "relative w-full mx-auto group",
+                    isQuickView
+                        ? "aspect-square rounded-2xl bg-slate-50/80 overflow-hidden"
+                        : "aspect-square lg:aspect-[4/3] mb-2 lg:mb-8 bg-slate-50/80 rounded-2xl lg:rounded-3xl border border-slate-100 overflow-hidden"
+                )}>
+                    {/* Scrollable track. No `justify-center` here — with horizontal overflow it
+                        would center the total children width inside the viewport and split the
+                        first slide in half at scrollLeft=0. Default flex-start is what we want. */}
+                    <div
+                        ref={galleryRef}
+                        className="flex items-center w-full h-full overflow-x-auto snap-x snap-mandatory no-scrollbar"
+                        onScroll={(e) => {
+                            if (isProgrammaticScrollRef.current) return;
+                            const { scrollLeft, clientWidth } = e.currentTarget;
+                            if (clientWidth === 0) return;
+                            const index = Math.round(scrollLeft / clientWidth);
+                            if (index !== activeImageIndex) setActiveImageIndex(index);
+                        }}
+                    >
+                        {media.length > 0 ? (
+                            media.map((item: { node: ShopifyMediaNode }, idx: number) => (
+                                <div
+                                    key={idx}
+                                    className="w-full h-full shrink-0 snap-start relative flex items-center justify-center overflow-hidden"
+                                >
+                                    {renderMedia(item.node)}
+                                </div>
+                            ))
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                                <span className="text-slate-400 text-sm font-bold uppercase tracking-widest">Sin Media</span>
                             </div>
-                        ))
-                    ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                             <span className="text-slate-400 text-sm font-bold uppercase tracking-widest">Sin Media</span>
-                        </div>
-                    )}
+                        )}
+                    </div>
 
-                    {/* Desktop Navigation Arrows */}
+                    {/* Desktop navigation arrows — always visible when there's more than 1 slide.
+                        goPrev/goNext wrap around (first ↔ last). */}
                     {media.length > 1 && (
                         <>
                             <button
+                                type="button"
+                                aria-label="Imagen anterior"
                                 onClick={(e) => { e.stopPropagation(); goPrev(); }}
-                                className={cn(
-                                    "hidden lg:flex absolute left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm shadow-md border border-slate-200 items-center justify-center text-slate-600 hover:bg-white hover:text-slate-900 transition-all",
-                                    activeImageIndex === 0 && "opacity-0 pointer-events-none"
-                                )}
+                                className="hidden lg:flex absolute left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm shadow-md border border-slate-200 items-center justify-center text-slate-600 hover:bg-white hover:text-slate-900 hover:scale-105 transition-all"
                             >
                                 <ChevronLeft className="w-5 h-5" />
                             </button>
                             <button
+                                type="button"
+                                aria-label="Imagen siguiente"
                                 onClick={(e) => { e.stopPropagation(); goNext(); }}
-                                className={cn(
-                                    "hidden lg:flex absolute right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm shadow-md border border-slate-200 items-center justify-center text-slate-600 hover:bg-white hover:text-slate-900 transition-all",
-                                    activeImageIndex === media.length - 1 && "opacity-0 pointer-events-none"
-                                )}
+                                className="hidden lg:flex absolute right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm shadow-md border border-slate-200 items-center justify-center text-slate-600 hover:bg-white hover:text-slate-900 hover:scale-105 transition-all"
                             >
                                 <ChevronRight className="w-5 h-5" />
                             </button>
                         </>
                     )}
 
-                    {/* Image Counter */}
+                    {/* Image counter */}
                     {media.length > 1 && (
-                        <div className="absolute bottom-3 right-3 z-20 bg-black/50 backdrop-blur-sm text-white text-xs font-medium px-2.5 py-1 rounded-full">
+                        <div className="absolute bottom-3 right-3 z-20 bg-black/50 backdrop-blur-sm text-white text-xs font-medium px-2.5 py-1 rounded-full pointer-events-none">
                             {activeImageIndex + 1}/{media.length}
                         </div>
                     )}

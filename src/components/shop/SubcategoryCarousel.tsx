@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ChevronRight } from "lucide-react";
 import { type Subcollection } from "@/lib/constants/collectionHierarchy";
+import { SnapCarousel } from "@/components/shop/SnapCarousel";
 
 interface SubcategoryCarouselProps {
   parentHandle: string;
@@ -14,7 +15,7 @@ export function SubcategoryCarousel({ parentHandle, subcollections }: Subcategor
   if (!subcollections || subcollections.length === 0) return null;
 
   return (
-    <section className="w-full bg-slate-50 border-b border-slate-200 py-6 mb-8">
+    <section className="w-full mb-8">
       <div className="container mx-auto px-4 max-w-[1200px]">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-slate-900 tracking-tight">
@@ -23,7 +24,7 @@ export function SubcategoryCarousel({ parentHandle, subcollections }: Subcategor
         </div>
 
         {/* CSS Scroll Snapping Container */}
-        <div className="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory no-scrollbar">
+        <SnapCarousel ariaLabel="Explorar categorías" trackClassName="gap-4 pb-4">
           {subcollections.map((sub) => (
             <Link
               key={sub.handle}
@@ -56,7 +57,7 @@ export function SubcategoryCarousel({ parentHandle, subcollections }: Subcategor
               </div>
             </Link>
           ))}
-        </div>
+        </SnapCarousel>
       </div>
     </section>
   );

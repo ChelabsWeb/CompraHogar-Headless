@@ -6,6 +6,7 @@ import { ChevronRight, Truck } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { FavoriteButton } from "@/components/shop/FavoriteButton";
 import { Badge } from "@/components/ui/badge";
+import { SnapCarousel } from "@/components/shop/SnapCarousel";
 
 interface CollectionShowcaseProps {
     title: string;
@@ -30,11 +31,14 @@ export function CollectionShowcase({ title, handle, description, bannerImage, ba
             </div>
 
             {/* Banner + Products Row */}
-            <div className="flex gap-3 md:gap-4 overflow-x-auto snap-x snap-mandatory pb-4 no-scrollbar -mx-4 px-4 lg:mx-0 lg:px-0">
+            <SnapCarousel
+                ariaLabel={title}
+                trackClassName="gap-3 md:gap-4 pb-4 -mx-4 px-4 lg:mx-0 lg:px-0"
+            >
                 {/* Collection Banner Card */}
                 <Link
                     href={`/collections/${handle}`}
-                    className="relative min-w-[200px] max-w-[200px] md:min-w-[260px] md:max-w-[260px] lg:min-w-[280px] lg:max-w-[280px] snap-center shrink-0 rounded-xl overflow-hidden group cursor-pointer"
+                    className="relative min-w-[200px] max-w-[200px] md:min-w-[260px] md:max-w-[260px] lg:min-w-[280px] lg:max-w-[280px] snap-start shrink-0 rounded-xl overflow-hidden group cursor-pointer"
                 >
                     <div className={`absolute inset-0 bg-gradient-to-br ${bannerColor}`} />
                     {bannerImage && (
@@ -64,7 +68,7 @@ export function CollectionShowcase({ title, handle, description, bannerImage, ba
                     const installments = (priceAmount / 12).toLocaleString("es-UY", { maximumFractionDigits: 0 });
 
                     return (
-                        <Card key={node.id} className="min-w-[180px] max-w-[180px] md:min-w-[220px] md:max-w-[220px] lg:min-w-[240px] lg:max-w-[240px] snap-center shrink-0 group bg-white rounded-xl border border-slate-100 shadow-[0_1px_3px_rgba(0,0,0,0.08)] hover:shadow-md transition-shadow duration-300 overflow-hidden flex flex-col cursor-pointer p-0">
+                        <Card key={node.id} className="min-w-[180px] max-w-[180px] md:min-w-[220px] md:max-w-[220px] lg:min-w-[240px] lg:max-w-[240px] snap-start shrink-0 group bg-white rounded-xl border border-slate-100 shadow-[0_1px_3px_rgba(0,0,0,0.08)] hover:shadow-md transition-shadow duration-300 overflow-hidden flex flex-col cursor-pointer p-0">
                             <Link href={`/products/${node.handle}`} className="flex-1 flex flex-col outline-none">
                                 <div className="relative w-full aspect-square bg-white flex items-center justify-center overflow-hidden">
                                     {node.featuredImage ? (
@@ -114,7 +118,7 @@ export function CollectionShowcase({ title, handle, description, bannerImage, ba
                         </Card>
                     );
                 })}
-            </div>
+            </SnapCarousel>
         </section>
     );
 }
