@@ -5,6 +5,7 @@ import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useStoreFilters } from "../../hooks/useStoreFilters";
 import { FilterLink } from "@/components/ui/FilterLink";
+import { PriceRangeFilter } from "@/components/shop/SidebarFilter";
 
 export type FilterValue = {
   id: string;
@@ -76,7 +77,7 @@ export function StoreFilters({ filters }: StoreFiltersProps) {
 
             {expanded[filter.id] && (
               <div className="mt-4 flex flex-col gap-3">
-                
+
                 {/* Renderizado para los filtros de tipo Lista (Checkboxes) con FilterLink */}
                 {filter.type === "LIST" &&
                   filter.values.map((val) => {
@@ -115,8 +116,8 @@ export function StoreFilters({ filters }: StoreFiltersProps) {
                     );
                   })}
 
-                {/* Renderizado para PRICE_RANGE u otros tipos */}
-                {/* Puedes conectar aquí tu componente `<PriceRangeFilter />` si la iteración evalúa filter.type === 'PRICE_RANGE' */}
+                {/* Renderizado para PRICE_RANGE: inputs min/max sincronizados con URL */}
+                {filter.type === "PRICE_RANGE" && <PriceRangeFilter />}
               </div>
             )}
           </div>
