@@ -224,11 +224,17 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                     </Badge>
                 </div>
 
-                {/* Imagen Principal */}
+                {/* Imagen Principal
+                    NOTE: no `justify-center` on this container. A flex container with
+                    `justify-center` + horizontal overflow will try to center the total
+                    children width inside the viewport, so with 2 full-width slides the
+                    initial scroll shows the right half of slide 1 + left half of slide 2
+                    (half each, with a gap). Default (flex-start) aligns the first slide
+                    to the left edge, which is what snap-start expects. */}
                 <div
                     ref={galleryRef}
                     className={cn(
-                        "relative flex items-center justify-center w-full mx-auto group overflow-x-auto snap-x snap-mandatory no-scrollbar",
+                        "relative flex items-center w-full mx-auto group overflow-x-auto snap-x snap-mandatory no-scrollbar",
                         isQuickView
                             ? "aspect-square rounded-2xl bg-slate-50/80 overflow-hidden"
                             : "aspect-square lg:aspect-[4/3] mb-2 lg:mb-8 bg-slate-50/80 rounded-2xl lg:rounded-3xl border border-slate-100 overflow-hidden cursor-zoom-in"
