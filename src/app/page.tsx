@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { cookies } from "next/headers";
 import { shopifyFetch, getDealOfTheDay, getCollectionProducts } from "@/lib/shopify";
 import { getProductsQuery } from "@/lib/queries";
 import { ProductGrid } from "@/components/shop/ProductGrid";
@@ -40,6 +41,9 @@ async function FeaturedProducts() {
 }
 
 export default async function Home() {
+  const cookieStore = await cookies();
+  const isLoggedIn = !!cookieStore.get("customerAccessToken")?.value;
+
   const [deal, herramientas, sanitaria, electricidad] = await Promise.all([
     getDealOfTheDay(),
     getCollectionProducts("herramientas-y-maquinaria", 8),
@@ -86,28 +90,32 @@ export default async function Home() {
             ))}
           </div>
 
-          {/* SECTION: Auth Card — compact on mobile */}
-          <div className="mt-6 mb-2">
-            <div className="bg-gradient-to-r from-primary/8 to-primary/3 rounded-xl p-4 md:p-8 lg:p-10 flex flex-row items-center justify-between gap-3 md:gap-6 border border-primary/10">
-                <div className="flex flex-row items-center gap-3 flex-1 min-w-0">
-                    <div className="w-9 h-9 md:w-12 md:h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                      <svg className="w-4 h-4 md:w-5 md:h-5 text-primary" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
-                    </div>
-                    <div className="flex flex-col min-w-0">
-                      <h3 className="text-[14px] md:text-2xl lg:text-3xl font-bold tracking-tight text-slate-900 leading-tight">Ingresá a tu cuenta</h3>
-                      <p className="text-[11px] md:text-[15px] lg:text-base font-medium text-slate-500 truncate">Comprá más rápido y seguí tus pedidos.</p>
-                    </div>
-                </div>
-                <div className="flex flex-row items-center gap-2 shrink-0">
-                    <Button asChild variant="default" size="sm" className="bg-primary hover:bg-primary/90 text-white font-semibold rounded-lg h-9 md:h-11 lg:h-12 px-4 md:px-8 lg:px-10 text-[12px] md:text-sm lg:text-base">
-                      <Link href="/login">Ingresar</Link>
-                    </Button>
-                    <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex text-primary border-primary/20 hover:bg-primary/5 font-semibold rounded-lg h-9 md:h-11 lg:h-12 px-4 md:px-8 lg:px-10 text-[12px] md:text-sm lg:text-base">
-                      <Link href="/registro">Crear cuenta</Link>
-                    </Button>
-                </div>
+          {/* SECTION: Auth Card — only shown to anonymous visitors.
+              Logged-in users already have the account entry point in the header, so this
+              block wastes first-viewport real estate for them. */}
+          {!isLoggedIn && (
+            <div className="mt-6 mb-2">
+              <div className="bg-gradient-to-r from-primary/8 to-primary/3 rounded-xl p-4 md:p-8 lg:p-10 flex flex-row items-center justify-between gap-3 md:gap-6 border border-primary/10">
+                  <div className="flex flex-row items-center gap-3 flex-1 min-w-0">
+                      <div className="w-9 h-9 md:w-12 md:h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                        <svg className="w-4 h-4 md:w-5 md:h-5 text-primary" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <h3 className="text-[14px] md:text-2xl lg:text-3xl font-bold tracking-tight text-slate-900 leading-tight">Ingresá a tu cuenta</h3>
+                        <p className="text-[11px] md:text-[15px] lg:text-base font-medium text-slate-500 truncate">Comprá más rápido y seguí tus pedidos.</p>
+                      </div>
+                  </div>
+                  <div className="flex flex-row items-center gap-2 shrink-0">
+                      <Button asChild variant="default" size="sm" className="bg-primary hover:bg-primary/90 text-white font-semibold rounded-lg h-9 md:h-11 lg:h-12 px-4 md:px-8 lg:px-10 text-[12px] md:text-sm lg:text-base">
+                        <Link href="/login">Ingresar</Link>
+                      </Button>
+                      <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex text-primary border-primary/20 hover:bg-primary/5 font-semibold rounded-lg h-9 md:h-11 lg:h-12 px-4 md:px-8 lg:px-10 text-[12px] md:text-sm lg:text-base">
+                        <Link href="/registro">Crear cuenta</Link>
+                      </Button>
+                  </div>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* SECTION: Category Bubbles */}
           <div className="mt-6 md:mt-10">
@@ -158,51 +166,61 @@ export default async function Home() {
           </div>
           )}
 
+          {/* SECTION: Promos — each banner is now a real Link to a collection.
+              Previously the whole card had cursor-pointer and a "Ver Colección" button but no
+              href, so clicks went nowhere. */}
           <div className="mt-8 px-2 md:px-0">
             <div className="flex justify-between items-center mb-4 md:mb-6 px-4 md:px-0">
-              <h2 className="text-xl md:text-2xl lg:text-3xl font-semibold tracking-tight text-slate-800">Promociones Especiales</h2>
+              <h2 className="text-xl md:text-2xl lg:text-3xl font-semibold tracking-tight text-slate-800">Promociones especiales</h2>
             </div>
-            <div className="relative">
             <div className="flex overflow-x-auto snap-x snap-mandatory scroll-p-4 no-scrollbar pb-4 -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 lg:gap-8">
-              {/* Promo Banner 1 */}
-              <div className="relative rounded-xl overflow-hidden h-[200px] md:h-[280px] lg:h-[340px] w-[75vw] max-w-[320px] md:max-w-none md:w-auto shrink-0 md:shrink snap-center group cursor-pointer shadow-sm border border-slate-100 transition-all hover:shadow-md">
+              <Link
+                href="/collections/sanitaria-y-griferia"
+                className="relative rounded-xl overflow-hidden h-[200px] md:h-[280px] lg:h-[340px] w-[75vw] max-w-[320px] md:max-w-none md:w-auto shrink-0 md:shrink snap-center group shadow-sm border border-slate-100 transition-all hover:shadow-md block"
+              >
                 <div className="absolute inset-0 bg-[url('/hero-2.png')] bg-cover bg-center transition-transform duration-700 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80" />
                 <div className="relative z-10 h-full p-5 md:p-8 flex flex-col justify-end">
                   <Badge variant="secondary" className="w-fit mb-2 md:mb-3 text-[11px] md:text-sm">Sanitaria</Badge>
-                  <h3 className="text-lg md:text-2xl font-bold text-white mb-2 md:mb-4 leading-tight">Hasta 40% OFF <br/>en Grifería</h3>
-                  <Button variant="secondary" size="sm" className="w-fit text-xs md:text-sm">
-                    Ver Colección
-                  </Button>
+                  <h3 className="text-lg md:text-2xl font-bold text-white mb-2 md:mb-4 leading-tight">Hasta 40% OFF<br />en grifería</h3>
+                  <span className="w-fit inline-flex items-center gap-1 text-white text-xs md:text-sm font-semibold">
+                    Ver colección
+                    <svg className="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                  </span>
                 </div>
-              </div>
+              </Link>
 
-              {/* Promo Banner 2 */}
-              <div className="relative rounded-xl overflow-hidden h-[200px] md:h-[280px] lg:h-[340px] w-[75vw] max-w-[320px] md:max-w-none md:w-auto shrink-0 md:shrink snap-center group cursor-pointer shadow-sm border border-slate-100 transition-all hover:shadow-md">
-                 <div className="absolute inset-0 bg-[url('/hero-1.png')] bg-cover bg-center transition-transform duration-700 group-hover:scale-105" />
+              <Link
+                href="/collections/herramientas-y-maquinaria"
+                className="relative rounded-xl overflow-hidden h-[200px] md:h-[280px] lg:h-[340px] w-[75vw] max-w-[320px] md:max-w-none md:w-auto shrink-0 md:shrink snap-center group shadow-sm border border-slate-100 transition-all hover:shadow-md block"
+              >
+                <div className="absolute inset-0 bg-[url('/hero-1.png')] bg-cover bg-center transition-transform duration-700 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80" />
                 <div className="relative z-10 h-full p-5 md:p-8 flex flex-col justify-end">
                   <Badge variant="secondary" className="w-fit mb-2 md:mb-3 text-[11px] md:text-sm">Herramientas</Badge>
-                  <h3 className="text-lg md:text-2xl font-bold text-white mb-2 md:mb-4 leading-tight">Nuevos Taladros <br/>Inalámbricos</h3>
-                  <Button variant="secondary" size="sm" className="w-fit text-xs md:text-sm">
+                  <h3 className="text-lg md:text-2xl font-bold text-white mb-2 md:mb-4 leading-tight">Nuevos taladros<br />inalámbricos</h3>
+                  <span className="w-fit inline-flex items-center gap-1 text-white text-xs md:text-sm font-semibold">
                     Descubrir
-                  </Button>
+                    <svg className="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                  </span>
                 </div>
-              </div>
+              </Link>
 
-              {/* Promo Banner 3 */}
-              <div className="relative rounded-xl overflow-hidden h-[200px] md:h-[280px] lg:h-[340px] w-[75vw] max-w-[320px] md:max-w-none md:w-auto shrink-0 md:shrink snap-center group cursor-pointer shadow-sm border border-slate-100 transition-all hover:shadow-md md:col-span-2 lg:col-span-1">
-                 <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&q=80')] bg-cover bg-center transition-transform duration-700 group-hover:scale-105" />
+              <Link
+                href="/collections/electricidad-e-iluminacion"
+                className="relative rounded-xl overflow-hidden h-[200px] md:h-[280px] lg:h-[340px] w-[75vw] max-w-[320px] md:max-w-none md:w-auto shrink-0 md:shrink snap-center group shadow-sm border border-slate-100 transition-all hover:shadow-md md:col-span-2 lg:col-span-1 block"
+              >
+                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&q=80')] bg-cover bg-center transition-transform duration-700 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                 <div className="relative z-10 h-full p-5 md:p-8 flex flex-col justify-end">
                   <Badge variant="secondary" className="w-fit mb-2 md:mb-3 text-[11px] md:text-sm">Iluminación</Badge>
-                  <h3 className="text-lg md:text-2xl font-bold text-white mb-2 md:mb-4 leading-tight">Renueva tus <br/>Ambientes</h3>
-                  <Button variant="secondary" size="sm" className="w-fit text-xs md:text-sm">
-                    Ver Ofertas
-                  </Button>
+                  <h3 className="text-lg md:text-2xl font-bold text-white mb-2 md:mb-4 leading-tight">Renová tus<br />ambientes</h3>
+                  <span className="w-fit inline-flex items-center gap-1 text-white text-xs md:text-sm font-semibold">
+                    Ver ofertas
+                    <svg className="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                  </span>
                 </div>
-              </div>
-            </div>
+              </Link>
             </div>
           </div>
           {/* SECTION: Collection Showcases */}
@@ -242,10 +260,13 @@ export default async function Home() {
       </section>
 
       {/* SECTION: Featured Products */}
-      <section className="w-full py-8 md:py-20 xl:py-24 bg-slate-100/60">
+      <section className="w-full py-8 md:py-16 xl:py-20">
         <Container>
-          <div className="flex items-center gap-3 mb-4 md:mb-10 lg:mb-12 px-1">
-              <h2 className="text-xl md:text-2xl lg:text-3xl font-semibold tracking-tight text-slate-800">Equipamiento Destacado</h2>
+          <div className="flex items-center justify-between gap-3 mb-4 md:mb-8 px-1">
+              <h2 className="text-xl md:text-2xl lg:text-3xl font-semibold tracking-tight text-slate-900">Equipamiento destacado</h2>
+              <Link href="/products" className="text-[13px] font-semibold text-primary hover:text-primary/80 transition-colors shrink-0">
+                  Ver todos
+              </Link>
           </div>
 
           <Suspense fallback={<ProductGridSkeleton count={8} />}>
