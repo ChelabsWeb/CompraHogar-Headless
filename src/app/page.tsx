@@ -129,39 +129,73 @@ export default async function Home() {
             </div>
             <CategoryShortcutsList categories={categories} />
           </div>
-            {/* SECTION: Oferta del Día */}
+            {/* SECTION: Oferta del día — hero-style to stand out from other rows.
+                Subtle gradient backdrop + secondary (orange) accents to convey urgency
+                without screaming, and a real "Aprovechar oferta" CTA so the card has a
+                clear action target beside being a whole-surface link. */}
           {deal && (
-          <div className="mt-8">
+          <div className="mt-8 md:mt-10">
             <div className="flex justify-between items-center mb-3">
               <h2 className="text-lg md:text-2xl font-bold tracking-tight text-slate-900">Oferta del día</h2>
               <Link href="/collections/ofertas" className="text-[13px] font-semibold text-primary hover:text-primary/80 transition-colors">Ver todas</Link>
             </div>
 
-            <Link href={`/products/${deal.handle}`} className="block bg-white rounded-xl shadow-[0_2px_12px_rgba(0,0,0,0.06)] overflow-hidden hover:shadow-[0_4px_20px_rgba(0,0,0,0.1)] border border-slate-100 transition-all cursor-pointer group">
-                <div className="flex flex-row items-stretch min-h-[140px] lg:min-h-[220px]">
-                    {/* Image — left side, compact */}
-                    <div className="w-[140px] sm:w-[180px] md:w-1/2 relative bg-slate-50 flex items-center justify-center shrink-0">
-                        {dealDiscount && (
-                        <Badge className="absolute top-2 left-2 z-10 bg-secondary text-white border-none font-bold px-2 py-0.5 text-[10px] uppercase tracking-wider">
-                            -{dealDiscount}%
-                        </Badge>
+            <Link
+              href={`/products/${deal.handle}`}
+              className="block rounded-2xl overflow-hidden border border-secondary/20 bg-gradient-to-br from-secondary/5 via-white to-primary/5 shadow-[0_2px_12px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_28px_rgba(0,0,0,0.1)] transition-shadow duration-300 group"
+            >
+                <div className="flex flex-row items-stretch min-h-[180px] md:min-h-[240px] lg:min-h-[280px]">
+                    {/* Image */}
+                    <div className="w-[150px] sm:w-[200px] md:w-[42%] lg:w-[45%] relative bg-white flex items-center justify-center shrink-0 overflow-hidden">
+                        {dealDiscount !== null && (
+                            <Badge className="absolute top-3 left-3 z-10 bg-secondary text-white border-none font-bold px-2.5 py-1 text-[11px] uppercase tracking-wider shadow-sm">
+                                -{dealDiscount}%
+                            </Badge>
                         )}
-                        <div className="relative w-full h-full transition-transform duration-500 group-hover:scale-105">
-                            <Image src={deal.featuredImage?.url || "/placeholder.png"} alt={deal.featuredImage?.altText || deal.title} fill className="object-contain p-3" sizes="(max-width: 768px) 140px, 50vw" />
+                        <div className="relative w-full h-full transition-transform duration-500 group-hover:scale-[1.04]">
+                            <Image
+                                src={deal.featuredImage?.url || "/placeholder.png"}
+                                alt={deal.featuredImage?.altText || deal.title}
+                                fill
+                                className="object-contain p-4 md:p-6"
+                                sizes="(max-width: 768px) 200px, 45vw"
+                            />
                         </div>
                     </div>
-                    {/* Info — right side */}
-                    <div className="flex-1 p-4 md:p-6 lg:p-8 flex flex-col justify-center">
-                        <h3 className="text-[13px] md:text-[15px] lg:text-lg text-slate-700 font-medium leading-snug line-clamp-2 mb-2 group-hover:text-primary transition-colors">{deal.title}</h3>
+
+                    {/* Info */}
+                    <div className="flex-1 p-4 md:p-6 lg:p-8 flex flex-col justify-center gap-2 min-w-0">
+                        <span className="inline-flex items-center gap-1.5 w-fit text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-secondary bg-secondary/10 px-2 py-1 rounded-md">
+                            <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
+                            Oferta del día
+                        </span>
+
+                        <h3 className="text-[14px] md:text-[17px] lg:text-xl text-slate-900 font-semibold leading-snug line-clamp-2 mt-1 group-hover:text-primary transition-colors">
+                            {deal.title}
+                        </h3>
+
                         {dealOriginalPrice && (
-                        <span className="text-[11px] text-slate-400 line-through font-medium">$ {dealOriginalPrice.toLocaleString("es-UY")}</span>
+                            <span className="text-[11px] md:text-[13px] text-slate-400 line-through font-medium mt-1">
+                                ${dealOriginalPrice.toLocaleString("es-UY")}
+                            </span>
                         )}
-                        <div className="flex items-center gap-2 mt-0.5">
-                            <span className="text-[22px] sm:text-[26px] lg:text-[32px] font-normal text-slate-900 leading-none tracking-tight">$ {dealPrice.toLocaleString("es-UY")}</span>
+
+                        <div className="flex items-baseline gap-2">
+                            <span className="text-[24px] sm:text-[28px] lg:text-[34px] font-semibold text-slate-900 leading-none tracking-tight">
+                                ${dealPrice.toLocaleString("es-UY")}
+                            </span>
                         </div>
-                        <div className="flex items-center gap-2 mt-2">
-                            <span className="inline-flex items-center text-[11px] text-[#00a650] font-bold">
-                                <Truck className="w-3 h-3 mr-1" /> Envío gratis
+
+                        {dealPrice >= 1000 && (
+                            <span className="text-[12px] md:text-[13px] text-emerald-700 font-medium mt-0.5">
+                                12x ${(dealPrice / 12).toLocaleString("es-UY", { maximumFractionDigits: 0 })} sin interés
+                            </span>
+                        )}
+
+                        <div className="hidden md:flex items-center gap-3 mt-3">
+                            <span className="inline-flex items-center gap-1.5 text-[12px] lg:text-[13px] font-semibold text-primary bg-primary/5 px-2.5 py-1 rounded-md">
+                                Aprovechar oferta
+                                <svg className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
                             </span>
                         </div>
                     </div>
