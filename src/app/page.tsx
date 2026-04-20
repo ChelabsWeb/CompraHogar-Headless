@@ -74,18 +74,22 @@ export default async function Home() {
         <HeroCarousel />
 
         <Container>
-          {/* Trust Bar — compact horizontal strip on mobile, grid on desktop */}
-          <div className="w-full mt-4 grid grid-cols-4 gap-2 md:gap-4 lg:gap-6 md:mt-6">
+          {/* Trust Bar — icons-forward, no card backgrounds. Each item is a strong value
+              prop (not generic "compra segura" copy). Two columns on mobile so text breathes. */}
+          <div className="w-full mt-6 md:mt-8 grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-5 md:gap-x-6">
             {[
-              { icon: CreditCard, label: "Medios de pago", description: "Tarjetas, transferencias y más", color: "text-primary" },
-              { icon: Truck, label: "Envío rápido", description: "Recibí en 24-48hs", color: "text-secondary" },
-              { icon: ShieldCheck, label: "Compra segura", description: "Protección en cada compra", color: "text-primary" },
-              { icon: Tag, label: "Ofertas", description: "Descuentos exclusivos diarios", color: "text-secondary" },
+              { icon: CreditCard, label: "12 cuotas sin interés" },
+              { icon: Truck, label: "Envío en 24–48 hs" },
+              { icon: ShieldCheck, label: "Compra protegida" },
+              { icon: Tag, label: "Ofertas todos los días" },
             ].map((item) => (
-              <div key={item.label} className="flex flex-col items-center gap-1.5 py-3 md:py-4 lg:py-5 xl:py-6 rounded-xl lg:rounded-2xl bg-slate-50 border border-slate-100 transition-colors hover:bg-slate-100">
-                <item.icon className={`w-5 h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 ${item.color}`} strokeWidth={1.5} />
-                <span className="text-[11px] md:text-[13px] lg:text-sm font-medium text-slate-600 text-center leading-tight">{item.label}</span>
-                <span className="hidden lg:block text-xs text-slate-400 text-center leading-tight">{item.description}</span>
+              <div key={item.label} className="flex items-center gap-3">
+                <div className="w-11 h-11 md:w-12 md:h-12 rounded-full bg-primary/8 flex items-center justify-center shrink-0">
+                  <item.icon className="w-5 h-5 md:w-[22px] md:h-[22px] text-primary" strokeWidth={1.75} />
+                </div>
+                <span className="text-[13px] md:text-[14px] font-semibold text-slate-900 leading-tight">
+                  {item.label}
+                </span>
               </div>
             ))}
           </div>
