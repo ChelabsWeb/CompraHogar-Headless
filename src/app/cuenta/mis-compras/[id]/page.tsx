@@ -65,7 +65,7 @@ export default function OrderDetailPage() {
           className="text-sm font-medium text-slate-500 hover:text-slate-900 flex items-center gap-2 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          Volver a Mis Compras
+          Volver a mis compras
         </Link>
         <div className="bg-white rounded-2xl border border-slate-200 p-6 text-center py-16">
           <Package className="w-12 h-12 text-slate-300 mx-auto mb-4" />

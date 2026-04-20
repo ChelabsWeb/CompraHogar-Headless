@@ -81,7 +81,7 @@ export default function MisComprasPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-slate-900">Mis Compras</h1>
+      <h1 className="text-2xl font-bold text-slate-900">Mis compras</h1>
 
       {loading && (
         <div className="space-y-4">
@@ -111,10 +111,10 @@ export default function MisComprasPage() {
             completo y el estado de cada envío.
           </p>
           <Link
-            href="/"
-            className="inline-flex items-center justify-center bg-slate-900 text-white font-medium px-8 py-3.5 rounded-2xl hover:bg-slate-800 transition-all hover:scale-105 active:scale-95 shadow-lg shadow-slate-900/20"
+            href="/products"
+            className="inline-flex items-center justify-center bg-primary text-primary-foreground font-medium px-8 py-3.5 rounded-xl hover:bg-primary/90 transition-colors"
           >
-            Explorar Productos
+            Explorar productos
           </Link>
         </div>
       )}

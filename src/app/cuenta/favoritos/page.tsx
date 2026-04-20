@@ -53,14 +53,14 @@ function EmptyState() {
         <div className="flex flex-col items-center justify-center py-20 px-4 text-center">
             <Heart className="w-16 h-16 text-slate-300 mb-4" />
             <h2 className="text-lg font-semibold text-slate-700 mb-1">
-                No tenes favoritos aun
+                Aún no tenés favoritos
             </h2>
             <p className="text-sm text-slate-500 max-w-sm mb-6">
-                Cuando encuentres productos que te gusten, toca el corazon para guardarlos aqui.
+                Cuando encuentres productos que te gusten, tocá el corazón para guardarlos acá.
             </p>
             <Link
-                href="/"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#21645d] text-white text-sm font-medium hover:bg-[#1a504a] transition-colors"
+                href="/products"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors"
             >
                 Explorar productos
             </Link>
@@ -124,7 +124,7 @@ export default function FavoritosPage() {
             <div>
                 <div className="mb-6">
                     <h1 className="text-2xl font-bold text-slate-900">
-                        Mis Favoritos
+                        Mis favoritos
                     </h1>
                     <p className="text-sm text-slate-500">0 producto(s)</p>
                 </div>
