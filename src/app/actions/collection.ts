@@ -1,7 +1,21 @@
 "use server"
 
 import { shopifyFetch } from "@/lib/shopify";
-import { getCollectionWithProductsQuery } from "@/lib/queries";
+import { getCollectionWithProductsQuery, getProductsQuery } from "@/lib/queries";
+
+export async function getPopularProducts(first: number = 8) {
+  try {
+    const { body } = await shopifyFetch({
+      query: getProductsQuery,
+      tags: ['products', 'popular'],
+      variables: { first },
+    });
+    return body?.data?.products?.edges ?? [];
+  } catch (error) {
+    console.error("Error fetching popular products:", error);
+    return [];
+  }
+}
 
 export async function loadMoreCollectionProducts(
   handle: string,
