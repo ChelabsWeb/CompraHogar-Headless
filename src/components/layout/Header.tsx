@@ -16,16 +16,7 @@ import { PredictiveSearch } from "@/components/shared/PredictiveSearch";
 import { LocationSelector } from "@/components/shop/LocationSelector";
 import { MegaMenu } from "./MegaMenu";
 import { LocaleSwitcher } from "./LocaleSwitcher";
-
-const CATEGORIES = [
-    { name: "Obra gruesa", handle: "obra-gruesa" },
-    { name: "Herramientas", handle: "herramientas-y-maquinaria" },
-    { name: "Electricidad", handle: "electricidad-e-iluminacion" },
-    { name: "Sanitaria", handle: "sanitaria-y-griferia" },
-    { name: "Pinturas", handle: "pinturas-y-acabados" },
-    { name: "Decoración", handle: "hogar-y-decoracion" },
-    { name: "Servicios", handle: "servicios-y-alquileres" }
-];
+import { MAIN_CATEGORIES, categoryHref } from "@/lib/constants/categories";
 
 export function Header({ collections = [], isLoggedIn }: { collections?: any[], isLoggedIn?: boolean }) {
     const { scrollY } = useScroll();
@@ -125,10 +116,10 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
                                                     <div className="px-4 py-3 pb-1">
                                                         <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Categorías</span>
                                                     </div>
-                                                    {CATEGORIES.map(cat => (
+                                                    {MAIN_CATEGORIES.map(cat => (
                                                         <SheetClose key={cat.handle} asChild>
-                                                            <Link href={`/collections/${cat.handle}`} className="flex items-center gap-4 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg font-medium text-[15px] transition-colors">
-                                                                <List className="w-5 h-5 text-slate-400" /> {cat.name}
+                                                            <Link href={categoryHref(cat.handle)} className="flex items-center gap-4 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg font-medium text-[15px] transition-colors">
+                                                                <List className="w-5 h-5 text-slate-400" /> {cat.shortName}
                                                             </Link>
                                                         </SheetClose>
                                                     ))}

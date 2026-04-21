@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Container } from "@/components/ui/container";
 import { CategoryShortcutsList } from "@/components/shop/CategoryShortcuts";
+import { MAIN_CATEGORIES, categoryHref } from "@/lib/constants/categories";
 
 async function FeaturedProducts() {
   try {
@@ -63,15 +64,11 @@ export default async function Home() {
     : null;
   const dealDiscount = dealOriginalPrice ? Math.round((1 - dealPrice / dealOriginalPrice) * 100) : null;
 
-  const categories = [
-    { label: "Obra Gruesa", href: "/collections/obra-gruesa", icon: "🏗️" },
-    { label: "Herramientas", href: "/collections/herramientas-y-maquinaria", icon: "🛠️" },
-    { label: "Electricidad", href: "/collections/electricidad-e-iluminacion", icon: "⚡" },
-    { label: "Sanitaria", href: "/collections/sanitaria-y-griferia", icon: "🚿" },
-    { label: "Pinturas", href: "/collections/pinturas-y-acabados", icon: "🎨" },
-    { label: "Decoración", href: "/collections/hogar-y-decoracion", icon: "🛋️" },
-    { label: "Alquileres", href: "/collections/servicios-y-alquileres", icon: "🔧" },
-  ];
+  const categories = MAIN_CATEGORIES.map((cat) => ({
+    label: cat.shortName,
+    href: categoryHref(cat.handle),
+    icon: cat.icon,
+  }));
 
   return (
     <div className="flex flex-col w-full min-h-screen bg-white text-slate-800 overflow-x-hidden">

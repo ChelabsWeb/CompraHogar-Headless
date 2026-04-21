@@ -17,19 +17,18 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Container } from "@/components/ui/container";
 import { PaymentMethodIcons } from "@/components/shared/PaymentMethodIcons";
+import { MAIN_CATEGORIES, categoryHref } from "@/lib/constants/categories";
 
-// Collection handles must match real Shopify collections — see home page
-// categories array for the source of truth.
+// Collection handles come from MAIN_CATEGORIES — the single source of truth
+// shared with the header nav and the home shortcuts.
 const FOOTER_LINKS: { title: string; links: { name: string; href: string }[] }[] = [
   {
     title: "Categorías",
-    links: [
-      { name: "Obra gruesa", href: "/collections/obra-gruesa" },
-      { name: "Herramientas", href: "/collections/herramientas-y-maquinaria" },
-      { name: "Electricidad e iluminación", href: "/collections/electricidad-e-iluminacion" },
-      { name: "Sanitaria y grifería", href: "/collections/sanitaria-y-griferia" },
-      { name: "Pinturas y acabados", href: "/collections/pinturas-y-acabados" },
-    ],
+    // Show the first five main categories in the footer using their long names.
+    links: MAIN_CATEGORIES.slice(0, 5).map((cat) => ({
+      name: cat.longName,
+      href: categoryHref(cat.handle),
+    })),
   },
   {
     title: "Ayuda",
