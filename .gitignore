@@ -39,6 +39,18 @@ yarn-error.log*
 .debug_*.js
 .debug_*.ts
 
+# sales/proposal artifacts — live outside the repo or in docs/ventas/
+/*.xlsx
+/*.pdf
+/CompraHogar-Propuesta-*
+/index.html
+.~lock.*#
+
+# Claude Code local configuration (per-machine paths, permissions, agents)
+.claude/settings.local.json
+.claude/agents/
+.claude/scheduled_tasks.lock
+
 # vercel
 .vercel
 
