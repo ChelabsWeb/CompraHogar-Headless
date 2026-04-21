@@ -42,75 +42,71 @@ export interface Category {
 // ==========================================
 // 2. Mock Data (Estructura Simulada)
 // ==========================================
+// Fallback data — only used when props.collections is empty (initial paint or
+// Shopify unreachable). Handles must match real Shopify collections to avoid 404s.
 const MOCK_CATEGORIES: Category[] = [
   {
     id: "obra-gruesa",
-    title: "Obra Gruesa",
+    title: "Obra gruesa",
     href: "/collections/obra-gruesa",
     icon: <LayoutGrid className="w-4 h-4" />,
     subcategories: [
-      { title: "Cementos y Cal", href: "/collections/cementos" },
-      { title: "Ladrillos y Bloques", href: "/collections/ladrillos" },
-      { title: "Hierros y Mallas", href: "/collections/hierros" },
+      { title: "Cementos y cal", href: "/collections/cementos-y-cal" },
+      { title: "Ladrillos y bloques", href: "/collections/ladrillos-y-bloques" },
+      { title: "Hierros y mallas", href: "/collections/hierros-y-mallas" },
       { title: "Áridos", href: "/collections/aridos" },
       { title: "Impermeabilizantes", href: "/collections/impermeabilizantes" },
       { title: "Aditivos", href: "/collections/aditivos" },
     ],
     promo: {
-      title: "Descuento en Acero",
+      title: "Descuento en acero",
       subtitle: "Hasta 20% OFF en barras ADN 500 para tu obra",
       imageSrc:
         "https://images.unsplash.com/photo-1518331539958-31623192fde0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      href: "/collections/hierros-promocion",
-      ctaText: "Ver Promoción",
+      href: "/collections/obra-gruesa",
+      ctaText: "Ver promoción",
     },
   },
   {
     id: "herramientas",
     title: "Herramientas",
-    href: "/collections/herramientas",
+    href: "/collections/herramientas-y-maquinaria",
     icon: <Wrench className="w-4 h-4" />,
     subcategories: [
-      {
-        title: "Herramientas Eléctricas",
-        href: "/collections/herramientas-electricas",
-      },
-      {
-        title: "Herramientas Manuales",
-        href: "/collections/herramientas-manuales",
-      },
-      { title: "Medición y Trazado", href: "/collections/medicion" },
+      { title: "Herramientas eléctricas", href: "/collections/herramientas-electricas" },
+      { title: "Herramientas manuales", href: "/collections/herramientas-manuales" },
+      { title: "Medición y trazado", href: "/collections/medicion-y-trazado" },
       { title: "Accesorios", href: "/collections/accesorios" },
-      { title: "Seguridad Industrial", href: "/collections/seguridad" },
+      { title: "Seguridad industrial", href: "/collections/seguridad-industrial" },
     ],
     promo: {
-      title: "Nueva Colección Dewalt",
+      title: "Nueva colección Dewalt",
       subtitle: "Potencia sin cables. Descubrí la línea 20V MAX",
       imageSrc:
         "https://images.unsplash.com/photo-1504148455328-c376907d081c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      href: "/collections/dewalt",
+      href: "/collections/herramientas-y-maquinaria",
       ctaText: "Comprar ahora",
     },
   },
   {
     id: "sanitaria",
     title: "Sanitaria",
-    href: "/collections/sanitaria",
+    href: "/collections/sanitaria-y-griferia",
     icon: <Droplets className="w-4 h-4" />,
     subcategories: [
-      { title: "Caños y Conexiones", href: "/collections/canos" },
+      { title: "Caños y conexiones", href: "/collections/canos-y-conexiones" },
       { title: "Grifería", href: "/collections/griferia" },
-      { title: "Loza Sanitaria", href: "/collections/loza" },
-      { title: "Bombas de Agua", href: "/collections/bombas" },
-      { title: "Tanques y Cisternas", href: "/collections/tanques" },
+      { title: "Loza sanitaria", href: "/collections/loza-sanitaria" },
+      { title: "Bombas de agua", href: "/collections/bombas-de-agua" },
+      { title: "Tanques y cisternas", href: "/collections/tanques-y-cisternas" },
     ],
     promo: {
-      title: "Renová tu Baño",
+      title: "Renová tu baño",
       subtitle: "Encontrá las mejores marcas en grifería premium",
       imageSrc:
         "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      href: "/collections/griferia-premium",
-      ctaText: "Ver Catálogo",
+      href: "/collections/sanitaria-y-griferia",
+      ctaText: "Ver catálogo",
     },
   },
 ];
@@ -162,11 +158,11 @@ export function MegaMenu({
           subcategories: foundSubs.length > 0 ? foundSubs : (mock?.subcategories || []),
           promo: {
             // Use actual collection data if available, otherwise fallback to mock
-            title: `Especial ${mainCol.title}`,
+            title: `Destacado en ${mainCol.title.toLowerCase()}`,
             subtitle: mainCol.description || "Descubrí las mejores ofertas en esta categoría",
             imageSrc: mainCol.image?.url || mock.promo.imageSrc,
             href: `/collections/${mainCol.handle}`,
-            ctaText: "Ver Colección"
+            ctaText: "Ver colección"
           }
         });
       }
@@ -293,7 +289,7 @@ export function MegaMenu({
                   onClick={closeMenu}
                   className="inline-block mb-6 text-xl font-semibold tracking-tight text-neutral-900 transition-colors hover:text-primary"
                 >
-                  Explorar todo {activeCategory.title}
+                  Ver todo en {activeCategory.title.toLowerCase()}
                 </Link>
                 <ul className="flex flex-col gap-4">
                   {activeCategory.subcategories.map((sub, index) => (

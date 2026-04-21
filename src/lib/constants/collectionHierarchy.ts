@@ -8,54 +8,54 @@ export type CollectionHierarchy = Record<string, Subcollection[]>;
 
 export const COLLECTION_HIERARCHY: CollectionHierarchy = {
   "construccion-y-materiales": [
-    { name: "Cementos y Cal", handle: "cementos-y-cal", image: "/images/categories/cementos.jpg" },
-    { name: "Ladrillos y Bloques", handle: "ladrillos-y-bloques", image: "/images/categories/ladrillos.jpg" },
-    { name: "Hierros y Mallas", handle: "hierros-y-mallas", image: "/images/categories/hierros.jpg" },
+    { name: "Cementos y cal", handle: "cementos-y-cal", image: "/images/categories/cementos.jpg" },
+    { name: "Ladrillos y bloques", handle: "ladrillos-y-bloques", image: "/images/categories/ladrillos.jpg" },
+    { name: "Hierros y mallas", handle: "hierros-y-mallas", image: "/images/categories/hierros.jpg" },
     { name: "Áridos", handle: "aridos", image: "/images/categories/aridos.jpg" },
     { name: "Impermeabilizantes", handle: "impermeabilizantes" },
     { name: "Aditivos", handle: "aditivos" }
   ],
   "herramientas-y-maquinaria": [
-    { name: "Herramientas Eléctricas", handle: "herramientas-electricas" },
-    { name: "Herramientas Manuales", handle: "herramientas-manuales" },
-    { name: "Medición y Trazado", handle: "medicion-y-trazado" },
+    { name: "Herramientas eléctricas", handle: "herramientas-electricas" },
+    { name: "Herramientas manuales", handle: "herramientas-manuales" },
+    { name: "Medición y trazado", handle: "medicion-y-trazado" },
     { name: "Accesorios", handle: "accesorios" },
-    { name: "Seguridad Industrial", handle: "seguridad-industrial" }
+    { name: "Seguridad industrial", handle: "seguridad-industrial" }
   ],
   "electricidad-e-iluminacion": [
-    { name: "Cables y Conductores", handle: "cables-y-conductores" },
-    { name: "Tableros y Protecciones", handle: "tableros-y-protecciones" },
+    { name: "Cables y conductores", handle: "cables-y-conductores" },
+    { name: "Tableros y protecciones", handle: "tableros-y-protecciones" },
     { name: "Iluminación LED", handle: "iluminacion" }
   ],
   "sanitaria-y-griferia": [
-    { name: "Caños y Conexiones", handle: "canos-y-conexiones" },
+    { name: "Caños y conexiones", handle: "canos-y-conexiones" },
     { name: "Grifería", handle: "griferia" },
-    { name: "Loza Sanitaria", handle: "loza-sanitaria" },
-    { name: "Bombas de Agua", handle: "bombas-de-agua" },
-    { name: "Tanques y Cisternas", handle: "tanques-y-cisternas" }
+    { name: "Loza sanitaria", handle: "loza-sanitaria" },
+    { name: "Bombas de agua", handle: "bombas-de-agua" },
+    { name: "Tanques y cisternas", handle: "tanques-y-cisternas" }
   ],
   "pinturas-y-acabados": [
-    { name: "Pinturas de Interior", handle: "pinturas-de-interior" },
-    { name: "Pinturas de Exterior", handle: "pinturas-de-exterior" },
-    { name: "Accesorios para Pintar", handle: "accesorios-para-pintar" }
+    { name: "Pinturas de interior", handle: "pinturas-de-interior" },
+    { name: "Pinturas de exterior", handle: "pinturas-de-exterior" },
+    { name: "Accesorios para pintar", handle: "accesorios-para-pintar" }
   ],
   "hogar-y-decoracion": [
-    { name: "Revestimientos y Pisos", handle: "revestimientos-y-pisos" },
-    { name: "Mobiliario de Baño y Cocina", handle: "mobiliario-de-bano-y-cocina" }
+    { name: "Revestimientos y pisos", handle: "revestimientos-y-pisos" },
+    { name: "Mobiliario de baño y cocina", handle: "mobiliario-de-bano-y-cocina" }
   ],
   "jardin-y-exteriores": [
-    { name: "Muebles de Jardín", handle: "muebles-de-jardin" },
-    { name: "Piscinas y Mantenimiento", handle: "piscinas-y-mantenimiento" },
-    { name: "Herramientas de Jardinería", handle: "herramientas-de-jardineria" },
+    { name: "Muebles de jardín", handle: "muebles-de-jardin" },
+    { name: "Piscinas y mantenimiento", handle: "piscinas-y-mantenimiento" },
+    { name: "Herramientas de jardinería", handle: "herramientas-de-jardineria" },
     { name: "Riego", handle: "riego" }
   ],
   "servicios-y-alquileres": [
-    { name: "Alquiler de Maquinaria", handle: "alquiler-de-maquinaria" },
-    { name: "Andamios y Estructuras", handle: "andamios-y-estructuras" },
-    { name: "Herramientas Especializadas", handle: "herramientas-especializadas-alquiler" },
-    { name: "Fletes y Transporte", handle: "fletes-y-transporte" },
-    { name: "Servicios de Mano de Obra", handle: "servicios-mano-de-obra" },
-    { name: "Contenedores y Limpieza", handle: "contenedores-y-limpieza" },
+    { name: "Alquiler de maquinaria", handle: "alquiler-de-maquinaria" },
+    { name: "Andamios y estructuras", handle: "andamios-y-estructuras" },
+    { name: "Herramientas especializadas", handle: "herramientas-especializadas-alquiler" },
+    { name: "Fletes y transporte", handle: "fletes-y-transporte" },
+    { name: "Servicios de mano de obra", handle: "servicios-mano-de-obra" },
+    { name: "Contenedores y limpieza", handle: "contenedores-y-limpieza" },
   ]
 };
 
