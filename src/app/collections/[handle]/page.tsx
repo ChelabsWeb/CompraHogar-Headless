@@ -9,6 +9,7 @@ import type { Metadata } from "next";
 import { getSubcollections } from "@/lib/constants/collectionHierarchy";
 import { SubcategoryCarousel } from "@/components/shop/SubcategoryCarousel";
 import { CollectionHero } from "@/components/shop/CollectionHero";
+import { CollectionSeoBlock } from "@/components/shop/CollectionSeoBlock";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
@@ -289,6 +290,8 @@ export default async function CollectionPage(props: {
                         )}
                     </MobileFilterDrawer>
                 </div>
+
+                <CollectionSeoBlock handle={resolvedParams.handle} />
 
             </div>
         </div>
