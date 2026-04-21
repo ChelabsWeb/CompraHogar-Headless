@@ -30,18 +30,27 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
     }
 
     const title = product.title;
-    const description = product.description;
     const coverImage = product.media?.edges?.[0]?.node?.previewImage?.url;
     const canonicalUrl = `/products/${resolvedParams.handle}`;
 
+    // Enriquecemos la meta description: si Shopify tira algo corto/genérico, la completamos
+    // con señales comerciales (envíos, cuotas) para ganar CTR en SERP y keywords long-tail.
+    const rawDesc = (product.description || "").trim();
+    const enrichment = " Envío 24-48hs a todo Uruguay. Hasta 12 cuotas sin interés. CompraHogar.";
+    const description = rawDesc.length >= 120
+        ? rawDesc.slice(0, 155)
+        : `${title} disponible en CompraHogar Uruguay. ${rawDesc}${enrichment}`.slice(0, 160).trim();
+
+    const metaTitle = `${title} | CompraHogar Uruguay`;
+
     return {
-        title,
+        title: metaTitle,
         description,
         alternates: {
             canonical: canonicalUrl,
         },
         openGraph: {
-            title,
+            title: metaTitle,
             description,
             type: "website",
             url: canonicalUrl,
@@ -49,7 +58,7 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
         },
         twitter: {
             card: "summary_large_image",
-            title,
+            title: metaTitle,
             description,
             ...(coverImage && { images: [coverImage] }),
         }

@@ -53,7 +53,7 @@ function ProductCardInner({ product, priority = false }: ProductCardProps) {
                                 >
                                     <Image
                                         src={img.url}
-                                        alt={img.altText || product.title}
+                                        alt={img.altText || (images.length > 1 ? `${product.title} — imagen ${index + 1} de ${images.length}` : product.title)}
                                         fill
                                         className="object-contain p-3 sm:p-5 lg:p-6 transition-transform duration-500 group-hover:scale-[1.03]"
                                         sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
