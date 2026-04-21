@@ -34,6 +34,7 @@ const FOOTER_LINKS: { title: string; links: { name: string; href: string }[] }[]
     title: "Ayuda",
     links: [
       { name: "Envíos y entregas", href: "/envios-y-entregas" },
+      { name: "Zonas de envío", href: "/zonas" },
       { name: "Cambios y devoluciones", href: "/devoluciones-y-garantias" },
       { name: "Términos y condiciones", href: "/terminos-y-condiciones" },
       { name: "Política de privacidad", href: "/politica-privacidad" },

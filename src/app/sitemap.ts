@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { shopifyFetch } from "@/lib/shopify";
 import { getCollectionsQuery, getProductsQuery } from "@/lib/queries";
+import { ZONE_SLUGS } from "@/lib/constants/zoneContent";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
@@ -13,6 +14,7 @@ const staticPages: {
   { path: "/collections", priority: 0.9, changeFrequency: "daily" },
   { path: "/products", priority: 0.9, changeFrequency: "daily" },
   { path: "/search", priority: 0.7, changeFrequency: "weekly" },
+  { path: "/zonas", priority: 0.8, changeFrequency: "monthly" },
   { path: "/sobre-nosotros", priority: 0.6, changeFrequency: "monthly" },
   { path: "/envios-y-entregas", priority: 0.5, changeFrequency: "monthly" },
   { path: "/devoluciones-y-garantias", priority: 0.5, changeFrequency: "monthly" },
@@ -63,6 +65,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: page.priority,
   }));
 
+  const zoneEntries: MetadataRoute.Sitemap = ZONE_SLUGS.map((slug) => ({
+    url: `${BASE_URL}/zonas/${slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.85,
+  }));
+
   let collectionEntries: MetadataRoute.Sitemap = [];
   let productEntries: MetadataRoute.Sitemap = [];
 
@@ -89,5 +98,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Gracefully degrade — static pages will still be returned
   }
 
-  return [...staticEntries, ...collectionEntries, ...productEntries];
+  return [...staticEntries, ...zoneEntries, ...collectionEntries, ...productEntries];
 }
