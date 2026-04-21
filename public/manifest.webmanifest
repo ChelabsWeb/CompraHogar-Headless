@@ -1,0 +1,34 @@
+{
+  "name": "CompraHogar Uruguay",
+  "short_name": "CompraHogar",
+  "description": "Materiales, herramientas y todo para tu hogar. Envíos en 24-48hs en todo Uruguay.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#21645d",
+  "orientation": "portrait-primary",
+  "lang": "es-UY",
+  "dir": "ltr",
+  "categories": ["shopping", "lifestyle"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
