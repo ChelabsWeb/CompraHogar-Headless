@@ -1,7 +1,14 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { shopifyFetch, getDealOfTheDay, getCollectionProducts } from "@/lib/shopify";
 import { getProductsQuery } from "@/lib/queries";
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "/",
+  },
+};
 import { ProductGrid } from "@/components/shop/ProductGrid";
 import { ProductGridSkeleton } from "@/components/shop/ProductCardSkeleton";
 import { CollectionShowcase } from "@/components/home/CollectionShowcase";
@@ -68,6 +75,9 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col w-full min-h-screen bg-white text-slate-800 overflow-x-hidden">
+      <h1 className="sr-only">
+        CompraHogar Uruguay — Ferretería online: materiales de construcción, herramientas, sanitaria, electricidad y pinturas con envíos en 24-48hs a todo el país
+      </h1>
       {/* SECTION: Hero & Payment Bar */}
       <section className="relative w-full pb-6">
         {/* Hero Carousel */}

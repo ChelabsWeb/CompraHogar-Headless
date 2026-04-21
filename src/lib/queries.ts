@@ -1,3 +1,16 @@
+export const getCollectionMetaQuery = `
+  query getCollectionMeta($handle: String!) {
+    collection(handle: $handle) {
+      title
+      description
+      image {
+        url
+        altText
+      }
+    }
+  }
+`;
+
 export const getProductsQuery = `
   query getProducts($first: Int!) {
     products(first: $first) {

@@ -32,14 +32,19 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
     const title = product.title;
     const description = product.description;
     const coverImage = product.media?.edges?.[0]?.node?.previewImage?.url;
+    const canonicalUrl = `/products/${resolvedParams.handle}`;
 
     return {
         title,
         description,
+        alternates: {
+            canonical: canonicalUrl,
+        },
         openGraph: {
             title,
             description,
             type: "website",
+            url: canonicalUrl,
             ...(coverImage && { images: [{ url: coverImage }] }),
         },
         twitter: {
@@ -108,6 +113,7 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
         },
     };
 
+    const productUrl = `${siteUrl}/products/${product.handle}`;
     const breadcrumbJsonLd = {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
@@ -117,7 +123,7 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
             ...(collectionNode
                 ? [{ "@type": "ListItem", position: 3, name: collectionNode.title, item: `${siteUrl}/collections/${collectionNode.handle}` }]
                 : []),
-            { "@type": "ListItem", position: collectionNode ? 4 : 3, name: product.title },
+            { "@type": "ListItem", position: collectionNode ? 4 : 3, name: product.title, item: productUrl },
         ],
     };
 

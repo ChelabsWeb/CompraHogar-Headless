@@ -1,5 +1,5 @@
 import { shopifyFetch } from "@/lib/shopify";
-import { getCollectionWithProductsQuery, getCollectionWithProductsPrevQuery } from "@/lib/queries";
+import { getCollectionWithProductsQuery, getCollectionWithProductsPrevQuery, getCollectionMetaQuery } from "@/lib/queries";
 import { ProductGrid } from "@/components/shop/ProductGrid";
 import { notFound } from "next/navigation";
 import { StoreFilters } from "@/components/shop/StoreFilters";
@@ -35,17 +35,50 @@ export async function generateMetadata(props: {
     const queryString = cleanParams.toString();
     const canonicalUrl = `${baseUrl}${pathname}${queryString ? `?${queryString}` : ''}`;
 
-    // Formateamos el título
     const titleFormatted = handle.charAt(0).toUpperCase() + handle.slice(1).replace(/-/g, ' ');
 
+    // Fetch real collection data from Shopify for rich metadata (dedup'd with the page query).
+    let shopifyTitle: string | undefined;
+    let shopifyDescription: string | undefined;
+    let shopifyImage: string | undefined;
+    try {
+        const { body } = await shopifyFetch({
+            query: getCollectionMetaQuery,
+            tags: ['collections', `collection:${handle}`],
+            variables: { handle },
+        });
+        shopifyTitle = body?.data?.collection?.title;
+        shopifyDescription = body?.data?.collection?.description;
+        shopifyImage = body?.data?.collection?.image?.url;
+    } catch {
+        // Fall back to handle-derived metadata
+    }
+
+    const metaTitle = `${shopifyTitle || titleFormatted} en Uruguay — Envíos 24-48hs | CompraHogar`;
+    const metaDescription = (shopifyDescription && shopifyDescription.trim().length > 40)
+        ? shopifyDescription.trim().slice(0, 155)
+        : `Comprá ${(shopifyTitle || titleFormatted).toLowerCase()} online en Uruguay. Envíos a todo el país en 24-48hs. Hasta 12 cuotas sin interés. Precios mayoristas.`;
+
     return {
-        title: `${titleFormatted} | CompraHogar`,
-        description: `Descubre nuestra colección de ${titleFormatted.toLowerCase()} al mejor precio.`,
+        title: metaTitle,
+        description: metaDescription,
         alternates: {
             canonical: canonicalUrl,
         },
+        openGraph: {
+            title: metaTitle,
+            description: metaDescription,
+            type: "website",
+            url: canonicalUrl,
+            ...(shopifyImage && { images: [{ url: shopifyImage }] }),
+        },
+        twitter: {
+            card: "summary_large_image",
+            title: metaTitle,
+            description: metaDescription,
+            ...(shopifyImage && { images: [shopifyImage] }),
+        },
         robots: {
-            // Bloqueo preventivo: Si tu e-commerce expone un orden sin resultados, evitamos indexarlo
             index: true,
             follow: true,
             nocache: false,
