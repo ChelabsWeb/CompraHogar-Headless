@@ -89,15 +89,6 @@ export default function LoginForm() {
           "Iniciar sesión"
         )}
       </Button>
-
-      <div className="text-center mt-4">
-        <p className="text-sm text-slate-500">
-          ¿No tienes una cuenta?{" "}
-          <Link href="/registro" className="text-primary font-semibold hover:underline">
-            Regístrate aquí
-          </Link>
-        </p>
-      </div>
     </form>
   );
 }

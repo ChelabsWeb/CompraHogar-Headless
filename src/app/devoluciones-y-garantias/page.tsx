@@ -1,73 +1,117 @@
 import type { Metadata } from "next";
+import { Container } from "@/components/ui/container";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Devoluciones y Garantías | CompraHogar",
-  description: "Política de devoluciones, cambios y cobertura de garantía para tus compras.",
+  title: "Devoluciones y garantías | CompraHogar",
+  description: "Política de devoluciones, cambios y cobertura de garantía de acuerdo a la Ley 17.250 de Uruguay.",
 };
 
 export default function DevolucionesYGarantias() {
   return (
-    <div className="min-h-screen bg-background py-16 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto space-y-12">
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl font-extrabold tracking-tight text-primary sm:text-5xl">
-            Devoluciones y Garantías
+    <div className="min-h-screen bg-[#f7f7f8] pb-16">
+      <Container>
+        <div className="pt-6 md:pt-8">
+          <Breadcrumbs items={[{ label: "Devoluciones y garantías", isLast: true }]} />
+        </div>
+
+        <div className="pt-4 md:pt-6 pb-8 max-w-3xl">
+          <h1 className="text-3xl md:text-[40px] font-bold tracking-tight text-slate-900 leading-tight">
+            Devoluciones y garantías
           </h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="mt-3 text-slate-600 text-base md:text-lg">
             Transparencia y respaldo en cada una de tus compras.
           </p>
         </div>
 
-        <div className="bg-card shadow-sm border rounded-2xl p-8 sm:p-10 space-y-8 text-card-foreground">
-          
+        <div className="max-w-3xl bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-10 space-y-8">
           <section>
-            <h2 className="text-2xl font-bold mb-4 text-primary">1. Derecho de Retracto (Cambios y Devoluciones)</h2>
-            <p className="text-muted-foreground leading-relaxed mb-4">
-              En CompraHogar cumplimos con lo establecido en el <strong>Artículo 16 de la Ley N° 17.250</strong> (Ley de Relaciones de Consumo de Uruguay). Si por alguna razón no estás satisfecho con tu compra realizada de forma no presencial, cuentas con el derecho a rescindir el contrato dentro de los <strong>5 (cinco) días hábiles</strong> posteriores a haber recibido el producto.
+            <h2 className="text-xl md:text-2xl font-semibold text-slate-900 mb-3">
+              1. Derecho de retracto
+            </h2>
+            <p className="text-slate-600 leading-relaxed mb-4">
+              En CompraHogar cumplimos con lo establecido en el{" "}
+              <strong className="text-slate-900">Artículo 16 de la Ley N° 17.250</strong>{" "}
+              (Ley de Relaciones de Consumo de Uruguay). Si por alguna razón no estás
+              satisfecho con tu compra, podés rescindir el contrato dentro de los{" "}
+              <strong className="text-slate-900">5 días hábiles</strong> posteriores a
+              recibir el producto.
             </p>
-            <div className="bg-muted p-4 rounded-lg border border-border">
-              <h3 className="font-semibold text-foreground mb-2">Condiciones para devoluciones:</h3>
-              <ul className="list-disc pl-5 text-muted-foreground text-sm space-y-1">
-                <li>El producto debe encontrarse en su empaque original, cerrado, con etiquetas y accesorios correspondientes.</li>
-                <li>No debe presentar señales de uso, maltrato, golpes o instalaciones previas (ej. grifería, artículos de baño).</li>
-                <li>Haber conservado el ticket o factura electrónica de la compra.</li>
+            <div className="bg-slate-50 rounded-xl border border-slate-100 p-4">
+              <h3 className="font-semibold text-slate-900 text-sm mb-2">
+                Condiciones para la devolución
+              </h3>
+              <ul className="list-disc pl-5 text-slate-600 text-[14px] space-y-1.5">
+                <li>
+                  El producto debe estar en su empaque original, cerrado, con etiquetas
+                  y accesorios correspondientes.
+                </li>
+                <li>
+                  No debe presentar señales de uso, maltrato, golpes o instalaciones
+                  previas (ej: grifería, artículos de baño).
+                </li>
+                <li>Conservá el ticket o factura electrónica de la compra.</li>
               </ul>
             </div>
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold mb-4 text-primary">2. Casos Especiales y Restricciones</h2>
-            <p className="text-muted-foreground leading-relaxed">
-              No se aceptarán devoluciones por &quot;arrepentimiento de compra&quot; una vez pasados los 5 días hábiles, ni sobre artículos hechos a medida (por ejemplo: cortes de cables, materiales fraccionados, pinturas preparadas a color), productos higiénicos que hayan sido desprecintados (asientos de sanitario) o artículos expuestos a liquidación y exhibidos como repuestos y/o saldos (informados previamente en su descripción).
+            <h2 className="text-xl md:text-2xl font-semibold text-slate-900 mb-3">
+              2. Casos especiales y restricciones
+            </h2>
+            <p className="text-slate-600 leading-relaxed">
+              No se aceptan devoluciones por arrepentimiento una vez pasados los 5 días
+              hábiles, ni sobre artículos hechos a medida (cortes de cables, materiales
+              fraccionados, pinturas preparadas a color), productos higiénicos
+              desprecintados (asientos de sanitario) o artículos expuestos a liquidación
+              y exhibidos como repuestos o saldos (informados previamente en la
+              descripción).
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold mb-4 text-primary">3. Garantías por Defectos de Fábrica</h2>
-            <p className="text-muted-foreground leading-relaxed mb-4">
-              Todos nuestros artículos de ferretería, construcción y equipamiento están respaldados por una garantía contra defectos comprobables de fabricación. El plazo de garantía varía dependiendo del componente y del importador oficial en Uruguay (generalmente indicado en la caja o ficha técnica del producto).
+            <h2 className="text-xl md:text-2xl font-semibold text-slate-900 mb-3">
+              3. Garantías por defectos de fábrica
+            </h2>
+            <p className="text-slate-600 leading-relaxed mb-4">
+              Todos nuestros artículos de ferretería, construcción y equipamiento están
+              respaldados por una garantía contra defectos comprobables de fabricación.
+              El plazo varía según el componente y el importador oficial en Uruguay
+              (generalmente indicado en la caja o ficha técnica).
             </p>
-            <p className="text-muted-foreground leading-relaxed">
-              La garantía <strong>no cubre</strong> daños por uso inadecuado, desgaste natural, instalaciones deficientes, accidentes, o alteraciones realizadas por terceros ajenos al fabricante o a CompraHogar.
+            <p className="text-slate-600 leading-relaxed">
+              La garantía <strong className="text-slate-900">no cubre</strong> daños por
+              uso inadecuado, desgaste natural, instalaciones deficientes, accidentes ni
+              alteraciones realizadas por terceros ajenos al fabricante o a CompraHogar.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold mb-4 text-primary">4. ¿Cómo Iniciar un Reclamo o Devolución?</h2>
-            <ol className="list-decimal pl-5 text-muted-foreground leading-relaxed space-y-3">
+            <h2 className="text-xl md:text-2xl font-semibold text-slate-900 mb-3">
+              4. Cómo iniciar un reclamo
+            </h2>
+            <ol className="list-decimal pl-5 text-slate-600 leading-relaxed space-y-2.5">
               <li>
-                <strong>Comunícate:</strong> Envíanos un correo o mensaje a través de WhatsApp detallando tu número de pedido, el producto afectado y el motivo de la devolución/garantía.
+                <span className="font-semibold text-slate-900">Comunicate:</span>{" "}
+                enviános un email o un mensaje por WhatsApp con tu número de pedido, el
+                producto afectado y el motivo.
               </li>
               <li>
-                <strong>Evidencias:</strong> Incluye fotografías nítidas o un video breve si es un reclamo por fallas de fábrica o roturas en el envío.
+                <span className="font-semibold text-slate-900">Evidencias:</span> sumá
+                fotos nítidas o un video breve si el reclamo es por fallas de fábrica o
+                roturas en el envío.
               </li>
               <li>
-                <strong>Resolución:</strong> Nuestro equipo de servicio técnico o atención al cliente analizará el caso. Si se autoriza el cambio o si se debe enviar al importador (RMA), coordinaremos el retiro por agencia o el punto de entrega en Montevideo. Los costos de logística en casos de garantías validadas son cubiertos por la empresa.
+                <span className="font-semibold text-slate-900">Resolución:</span> nuestro
+                equipo analiza el caso. Si se autoriza el cambio o hay que enviar al
+                importador (RMA), coordinamos el retiro por agencia o el punto de
+                entrega en Montevideo. Los costos de logística en garantías validadas
+                los cubrimos nosotros.
               </li>
             </ol>
           </section>
         </div>
-      </div>
+      </Container>
     </div>
   );
 }

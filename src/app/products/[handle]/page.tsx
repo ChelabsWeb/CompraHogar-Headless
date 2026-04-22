@@ -30,21 +30,35 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
     }
 
     const title = product.title;
-    const description = product.description;
     const coverImage = product.media?.edges?.[0]?.node?.previewImage?.url;
+    const canonicalUrl = `/products/${resolvedParams.handle}`;
+
+    // Enriquecemos la meta description: si Shopify tira algo corto/genérico, la completamos
+    // con señales comerciales (envíos, cuotas) para ganar CTR en SERP y keywords long-tail.
+    const rawDesc = (product.description || "").trim();
+    const enrichment = " Envío 24-48hs a todo Uruguay. Hasta 12 cuotas sin interés. CompraHogar.";
+    const description = rawDesc.length >= 120
+        ? rawDesc.slice(0, 155)
+        : `${title} disponible en CompraHogar Uruguay. ${rawDesc}${enrichment}`.slice(0, 160).trim();
+
+    const metaTitle = `${title} | CompraHogar Uruguay`;
 
     return {
-        title,
+        title: metaTitle,
         description,
+        alternates: {
+            canonical: canonicalUrl,
+        },
         openGraph: {
-            title,
+            title: metaTitle,
             description,
             type: "website",
+            url: canonicalUrl,
             ...(coverImage && { images: [{ url: coverImage }] }),
         },
         twitter: {
             card: "summary_large_image",
-            title,
+            title: metaTitle,
             description,
             ...(coverImage && { images: [coverImage] }),
         }
@@ -108,6 +122,7 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
         },
     };
 
+    const productUrl = `${siteUrl}/products/${product.handle}`;
     const breadcrumbJsonLd = {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
@@ -117,7 +132,7 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
             ...(collectionNode
                 ? [{ "@type": "ListItem", position: 3, name: collectionNode.title, item: `${siteUrl}/collections/${collectionNode.handle}` }]
                 : []),
-            { "@type": "ListItem", position: collectionNode ? 4 : 3, name: product.title },
+            { "@type": "ListItem", position: collectionNode ? 4 : 3, name: product.title, item: productUrl },
         ],
     };
 
@@ -126,7 +141,7 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }} />
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
             <Container>
-                <div className="mb-6 hidden md:block">
+                <div className="mb-4 md:mb-6">
                     <Breadcrumbs
                         items={[
                             { label: "Catálogo", href: "/products" },
@@ -159,7 +174,7 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
 
                 {recommendations.length > 0 && (
                     <div className="mt-8 lg:mt-12">
-                        <ProductCarousel title="Quienes vieron esto también compraron" products={recommendations} />
+                        <ProductCarousel title="También te puede interesar" products={recommendations} />
                     </div>
                 )}
 

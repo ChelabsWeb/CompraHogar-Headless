@@ -1,5 +1,18 @@
 import type { NextConfig } from "next";
 
+const isDev = process.env.NODE_ENV !== "production";
+const scriptSrc = [
+  "'self'",
+  "'unsafe-inline'",
+  isDev ? "'unsafe-eval'" : null,
+  "https://www.googletagmanager.com",
+  "https://ajax.googleapis.com",
+  "https://cdn.judge.me",
+  "https://connect.facebook.net",
+]
+  .filter(Boolean)
+  .join(" ");
+
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
@@ -41,7 +54,7 @@ const nextConfig: NextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://ajax.googleapis.com https://cdn.judge.me https://connect.facebook.net",
+              `script-src ${scriptSrc}`,
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.judge.me",
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob: https://cdn.shopify.com https://images.unsplash.com https://cdn.judge.me https://judgeme-public-images.imgix.net https://www.facebook.com",

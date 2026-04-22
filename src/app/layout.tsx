@@ -30,6 +30,12 @@ export const metadata: Metadata = {
   description: "Tu ferretería online en Uruguay. Materiales de construcción, herramientas, sanitaria, electricidad y más. Envíos a todo el país en 24-48hs. Hasta 12 cuotas sin interés.",
   applicationName: "CompraHogar",
   manifest: "/manifest.webmanifest",
+  alternates: {
+    languages: {
+      "es-UY": "/",
+      "es": "/",
+    },
+  },
   appleWebApp: {
     capable: true,
     title: "CompraHogar",
@@ -82,7 +88,7 @@ export default async function RootLayout({
   const fbPixelId = rawFbPixelId && /^\d{15,16}$/.test(rawFbPixelId) ? rawFbPixelId : null;
 
   return (
-    <html lang="es" className="scroll-smooth">
+    <html lang="es-UY" className="scroll-smooth">
       <head>
         <link rel="preconnect" href="https://cdn.shopify.com" />
         <link rel="dns-prefetch" href="https://cdn.shopify.com" />
@@ -93,25 +99,83 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "Organization",
-              name: "CompraHogar",
-              url: siteUrl,
-              logo: `${siteUrl}/logo.png`,
-              description: "Tu ferretería online en Uruguay. Materiales de construcción, herramientas, sanitaria, electricidad y más.",
-              address: {
-                "@type": "PostalAddress",
-                addressCountry: "UY",
-              },
-              contactPoint: {
-                "@type": "ContactPoint",
-                contactType: "customer service",
-                availableLanguage: "Spanish",
-              },
+              "@graph": [
+                {
+                  "@type": "Organization",
+                  "@id": `${siteUrl}/#organization`,
+                  name: "CompraHogar",
+                  legalName: "CompraHogar Uruguay",
+                  url: siteUrl,
+                  logo: {
+                    "@type": "ImageObject",
+                    url: `${siteUrl}/logo.png`,
+                    width: 512,
+                    height: 512,
+                  },
+                  image: `${siteUrl}/og-default.png`,
+                  description: "Ferretería online en Uruguay. Materiales de construcción, herramientas, sanitaria, electricidad, pinturas y equipamiento para el hogar. Envíos a todo el país en 24-48hs.",
+                  email: "ventas@comprahogar.com.uy",
+                  telephone: "+598 96 244 003",
+                  address: {
+                    "@type": "PostalAddress",
+                    addressCountry: "UY",
+                    addressRegion: "Montevideo",
+                  },
+                  contactPoint: {
+                    "@type": "ContactPoint",
+                    contactType: "customer service",
+                    telephone: "+598 96 244 003",
+                    email: "ventas@comprahogar.com.uy",
+                    availableLanguage: ["Spanish", "es-UY"],
+                    areaServed: "UY",
+                  },
+                },
+                {
+                  "@type": "Store",
+                  "@id": `${siteUrl}/#store`,
+                  name: "CompraHogar",
+                  url: siteUrl,
+                  image: `${siteUrl}/og-default.png`,
+                  description: "Ferretería online uruguaya con envíos en 24-48hs a todo el país.",
+                  priceRange: "$$",
+                  currenciesAccepted: "UYU",
+                  paymentAccepted: "Tarjetas de crédito, OCA, Abitab, RedPagos, Transferencia bancaria, Mercado Pago",
+                  address: {
+                    "@type": "PostalAddress",
+                    addressCountry: "UY",
+                    addressRegion: "Montevideo",
+                  },
+                  areaServed: {
+                    "@type": "Country",
+                    name: "Uruguay",
+                  },
+                  telephone: "+598 96 244 003",
+                  email: "ventas@comprahogar.com.uy",
+                },
+                {
+                  "@type": "WebSite",
+                  "@id": `${siteUrl}/#website`,
+                  url: siteUrl,
+                  name: "CompraHogar",
+                  inLanguage: "es-UY",
+                  publisher: { "@id": `${siteUrl}/#organization` },
+                  potentialAction: {
+                    "@type": "SearchAction",
+                    target: {
+                      "@type": "EntryPoint",
+                      urlTemplate: `${siteUrl}/search?q={search_term_string}`,
+                    },
+                    "query-input": "required name=search_term_string",
+                  },
+                },
+              ],
             }),
           }}
         />
         {gtmId && (
-          <script
+          <Script
+            id="gtm-loader"
+            strategy="afterInteractive"
             dangerouslySetInnerHTML={{
               __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -122,7 +186,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           />
         )}
         {fbPixelId && (
-          <script
+          <Script
+            id="fb-pixel-loader"
+            strategy="afterInteractive"
             dangerouslySetInnerHTML={{
               __html: `!function(f,b,e,v,n,t,s)
 {if(f.fbq)return;n=f.fbq=function(){n.callMethod?

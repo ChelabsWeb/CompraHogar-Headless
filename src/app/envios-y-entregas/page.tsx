@@ -1,80 +1,136 @@
 import type { Metadata } from "next";
+import { MapPin, Truck, Package } from "lucide-react";
+import { Container } from "@/components/ui/container";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Envíos y Entregas | CompraHogar",
-  description: "Información sobre nuestros métodos de envío a Montevideo y al Interior.",
+  title: "Envíos y entregas | CompraHogar",
+  description: "Tarifas, zonas y plazos de envío en Montevideo, zona metropolitana e interior del Uruguay.",
 };
 
 export default function EnviosYEntregas() {
   return (
-    <div className="min-h-screen bg-background py-16 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto space-y-12">
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl font-extrabold tracking-tight text-primary sm:text-5xl">
-            Envíos y Entregas
+    <div className="min-h-screen bg-[#f7f7f8] pb-16">
+      <Container>
+        <div className="pt-6 md:pt-8">
+          <Breadcrumbs items={[{ label: "Envíos y entregas", isLast: true }]} />
+        </div>
+
+        <div className="pt-4 md:pt-6 pb-8 max-w-3xl">
+          <h1 className="text-3xl md:text-[40px] font-bold tracking-tight text-slate-900 leading-tight">
+            Envíos y entregas
           </h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="mt-3 text-slate-600 text-base md:text-lg">
             Llegamos a todo el país para que disfrutes de tus compras donde estés.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           {/* Montevideo */}
-          <div className="bg-card shadow-sm border rounded-2xl p-8 space-y-6 hover-lift">
-            <div className="w-12 h-12 rounded-full bg-brand-teal/10 flex items-center justify-center text-primary mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg>
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8">
+            <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-4">
+              <MapPin className="w-5 h-5" strokeWidth={1.75} />
             </div>
-            <h2 className="text-2xl font-bold text-primary">Envíos en Montevideo</h2>
-            <p className="text-muted-foreground leading-relaxed">
-              Realizamos entregas dentro de Montevideo y zona metropolitana mediante cadetería propia o privada.
+            <h2 className="text-xl md:text-2xl font-semibold text-slate-900 mb-2">
+              Envíos en Montevideo
+            </h2>
+            <p className="text-slate-600 leading-relaxed mb-4">
+              Realizamos entregas dentro de Montevideo y zona metropolitana mediante
+              cadetería propia o privada.
             </p>
-            <div className="bg-muted p-4 rounded-lg border border-border space-y-2">
-              <h3 className="font-semibold text-foreground">Tarifas de envío:</h3>
-              <ul className="list-disc pl-5 text-muted-foreground text-sm space-y-1">
-                <li><strong>Montevideo:</strong> $250</li>
-                <li><strong>Zona metropolitana (Ciudad de la Costa, Las Piedras, La Paz, Barros Blancos, Pando):</strong> $350</li>
+            <div className="bg-slate-50 rounded-xl border border-slate-100 p-4 mb-4">
+              <h3 className="font-semibold text-slate-900 text-sm mb-2">Tarifas</h3>
+              <ul className="text-[13px] text-slate-600 space-y-1.5">
+                <li>
+                  <span className="font-medium text-slate-900">Montevideo:</span> $250
+                </li>
+                <li>
+                  <span className="font-medium text-slate-900">Zona metropolitana</span>{" "}
+                  (Ciudad de la Costa, Las Piedras, La Paz, Barros Blancos, Pando): $350
+                </li>
               </ul>
-              <p className="text-sm text-primary font-semibold pt-1">Envío gratis en compras superiores a $4.000</p>
+              <p className="text-[13px] text-primary font-semibold pt-2 mt-2 border-t border-slate-200">
+                Envío gratis en compras superiores a $4.000
+              </p>
             </div>
-            <ul className="list-disc pl-5 text-muted-foreground leading-relaxed space-y-1">
-              <li><strong>Plazo estimado:</strong> 24 a 48 horas hábiles tras la confirmación del pago.</li>
-              <li><strong>Horarios de entrega:</strong> Lunes a Viernes de 9:00 a 18:00 hs. (Se coordinarán tramos horarios aproximados).</li>
+            <ul className="text-[14px] text-slate-600 space-y-2 leading-relaxed">
+              <li>
+                <span className="font-semibold text-slate-900">Plazo estimado:</span> 24 a 48
+                horas hábiles tras la confirmación del pago.
+              </li>
+              <li>
+                <span className="font-semibold text-slate-900">Horarios:</span> lunes a viernes
+                de 9:00 a 18:00 hs. Coordinamos tramo horario aproximado.
+              </li>
             </ul>
           </div>
 
-          {/* Interior del País */}
-          <div className="bg-card shadow-sm border rounded-2xl p-8 space-y-6 hover-lift">
-            <div className="w-12 h-12 rounded-full bg-brand-orange/10 flex items-center justify-center text-secondary mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+          {/* Interior */}
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8">
+            <div className="w-11 h-11 rounded-xl bg-secondary/10 flex items-center justify-center text-secondary mb-4">
+              <Truck className="w-5 h-5" strokeWidth={1.75} />
             </div>
-            <h2 className="text-2xl font-bold text-primary">Envíos al Interior</h2>
-            <p className="text-muted-foreground leading-relaxed">
-              Llegamos a los 19 departamentos del país. Despachamos tu compra hasta la terminal de Tres Cruces en la agencia de tu preferencia (DAC, Mirtrans, DePunta, entre otras).
+            <h2 className="text-xl md:text-2xl font-semibold text-slate-900 mb-2">
+              Envíos al interior
+            </h2>
+            <p className="text-slate-600 leading-relaxed mb-4">
+              Llegamos a los 19 departamentos. Despachamos tu compra hasta la terminal
+              de Tres Cruces en la agencia de tu preferencia (DAC, Mirtrans, DePunta,
+              entre otras).
             </p>
-            <div className="bg-muted p-4 rounded-lg border border-border space-y-2">
-              <h3 className="font-semibold text-foreground">Tarifas de envío al interior:</h3>
-              <ul className="list-disc pl-5 text-muted-foreground text-sm space-y-1">
-                <li><strong>Canelones, San José, Colonia, Maldonado, Florida:</strong> $400</li>
-                <li><strong>Resto del interior (Salto, Paysandú, Rivera, Tacuarembó, Cerro Largo, Rocha, Lavalleja, Durazno, Flores, Soriano, Río Negro, Treinta y Tres, Artigas):</strong> $550</li>
+            <div className="bg-slate-50 rounded-xl border border-slate-100 p-4 mb-4">
+              <h3 className="font-semibold text-slate-900 text-sm mb-2">Tarifas</h3>
+              <ul className="text-[13px] text-slate-600 space-y-1.5">
+                <li>
+                  <span className="font-medium text-slate-900">
+                    Canelones, San José, Colonia, Maldonado, Florida:
+                  </span>{" "}
+                  $400
+                </li>
+                <li>
+                  <span className="font-medium text-slate-900">Resto del interior:</span>{" "}
+                  $550 (Salto, Paysandú, Rivera, Tacuarembó, Cerro Largo, Rocha, Lavalleja,
+                  Durazno, Flores, Soriano, Río Negro, Treinta y Tres, Artigas)
+                </li>
               </ul>
-              <p className="text-sm text-primary font-semibold pt-1">Envío gratis en compras superiores a $4.000</p>
+              <p className="text-[13px] text-primary font-semibold pt-2 mt-2 border-t border-slate-200">
+                Envío gratis en compras superiores a $4.000
+              </p>
             </div>
-            <ul className="list-disc pl-5 text-muted-foreground leading-relaxed space-y-1">
-              <li>El despacho hasta la terminal en Montevideo no tiene costo adicional. El flete interdepartamental de la agencia se abona al recibir o retirar el paquete en destino.</li>
-              <li><strong>Plazo de despacho:</strong> 24 a 48 horas hábiles tras la confirmación del pago. El tiempo de llegada final depende del cronograma de la agencia seleccionada.</li>
-              <li>Al ser despachado, recibirás el número de rastreo correspondiente.</li>
+            <ul className="text-[14px] text-slate-600 space-y-2 leading-relaxed">
+              <li>
+                El despacho hasta Tres Cruces no tiene costo adicional. El flete
+                interdepartamental se abona al retirar en destino.
+              </li>
+              <li>
+                <span className="font-semibold text-slate-900">Plazo de despacho:</span> 24 a
+                48 horas hábiles tras la confirmación del pago. El tiempo final depende
+                del cronograma de la agencia.
+              </li>
+              <li>Al despachar recibís el número de rastreo por email.</li>
             </ul>
           </div>
         </div>
 
-        {/* Retiro en Local */}
-        <div className="bg-card shadow-sm border rounded-2xl p-8 text-center space-y-4 hover-lift">
-            <h2 className="text-2xl font-bold text-primary">Pick up / Retiro en Local</h2>
-            <p className="text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-              También contamos con la opción de retiro presencial en nuestro depósito o local ubicado en Montevideo. Una vez que tu pedido se encuentre procesado y listo para ser retirado, te contactaremos por WhatsApp o correo electrónico para que puedas acercarte a retirar con tu documento de identidad y número de compra.
-            </p>
+        {/* Pick up */}
+        <div className="mt-4 md:mt-6 bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8">
+          <div className="flex items-start gap-4">
+            <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+              <Package className="w-5 h-5" strokeWidth={1.75} />
+            </div>
+            <div className="min-w-0">
+              <h2 className="text-xl md:text-2xl font-semibold text-slate-900 mb-2">
+                Retiro en local
+              </h2>
+              <p className="text-slate-600 leading-relaxed">
+                También podés retirar tu pedido en nuestro depósito de Montevideo. Cuando
+                esté listo te contactamos por WhatsApp o email para que pases con tu
+                documento y número de compra.
+              </p>
+            </div>
+          </div>
         </div>
-      </div>
+      </Container>
     </div>
   );
 }

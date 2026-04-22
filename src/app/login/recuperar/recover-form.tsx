@@ -32,7 +32,7 @@ export default function RecoverPasswordForm() {
         <Button asChild variant="outline" className="w-full sm:w-auto">
           <Link href="/login">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Volver a Iniciar Sesión
+            Volver a iniciar sesión
           </Link>
         </Button>
       </div>
@@ -53,7 +53,7 @@ export default function RecoverPasswordForm() {
             Correo electrónico
           </label>
           <p className="text-xs text-slate-500 mb-3">
-            Ingresa el correo electrónico asociado a tu cuenta y te enviaremos las instrucciones para restablecer tu contraseña.
+            Ingresá el correo asociado a tu cuenta y te enviamos las instrucciones para restablecer tu contraseña.
           </p>
           <Input 
             id="email"

@@ -132,8 +132,8 @@ export function HeroCarousel() {
           {slide.badge}
         </span>
 
-        {/* Headline */}
-        <h1
+        {/* Headline — H2 (homepage H1 lives in page.tsx as sr-only for SEO) */}
+        <h2
           key={`h-${current}`}
           className="text-[28px] sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-white leading-[1.05] tracking-tight mb-2 sm:mb-3 max-w-[300px] sm:max-w-md lg:max-w-lg xl:max-w-xl animate-[fadeUp_0.5s_ease-out]"
         >
@@ -141,7 +141,7 @@ export function HeroCarousel() {
           <span className="text-secondary drop-shadow-[0_2px_16px_rgba(243,132,62,0.5)]">
             {slide.highlight}
           </span>
-        </h1>
+        </h2>
 
         {/* Subtitle */}
         <p

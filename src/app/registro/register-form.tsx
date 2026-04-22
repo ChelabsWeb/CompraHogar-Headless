@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { Loader2, Mail, Lock, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -124,14 +123,6 @@ export default function RegisterForm() {
         )}
       </Button>
 
-      <div className="text-center mt-4">
-        <p className="text-sm text-slate-500">
-          ¿Ya tienes cuenta?{" "}
-          <Link href="/login" className="text-primary font-semibold hover:underline">
-            Inicia sesión
-          </Link>
-        </p>
-      </div>
     </form>
   );
 }

@@ -147,7 +147,7 @@ export default function PerfilPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-900">Mi Perfil</h1>
+        <h1 className="text-2xl font-bold text-slate-900">Mi perfil</h1>
         {!editing && (
           <button
             onClick={handleEdit}

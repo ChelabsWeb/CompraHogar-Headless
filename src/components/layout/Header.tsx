@@ -16,16 +16,7 @@ import { PredictiveSearch } from "@/components/shared/PredictiveSearch";
 import { LocationSelector } from "@/components/shop/LocationSelector";
 import { MegaMenu } from "./MegaMenu";
 import { LocaleSwitcher } from "./LocaleSwitcher";
-
-const CATEGORIES = [
-    { name: "Obra Gruesa", handle: "obra-gruesa" },
-    { name: "Herramientas", handle: "herramientas-y-maquinaria" },
-    { name: "Electricidad", handle: "electricidad-e-iluminacion" },
-    { name: "Sanitaria", handle: "sanitaria-y-griferia" },
-    { name: "Pinturas", handle: "pinturas-y-acabados" },
-    { name: "Decoración", handle: "hogar-y-decoracion" },
-    { name: "Servicios", handle: "servicios-y-alquileres" }
-];
+import { MAIN_CATEGORIES, categoryHref } from "@/lib/constants/categories";
 
 export function Header({ collections = [], isLoggedIn }: { collections?: any[], isLoggedIn?: boolean }) {
     const { scrollY } = useScroll();
@@ -46,8 +37,6 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
     useMotionValueEvent(scrollY, "change", (latest: number) => {
         setIsScrolled(latest > 50);
     });
-
-    const headerBg = "bg-[#21645d]";
 
     return (
         <div className={`fixed top-0 inset-x-0 z-50 flex flex-col pointer-events-auto transition-transform duration-300 ${isScrolled ? "lg:-translate-y-[72px] -translate-y-[60px]" : "translate-y-0"}`}>
@@ -91,7 +80,7 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
                                                     <Image src="/logo.png" alt="CompraHogar" fill className="object-contain" sizes="260px" />
                                                 </div>
                                             </div>
-                                            <div className="h-px bg-[#21645d]/20 mx-5" />
+                                            <div className="h-px bg-primary/20 mx-5" />
 
                                             {/* Drawer Links */}
                                             <div className="flex-1 overflow-y-auto py-2">
@@ -108,7 +97,7 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
                                                     </SheetClose>
                                                     <SheetClose asChild>
                                                         <Link href="/cuenta/mis-compras" className="flex items-center gap-4 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg font-medium text-[15px] transition-colors">
-                                                            <Clock className="w-5 h-5 text-slate-400" /> Mis Compras
+                                                            <Clock className="w-5 h-5 text-slate-400" /> Mis compras
                                                         </Link>
                                                     </SheetClose>
                                                     <SheetClose asChild>
@@ -127,10 +116,10 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
                                                     <div className="px-4 py-3 pb-1">
                                                         <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Categorías</span>
                                                     </div>
-                                                    {CATEGORIES.map(cat => (
+                                                    {MAIN_CATEGORIES.map(cat => (
                                                         <SheetClose key={cat.handle} asChild>
-                                                            <Link href={`/collections/${cat.handle}`} className="flex items-center gap-4 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg font-medium text-[15px] transition-colors">
-                                                                <List className="w-5 h-5 text-slate-400" /> {cat.name}
+                                                            <Link href={categoryHref(cat.handle)} className="flex items-center gap-4 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg font-medium text-[15px] transition-colors">
+                                                                <List className="w-5 h-5 text-slate-400" /> {cat.shortName}
                                                             </Link>
                                                         </SheetClose>
                                                     ))}
@@ -161,7 +150,7 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
                                     >
                                         <ShoppingBag className="w-5 h-5" strokeWidth={1.5} />
                                         {totalQuantity > 0 && (
-                                            <span className="absolute top-1 right-0 w-4 h-4 bg-[#ef7c1c] text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm" aria-live="polite" aria-atomic="true" role="status">
+                                            <span className="absolute top-1 right-0 w-4 h-4 bg-secondary text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm" aria-live="polite" aria-atomic="true" role="status">
                                                 {totalQuantity}
                                             </span>
                                         )}
@@ -195,7 +184,7 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
                 </div>
 
                 {/* BOTTOM ROW (Full width teal background) — desktop only */}
-                <div className="hidden lg:block w-full bg-[#21645d] border-b border-[#1c554f]">
+                <div className="hidden lg:block w-full bg-primary border-b border-primary/40">
                     <div className="w-full px-4 xl:px-8">
                         <div className="h-[52px] flex items-center justify-between text-white/95 text-[13px] lg:text-sm">
 
@@ -212,13 +201,22 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
                             {/* User & Cart Actions (Desktop) */}
                             <div className="hidden lg:flex items-center gap-1">
 
-                                <Link href="/cuenta" className="hidden sm:flex items-center gap-1.5 font-medium hover:bg-black/10 px-3 h-11 rounded-sm transition-colors">
-                                    <User className="w-4 h-4 opacity-80" />
-                                    <span className="hidden lg:block">Mi cuenta</span>
-                                </Link>
-                                <Link href="/cuenta/mis-compras" className="hidden lg:flex items-center font-medium hover:bg-black/10 px-3 h-11 rounded-sm transition-colors">
-                                    Mis compras
-                                </Link>
+                                {isLoggedIn ? (
+                                    <>
+                                        <Link href="/cuenta" className="hidden sm:flex items-center gap-1.5 font-medium hover:bg-black/10 px-3 h-11 rounded-sm transition-colors">
+                                            <User className="w-4 h-4 opacity-80" />
+                                            <span className="hidden lg:block">Mi cuenta</span>
+                                        </Link>
+                                        <Link href="/cuenta/mis-compras" className="hidden lg:flex items-center font-medium hover:bg-black/10 px-3 h-11 rounded-sm transition-colors">
+                                            Mis compras
+                                        </Link>
+                                    </>
+                                ) : (
+                                    <Link href="/login" className="hidden sm:flex items-center gap-1.5 font-medium hover:bg-black/10 px-3 h-11 rounded-sm transition-colors">
+                                        <User className="w-4 h-4 opacity-80" />
+                                        <span className="hidden lg:block">Ingresar</span>
+                                    </Link>
+                                )}
 
                                 <button
                                     className="relative flex items-center justify-center w-11 h-11 hover:bg-black/10 rounded-full transition-colors"
@@ -227,7 +225,7 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
                                 >
                                     <Heart className="w-5 h-5" />
                                     {wishlistCount > 0 && (
-                                        <span className="absolute top-0 right-0 w-4 h-4 bg-white text-[#21645d] text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm border border-[#21645d]">
+                                        <span className="absolute top-0 right-0 w-4 h-4 bg-white text-primary text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm border border-primary">
                                             {wishlistCount}
                                         </span>
                                     )}
@@ -239,7 +237,7 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
                                 >
                                     <ShoppingBag className="w-5 h-5" />
                                     {totalQuantity > 0 && (
-                                        <span className="absolute top-0 right-0 w-4 h-4 bg-white text-[#21645d] text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm border border-[#21645d]" aria-live="polite" aria-atomic="true" role="status">
+                                        <span className="absolute top-0 right-0 w-4 h-4 bg-white text-primary text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm border border-primary" aria-live="polite" aria-atomic="true" role="status">
                                             {totalQuantity}
                                         </span>
                                     )}
@@ -251,13 +249,22 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
                 </div>
             </header>
 
-            {/* MOBILE ONLY Location Bar (App Style Ribbon) */}
-            <div className={`lg:hidden w-full px-3 relative z-[40] transition-all duration-300 origin-top overflow-hidden bg-slate-100 ${isScrolled ? "h-0 py-0 opacity-0" : "h-[36px] py-2 opacity-100"}`}>
-                <div className="flex items-center gap-1.5 text-slate-700 text-[13px] font-normal w-full px-1">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-                    <span className="truncate flex-1">Ingresa tu ubicación</span>
+            {/* MOBILE ONLY Location Bar (App Style Ribbon) — clickable, opens the location
+                selector via the same [data-location-selector] button the ShippingCalculator uses. */}
+            <div className={`lg:hidden w-full relative z-[40] transition-all duration-300 origin-top overflow-hidden bg-slate-100 ${isScrolled ? "h-0 opacity-0" : "h-[36px] opacity-100"}`}>
+                <button
+                    type="button"
+                    onClick={() => {
+                        const el = document.querySelector<HTMLButtonElement>("[data-location-selector]");
+                        el?.click();
+                    }}
+                    className="w-full h-full px-4 flex items-center gap-1.5 text-slate-700 text-[13px] font-normal hover:bg-slate-200/70 active:bg-slate-200 transition-colors"
+                    aria-label="Seleccionar ubicación de envío"
+                >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></svg>
+                    <span className="truncate flex-1 text-left">Ingresá tu ubicación</span>
                     <ChevronRight className="w-4 h-4 opacity-50 shrink-0" strokeWidth={1.5} />
-                </div>
+                </button>
             </div>
 
             {/* Render CartDrawer once directly in the main layout tree instead of inside conditional hidden divs */}

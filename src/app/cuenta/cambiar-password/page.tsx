@@ -64,7 +64,7 @@ export default function CambiarPasswordPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-slate-900">Cambiar Contraseña</h1>
+      <h1 className="text-2xl font-bold text-slate-900">Cambiar contraseña</h1>
 
       <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8">
         <form onSubmit={handleSubmit} className="space-y-5 max-w-md">

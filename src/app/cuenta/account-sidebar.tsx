@@ -14,11 +14,11 @@ interface AccountSidebarProps {
 }
 
 const navItems = [
-  { href: "/cuenta/perfil", label: "Mi Perfil", shortLabel: "Perfil", icon: User },
-  { href: "/cuenta/direcciones", label: "Mis Direcciones", shortLabel: "Direcciones", icon: MapPin },
-  { href: "/cuenta/mis-compras", label: "Mis Compras", shortLabel: "Compras", icon: Package },
+  { href: "/cuenta/perfil", label: "Mi perfil", shortLabel: "Perfil", icon: User },
+  { href: "/cuenta/direcciones", label: "Mis direcciones", shortLabel: "Direcciones", icon: MapPin },
+  { href: "/cuenta/mis-compras", label: "Mis compras", shortLabel: "Compras", icon: Package },
   { href: "/cuenta/favoritos", label: "Favoritos", shortLabel: "Favoritos", icon: Heart },
-  { href: "/cuenta/cambiar-password", label: "Cambiar Contraseña", shortLabel: "Contraseña", icon: Lock },
+  { href: "/cuenta/cambiar-password", label: "Cambiar contraseña", shortLabel: "Contraseña", icon: Lock },
 ];
 
 export function AccountSidebar({ customer }: AccountSidebarProps) {

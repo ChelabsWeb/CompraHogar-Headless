@@ -5,7 +5,7 @@ import { getCustomerQuery } from "@/lib/customer";
 import { AccountSidebar } from "./account-sidebar";
 
 export const metadata = {
-  title: "Mi Cuenta | CompraHogar",
+  title: "Mi cuenta | CompraHogar",
 };
 
 export default async function CuentaLayout({
@@ -42,7 +42,7 @@ export default async function CuentaLayout({
   }
 
   return (
-    <div className="w-full min-h-screen bg-slate-50">
+    <div className="w-full min-h-screen bg-[#f7f7f8]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 lg:py-12">
         <div className="flex flex-col lg:flex-row gap-8">
           <AccountSidebar

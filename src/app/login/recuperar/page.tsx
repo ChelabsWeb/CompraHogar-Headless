@@ -1,20 +1,25 @@
 import type { Metadata } from "next";
+import { Mail } from "lucide-react";
 import RecoverPasswordForm from "./recover-form";
+import { AuthShell } from "@/components/layout/AuthShell";
 
 export const metadata: Metadata = {
   title: "Recuperar contraseña | CompraHogar",
-  description: "Restablece la contraseña de tu cuenta CompraHogar.",
+  description: "Restablecé la contraseña de tu cuenta CompraHogar.",
 };
 
+// NOTE: this route duplicates /olvide-password. Both end up calling Shopify's
+// customerRecover, differ only in UI wording. Consider consolidating in a
+// follow-up cleanup — the link from login-form.tsx points to /olvide-password,
+// so this route is effectively orphaned.
 export default function RecoverPasswordPage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center p-4 min-h-[70vh] bg-slate-50/50">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-sm border border-slate-100 p-8 space-y-6">
-        <div className="text-center space-y-2">
-          <h1 className="text-2xl font-bold tracking-tight">Recuperar contraseña</h1>
-        </div>
-        <RecoverPasswordForm />
-      </div>
-    </div>
+    <AuthShell
+      title="Recuperar contraseña"
+      description="Ingresá tu correo y te enviamos las instrucciones para restablecer el acceso."
+      icon={<Mail className="w-6 h-6 text-primary" />}
+    >
+      <RecoverPasswordForm />
+    </AuthShell>
   );
 }

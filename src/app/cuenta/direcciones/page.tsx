@@ -203,7 +203,7 @@ export default function DireccionesPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-900">Mis Direcciones</h1>
+        <h1 className="text-2xl font-bold text-slate-900">Mis direcciones</h1>
         <button
           onClick={handleOpenCreate}
           className="inline-flex items-center gap-1.5 bg-[#21645d] text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-[#1a504a] transition-colors"

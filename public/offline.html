@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <meta name="theme-color" content="#21645d" />
+        <title>Sin conexión — CompraHogar</title>
+        <style>
+            * {
+                box-sizing: border-box;
+            }
+            html,
+            body {
+                margin: 0;
+                padding: 0;
+                height: 100%;
+            }
+            body {
+                font-family:
+                    system-ui,
+                    -apple-system,
+                    "Segoe UI",
+                    Roboto,
+                    sans-serif;
+                background: #f8fafc;
+                color: #0f172a;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 24px;
+            }
+            .card {
+                max-width: 420px;
+                width: 100%;
+                background: white;
+                border-radius: 16px;
+                padding: 40px 28px;
+                text-align: center;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+                border: 1px solid #e2e8f0;
+            }
+            .icon {
+                width: 72px;
+                height: 72px;
+                margin: 0 auto 20px;
+                border-radius: 50%;
+                background: #21645d15;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #21645d;
+                font-size: 32px;
+            }
+            h1 {
+                margin: 0 0 8px;
+                font-size: 22px;
+                color: #0f172a;
+            }
+            p {
+                margin: 0 0 24px;
+                color: #64748b;
+                font-size: 14px;
+                line-height: 1.5;
+            }
+            button {
+                background: #21645d;
+                color: white;
+                border: none;
+                padding: 12px 24px;
+                border-radius: 10px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+                width: 100%;
+                transition: background 0.2s;
+            }
+            button:hover {
+                background: #1a504a;
+            }
+            .brand {
+                margin-top: 20px;
+                font-size: 12px;
+                color: #94a3b8;
+                letter-spacing: 0.5px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="card">
+            <div class="icon">⚡</div>
+            <h1>Sin conexión</h1>
+            <p>
+                Parece que perdiste la conexión a internet. Revisá tu red y
+                probá de nuevo.
+            </p>
+            <button onclick="location.reload()">Reintentar</button>
+            <div class="brand">CompraHogar Uruguay</div>
+        </div>
+    </body>
+</html>
