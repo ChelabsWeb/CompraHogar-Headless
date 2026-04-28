@@ -16,8 +16,15 @@ export interface MainCategory {
   longName: string;
   /** Shopify collection handle — must match the real slug in the store. */
   handle: string;
-  /** Emoji shown in the home page category shortcuts row. */
+  /** Emoji shown as fallback when no category image is available. */
   icon: string;
+  /**
+   * Asset key for the home category bubble crossfade animation.
+   * Resolves to /public/categories/{imageKey}-off.jpg and -on.jpg.
+   * Kept short on purpose so the asset names don't drift if the
+   * Shopify handle ever gets renamed.
+   */
+  imageKey: string;
 }
 
 export const MAIN_CATEGORIES: MainCategory[] = [
@@ -26,42 +33,49 @@ export const MAIN_CATEGORIES: MainCategory[] = [
     longName: "Obra gruesa",
     handle: "obra-gruesa",
     icon: "🏗️",
+    imageKey: "obra-gruesa",
   },
   {
     shortName: "Herramientas",
     longName: "Herramientas y maquinaria",
     handle: "herramientas-y-maquinaria",
     icon: "🛠️",
+    imageKey: "herramientas",
   },
   {
     shortName: "Electricidad",
     longName: "Electricidad e iluminación",
     handle: "electricidad-e-iluminacion",
     icon: "⚡",
+    imageKey: "electricidad",
   },
   {
     shortName: "Sanitaria",
     longName: "Sanitaria y grifería",
     handle: "sanitaria-y-griferia",
     icon: "🚿",
+    imageKey: "sanitaria",
   },
   {
     shortName: "Pinturas",
     longName: "Pinturas y acabados",
     handle: "pinturas-y-acabados",
     icon: "🎨",
+    imageKey: "pinturas",
   },
   {
     shortName: "Decoración",
     longName: "Hogar y decoración",
     handle: "hogar-y-decoracion",
     icon: "🛋️",
+    imageKey: "decoracion",
   },
   {
     shortName: "Servicios",
     longName: "Servicios y alquileres",
     handle: "servicios-y-alquileres",
     icon: "🔧",
+    imageKey: "servicios",
   },
 ];
 

@@ -68,6 +68,7 @@ export default async function Home() {
     label: cat.shortName,
     href: categoryHref(cat.handle),
     icon: cat.icon,
+    imageKey: cat.imageKey,
   }));
 
   return (
@@ -223,7 +224,7 @@ export default async function Home() {
                 href="/collections/sanitaria-y-griferia"
                 className="relative rounded-xl overflow-hidden h-[200px] md:h-[280px] lg:h-[340px] w-[75vw] max-w-[320px] md:max-w-none md:w-auto shrink-0 md:shrink snap-center group shadow-sm border border-slate-100 transition-all hover:shadow-md block"
               >
-                <div className="absolute inset-0 bg-[url('/hero-2.png')] bg-cover bg-center transition-transform duration-700 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-[url('/promo-griferia.jpg')] bg-cover bg-center transition-transform duration-700 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80" />
                 <div className="relative z-10 h-full p-5 md:p-8 flex flex-col justify-end">
                   <Badge variant="secondary" className="w-fit mb-2 md:mb-3 text-[11px] md:text-sm">Sanitaria</Badge>
@@ -239,7 +240,7 @@ export default async function Home() {
                 href="/collections/herramientas-y-maquinaria"
                 className="relative rounded-xl overflow-hidden h-[200px] md:h-[280px] lg:h-[340px] w-[75vw] max-w-[320px] md:max-w-none md:w-auto shrink-0 md:shrink snap-center group shadow-sm border border-slate-100 transition-all hover:shadow-md block"
               >
-                <div className="absolute inset-0 bg-[url('/hero-1.png')] bg-cover bg-center transition-transform duration-700 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-[url('/promo-taladros.jpg')] bg-cover bg-center transition-transform duration-700 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80" />
                 <div className="relative z-10 h-full p-5 md:p-8 flex flex-col justify-end">
                   <Badge variant="secondary" className="w-fit mb-2 md:mb-3 text-[11px] md:text-sm">Herramientas</Badge>
@@ -255,7 +256,7 @@ export default async function Home() {
                 href="/collections/electricidad-e-iluminacion"
                 className="relative rounded-xl overflow-hidden h-[200px] md:h-[280px] lg:h-[340px] w-[75vw] max-w-[320px] md:max-w-none md:w-auto shrink-0 md:shrink snap-center group shadow-sm border border-slate-100 transition-all hover:shadow-md md:col-span-2 lg:col-span-1 block"
               >
-                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&q=80')] bg-cover bg-center transition-transform duration-700 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-[url('/promo-iluminacion.jpg')] bg-cover bg-center transition-transform duration-700 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                 <div className="relative z-10 h-full p-5 md:p-8 flex flex-col justify-end">
                   <Badge variant="secondary" className="w-fit mb-2 md:mb-3 text-[11px] md:text-sm">Iluminación</Badge>
@@ -285,7 +286,7 @@ export default async function Home() {
                 title={sanitaria.title}
                 handle={sanitaria.handle}
                 description={sanitaria.description}
-                bannerImage="/hero-2.png"
+                bannerImage="/showcase-sanitaria.jpg"
                 bannerColor="from-sky-700 to-sky-900"
                 products={sanitaria.products.edges}
               />
@@ -295,6 +296,7 @@ export default async function Home() {
                 title={electricidad.title}
                 handle={electricidad.handle}
                 description={electricidad.description}
+                bannerImage="/showcase-electricidad.jpg"
                 bannerColor="from-yellow-600 to-yellow-800"
                 products={electricidad.products.edges}
               />

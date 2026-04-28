@@ -32,7 +32,7 @@ const slides: Slide[] = [
     cta: "Ver Materiales",
     href: "/collections/obra-gruesa",
     badge: "💰 Precios de obra",
-    image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1600&q=75&auto=format&fit=crop",
+    image: "/hero-obra.jpg",
   },
   {
     headline: "Alquilá",
@@ -41,7 +41,7 @@ const slides: Slide[] = [
     cta: "Consultá Disponibilidad",
     href: "/collections/servicios-y-alquileres",
     badge: "📦 Sin depósito",
-    image: "https://images.unsplash.com/photo-1580901368919-7738efb0f87e?w=1600&q=75&auto=format&fit=crop",
+    image: "/hero-alquileres.jpg",
   },
   {
     headline: "Renovación",
@@ -50,7 +50,7 @@ const slides: Slide[] = [
     cta: "Renovar Mi Hogar",
     href: "/collections/pinturas-y-acabados",
     badge: "🏠 Cuotas sin interés",
-    image: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1600&q=75&auto=format&fit=crop",
+    image: "/hero-renovacion.jpg",
   },
 ];
 
