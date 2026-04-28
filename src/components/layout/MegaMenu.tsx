@@ -61,8 +61,7 @@ const MOCK_CATEGORIES: Category[] = [
     promo: {
       title: "Descuento en acero",
       subtitle: "Hasta 20% OFF en barras ADN 500 para tu obra",
-      imageSrc:
-        "https://images.unsplash.com/photo-1518331539958-31623192fde0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      imageSrc: "/menu-construccion.jpg",
       href: "/collections/obra-gruesa",
       ctaText: "Ver promoción",
     },
@@ -103,8 +102,7 @@ const MOCK_CATEGORIES: Category[] = [
     promo: {
       title: "Renová tu baño",
       subtitle: "Encontrá las mejores marcas en grifería premium",
-      imageSrc:
-        "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      imageSrc: "/menu-sanitaria.jpg",
       href: "/collections/sanitaria-y-griferia",
       ctaText: "Ver catálogo",
     },

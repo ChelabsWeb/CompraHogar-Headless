@@ -36,8 +36,10 @@ yarn-error.log*
 # one-off debug/exploration scripts (NEVER commit — may contain hardcoded credentials)
 .check_*.js
 .check_*.ts
+.check_*.mjs
 .debug_*.js
 .debug_*.ts
+.debug_*.mjs
 
 # sales/proposal artifacts — live outside the repo or in docs/ventas/
 /*.xlsx
@@ -59,3 +61,4 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+.tmp-screenshots/
