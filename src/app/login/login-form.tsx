@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Loader2, Mail, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { GlassButton } from "@/components/ui/glass-button";
 import { Input } from "@/components/ui/input";
 import { loginCustomer } from "./actions";
 
@@ -79,7 +80,7 @@ export default function LoginForm() {
         </div>
       </div>
 
-      <Button type="submit" size="lg" className="w-full mt-2" disabled={isPending}>
+      <GlassButton type="submit" variant="light" size="md" className="w-full mt-2 h-12" disabled={isPending}>
         {isPending ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -88,7 +89,7 @@ export default function LoginForm() {
         ) : (
           "Iniciar sesión"
         )}
-      </Button>
+      </GlassButton>
     </form>
   );
 }

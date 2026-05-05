@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Mail, Lock, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { GlassButton } from "@/components/ui/glass-button";
 import { Input } from "@/components/ui/input";
 import { registerCustomer } from "./actions";
 
@@ -112,7 +113,7 @@ export default function RegisterForm() {
         </div>
       </div>
 
-      <Button type="submit" size="lg" className="w-full mt-2" disabled={isPending}>
+      <GlassButton type="submit" variant="light" size="md" className="w-full mt-2 h-12" disabled={isPending}>
         {isPending ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -121,7 +122,7 @@ export default function RegisterForm() {
         ) : (
           "Registrarme"
         )}
-      </Button>
+      </GlassButton>
 
     </form>
   );

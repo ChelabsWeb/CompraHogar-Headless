@@ -1,10 +1,14 @@
 @import "tailwindcss";
+@import "../styles/gradient-border-plugin.css";
 
 @plugin "tailwindcss-animate";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-cal-sans), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
   --color-brand-teal: #21645d;
   --color-brand-orange: #f3843e;
 
@@ -106,6 +110,12 @@
     overscroll-behavior-y: none;
     background-color: var(--background);
   }
+
+  /* Cal.com aesthetic: Cal Sans for all display headings */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
 }
 
 /* Pristine Structural Utilities */
@@ -195,6 +205,7 @@
   font-size: 14px !important;
   line-height: 1.6 !important;
 }
+
 
 /* Screen reader only utility */
 .sr-only {

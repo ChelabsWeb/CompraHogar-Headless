@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { GlassButton } from "@/components/ui/glass-button";
 import { Separator } from "@/components/ui/separator";
 import { Container } from "@/components/ui/container";
 import { PaymentMethodIcons } from "@/components/shared/PaymentMethodIcons";
@@ -116,14 +117,15 @@ export function Footer() {
                   aria-label="Correo electrónico"
                   className="bg-white/10 border-white/20 text-white placeholder:text-white/50 h-11 md:h-14 md:min-w-[280px] lg:min-w-[340px] focus-visible:ring-white/30 rounded-xl flex-1 md:flex-none"
                 />
-                <Button
+                <GlassButton
                   type="submit"
-                  size="lg"
-                  className="h-11 md:h-14 px-5 md:px-8 bg-secondary hover:bg-secondary/90 text-white font-semibold rounded-xl shrink-0"
+                  variant="dark"
+                  size="md"
+                  className="h-11 md:h-14 px-5 md:px-8 shrink-0"
                 >
                   <ArrowRight className="h-4 w-4 md:hidden" />
                   <span className="hidden md:inline">Suscribirme</span>
-                </Button>
+                </GlassButton>
               </form>
             )}
           </div>

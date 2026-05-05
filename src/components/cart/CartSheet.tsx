@@ -3,6 +3,7 @@
 import { Drawer } from "@/components/ui/drawer";
 import { Trash2, Plus, Minus, ShieldCheck, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { GlassButton } from "@/components/ui/glass-button";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 import { useState } from "react";
@@ -277,13 +278,14 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                         </p>
                     </div>
                     <div className="mt-auto pt-6 border-t">
-                        <Button
-                            className="w-full rounded-xl h-[48px] font-semibold"
-                            size="lg"
+                        <GlassButton
+                            variant="light"
+                            size="md"
+                            className="w-full h-[48px]"
                             onClick={onClose}
                         >
                             Seguir comprando
-                        </Button>
+                        </GlassButton>
                     </div>
                 </div>
             )}

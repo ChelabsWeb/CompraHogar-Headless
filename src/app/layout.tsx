@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import Script from "next/script";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
@@ -18,6 +19,14 @@ import { ServiceWorkerRegister } from "@/components/shared/ServiceWorkerRegister
 
 // Pure clean geometry: Single highly readable sans-serif
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
+
+// Cal Sans — display font for headings (Cal.com aesthetic)
+const calSans = localFont({
+  src: "../../public/fonts/CalSans-Regular.woff2",
+  variable: "--font-cal-sans",
+  display: "swap",
+  weight: "400 700",
+});
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
@@ -224,7 +233,7 @@ fbq('track', 'PageView');`,
           strategy="lazyOnload"
         />
       </head>
-      <body vaul-drawer-wrapper="" className={`${inter.variable} font-sans min-h-screen bg-background text-foreground antialiased selection:bg-brand-teal/20 selection:text-brand-teal flex flex-col`}>
+      <body vaul-drawer-wrapper="" className={`${inter.variable} ${calSans.variable} font-sans min-h-screen bg-background text-foreground antialiased selection:bg-brand-teal/20 selection:text-brand-teal flex flex-col`}>
         {gtmId && (
           <noscript>
             <iframe

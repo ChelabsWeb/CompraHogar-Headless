@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { GlassButton } from "@/components/ui/glass-button";
 
 interface Slide {
   headline: string;
@@ -151,15 +152,19 @@ export function HeroCarousel() {
           {slide.subtitle}
         </p>
 
-        {/* CTA */}
-        <Link
-          href={slide.href}
+        {/* CTA — GlassButton variant="dark" (frosted glass on hero overlay) */}
+        <GlassButton
           key={`c-${current}`}
-          className="inline-flex items-center gap-2 w-fit bg-secondary text-white font-semibold text-[13px] sm:text-sm lg:text-base px-5 lg:px-7 py-2.5 sm:py-3 lg:py-3.5 rounded-lg hover:bg-secondary/90 transition-colors duration-200 animate-[fadeUp_0.5s_ease-out_0.2s_both]"
+          variant="dark"
+          size="lg"
+          asChild
+          className="w-fit animate-[fadeUp_0.5s_ease-out_0.2s_both]"
         >
-          {slide.cta}
-          <ArrowRight className="w-4 h-4" />
-        </Link>
+          <Link href={slide.href}>
+            {slide.cta}
+            <ArrowRight className="w-4 h-4 lg:w-5 lg:h-5" />
+          </Link>
+        </GlassButton>
       </div>
 
       {/* Navigation arrows */}

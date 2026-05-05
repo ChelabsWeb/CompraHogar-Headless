@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Search, Home, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { GlassButton } from '@/components/ui/glass-button';
 
 export default function NotFound() {
   const suggestions = [
@@ -27,12 +28,12 @@ export default function NotFound() {
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-          <Button asChild className="bg-primary hover:bg-primary/90 text-white gap-2">
+          <GlassButton variant="light" size="md" asChild>
             <Link href="/">
               <Home className="w-4 h-4" />
               Ir al inicio
             </Link>
-          </Button>
+          </GlassButton>
           <Button asChild variant="outline" className="gap-2">
             <Link href="/collections">
               <ShoppingBag className="w-4 h-4" />

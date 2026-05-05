@@ -17,6 +17,7 @@ import Link from "next/link";
 import { ShieldCheck, Truck, CreditCard, AlertCircle, Tag } from "lucide-react";
 import { HeroCarousel } from "@/components/home/HeroCarousel";
 import { Button } from "@/components/ui/button";
+import { GlassButton } from "@/components/ui/glass-button";
 import { Badge } from "@/components/ui/badge";
 import { Container } from "@/components/ui/container";
 import { CategoryShortcutsList } from "@/components/shop/CategoryShortcuts";
@@ -118,9 +119,9 @@ export default async function Home() {
                       </div>
                   </div>
                   <div className="flex flex-row items-center gap-2 shrink-0">
-                      <Button asChild variant="default" size="sm" className="bg-primary hover:bg-primary/90 text-white font-semibold rounded-lg h-9 md:h-11 lg:h-12 px-4 md:px-8 lg:px-10 text-[12px] md:text-sm lg:text-base">
+                      <GlassButton variant="light" size="md" asChild className="h-9 md:h-11 lg:h-12 text-[12px] md:text-sm lg:text-base">
                         <Link href="/login">Ingresar</Link>
-                      </Button>
+                      </GlassButton>
                       <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex text-primary border-primary/20 hover:bg-primary/5 font-semibold rounded-lg h-9 md:h-11 lg:h-12 px-4 md:px-8 lg:px-10 text-[12px] md:text-sm lg:text-base">
                         <Link href="/registro">Crear cuenta</Link>
                       </Button>
@@ -201,10 +202,12 @@ export default async function Home() {
                         )}
 
                         <div className="hidden md:flex items-center gap-3 mt-3">
-                            <span className="inline-flex items-center gap-1.5 text-[12px] lg:text-[13px] font-semibold text-primary bg-primary/5 px-2.5 py-1 rounded-md">
-                                Aprovechar oferta
-                                <svg className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
-                            </span>
+                            <GlassButton variant="light" size="sm" asChild>
+                                <span>
+                                    Aprovechar oferta
+                                    <svg className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
+                                </span>
+                            </GlassButton>
                         </div>
                     </div>
                 </div>

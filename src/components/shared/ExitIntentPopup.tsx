@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { X, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { GlassButton } from "@/components/ui/glass-button";
 
 export function ExitIntentPopup() {
     const [isVisible, setIsVisible] = useState(false);
@@ -109,13 +110,15 @@ export function ExitIntentPopup() {
                                     onChange={(e) => setEmail(e.target.value)}
                                     className="w-full px-4 py-3 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
                                 />
-                                <Button
+                                <GlassButton
                                     type="submit"
+                                    variant="light"
+                                    size="md"
                                     disabled={isSubmitting}
-                                    className="w-full bg-secondary hover:bg-secondary/90 text-white font-semibold py-3 text-sm"
+                                    className="w-full py-3"
                                 >
                                     {isSubmitting ? "Enviando..." : "Quiero mi 10% OFF"}
-                                </Button>
+                                </GlassButton>
                             </form>
                             <button
                                 onClick={() => setIsVisible(false)}

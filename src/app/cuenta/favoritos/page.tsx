@@ -7,6 +7,7 @@ import { Heart, ShoppingCart, Loader2 } from "lucide-react";
 import { useWishlist } from "@/components/shop/WishlistProvider";
 import { FavoriteButton } from "@/components/shop/FavoriteButton";
 import { useCart } from "@/components/cart/CartProvider";
+import { GlassButton } from "@/components/ui/glass-button";
 import { shopifyFetch } from "@/lib/shopify";
 import { getProductsByIdsQuery } from "@/lib/customer";
 
@@ -58,12 +59,9 @@ function EmptyState() {
             <p className="text-sm text-slate-500 max-w-sm mb-6">
                 Cuando encuentres productos que te gusten, tocá el corazón para guardarlos acá.
             </p>
-            <Link
-                href="/products"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors"
-            >
-                Explorar productos
-            </Link>
+            <GlassButton variant="light" size="md" asChild>
+                <Link href="/products">Explorar productos</Link>
+            </GlassButton>
         </div>
     );
 }
