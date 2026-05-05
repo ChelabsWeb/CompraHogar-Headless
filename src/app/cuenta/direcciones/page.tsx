@@ -1,9 +1,18 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { Plus, Loader2, MapPin } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Plus, MapPin } from "lucide-react";
 import AddressCard from "@/components/shop/AddressCard";
 import AddressForm, { type AddressFormData } from "@/components/shop/AddressForm";
+import { Button } from "@/components/ui/button";
+import { Modal } from "@/components/ui/modal";
+import { useCustomer } from "@/hooks/useCustomer";
+import { AccountSectionHeader } from "@/components/cuenta/AccountSectionHeader";
+import { AccountCard } from "@/components/cuenta/AccountCard";
+import {
+  AccountSkeletonHeader,
+  AccountSkeletonGrid,
+} from "@/components/cuenta/AccountSkeleton";
 import {
   createCustomerAddress,
   updateCustomerAddress,
@@ -49,47 +58,29 @@ function removeLabel(addressId: string) {
 }
 
 export default function DireccionesPage() {
-  const [addresses, setAddresses] = useState<AddressNode[]>([]);
-  const [defaultAddressId, setDefaultAddressId] = useState<string | null>(null);
+  const { customer, isLoading, error, mutate } = useCustomer();
+
   const [labels, setLabels] = useState<Record<string, string>>({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [actionError, setActionError] = useState("");
 
-  // Modal state
   const [formOpen, setFormOpen] = useState(false);
-  const [editingAddress, setEditingAddress] = useState<AddressNode | null>(null);
+  const [editingAddress, setEditingAddress] = useState<AddressNode | null>(
+    null
+  );
 
-  // Confirm delete
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [deleteConfirm, setDeleteConfirm] = useState(false);
-
-  const fetchAddresses = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError("");
-      const res = await fetch("/api/customer/profile");
-      if (!res.ok) throw new Error("Error al cargar direcciones");
-      const data = await res.json();
-      const customer = data.customer;
-
-      const addressList: AddressNode[] =
-        customer.addresses?.edges?.map(
-          (edge: { node: AddressNode }) => edge.node
-        ) || [];
-
-      setAddresses(addressList);
-      setDefaultAddressId(customer.defaultAddress?.id || null);
-      setLabels(getLabels());
-    } catch {
-      setError("No se pudieron cargar las direcciones. Intentá de nuevo.");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deletingInProgress, setDeletingInProgress] = useState(false);
 
   useEffect(() => {
-    fetchAddresses();
-  }, [fetchAddresses]);
+    setLabels(getLabels());
+  }, []);
+
+  const addresses: AddressNode[] =
+    customer?.addresses?.edges?.map(
+      (edge) => edge.node as unknown as AddressNode
+    ) ?? [];
+  const defaultAddressId = customer?.defaultAddress?.id ?? null;
 
   function handleOpenCreate() {
     setEditingAddress(null);
@@ -119,125 +110,168 @@ export default function DireccionesPage() {
       phone: data.phone.trim() || undefined,
     };
 
-    try {
-      if (editingAddress) {
-        // Update existing
-        const result = await updateCustomerAddress(editingAddress.id, addressInput);
-        if (result.customerUserErrors?.length > 0) {
-          throw new Error(result.customerUserErrors[0].message);
-        }
-        saveLabel(editingAddress.id, data.label);
-
+    if (editingAddress) {
+      const result = await updateCustomerAddress(editingAddress.id, addressInput);
+      if (result.customerUserErrors?.length > 0) {
+        throw new Error(result.customerUserErrors[0].message);
+      }
+      saveLabel(editingAddress.id, data.label);
+      setLabels(getLabels());
+      if (data.setAsDefault) {
+        await setDefaultAddress(editingAddress.id);
+      }
+    } else {
+      const result = await createCustomerAddress(addressInput);
+      if (result.customerUserErrors?.length > 0) {
+        throw new Error(result.customerUserErrors[0].message);
+      }
+      const newId = result.customerAddress?.id;
+      if (newId) {
+        saveLabel(newId, data.label);
+        setLabels(getLabels());
         if (data.setAsDefault) {
-          await setDefaultAddress(editingAddress.id);
-        }
-      } else {
-        // Create new
-        const result = await createCustomerAddress(addressInput);
-        if (result.customerUserErrors?.length > 0) {
-          throw new Error(result.customerUserErrors[0].message);
-        }
-
-        const newId = result.customerAddress?.id;
-        if (newId) {
-          saveLabel(newId, data.label);
-          if (data.setAsDefault) {
-            await setDefaultAddress(newId);
-          }
+          await setDefaultAddress(newId);
         }
       }
-
-      handleCloseForm();
-      await fetchAddresses();
-    } catch (err) {
-      throw err;
     }
+
+    handleCloseForm();
+    await mutate();
   }
 
   function handleDeleteRequest(addressId: string) {
     setDeletingId(addressId);
-    setDeleteConfirm(true);
+    setDeleteConfirmOpen(true);
+  }
+
+  function handleDeleteCancel() {
+    setDeleteConfirmOpen(false);
+    setDeletingId(null);
   }
 
   async function handleConfirmDelete() {
     if (!deletingId) return;
-
+    setDeletingInProgress(true);
+    setActionError("");
     try {
       const result = await deleteCustomerAddress(deletingId);
       if (result.customerUserErrors?.length > 0) {
-        setError(result.customerUserErrors[0].message);
+        setActionError(result.customerUserErrors[0].message);
       } else {
         removeLabel(deletingId);
+        setLabels(getLabels());
       }
-      await fetchAddresses();
+      await mutate();
     } catch {
-      setError("Error al eliminar la dirección. Intentá de nuevo.");
+      setActionError("Error al eliminar la dirección. Intentá de nuevo.");
     } finally {
-      setDeleteConfirm(false);
+      setDeleteConfirmOpen(false);
       setDeletingId(null);
+      setDeletingInProgress(false);
     }
   }
 
   async function handleSetDefault(addressId: string) {
+    setActionError("");
     try {
       const result = await setDefaultAddress(addressId);
       if (result.customerUserErrors?.length > 0) {
-        setError(result.customerUserErrors[0].message);
+        setActionError(result.customerUserErrors[0].message);
         return;
       }
-      await fetchAddresses();
+      await mutate();
     } catch {
-      setError("Error al actualizar la dirección predeterminada.");
+      setActionError("Error al actualizar la dirección predeterminada.");
     }
   }
 
-  if (loading) {
+  if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      <div className="space-y-6">
+        <AccountSkeletonHeader />
+        <AccountSkeletonGrid cols={2} count={2} />
+      </div>
+    );
+  }
+
+  if (error || !customer) {
+    return (
+      <div className="space-y-6">
+        <AccountSectionHeader
+          title="Mis direcciones"
+          description="Gestioná tus direcciones de envío"
+        />
+        <div
+          role="alert"
+          className="bg-red-50 text-red-700 border border-red-200 px-4 py-3 rounded-xl text-sm"
+        >
+          No pudimos cargar tus direcciones. Recargá la página o intentá de
+          nuevo en unos minutos.
+        </div>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-900">Mis direcciones</h1>
-        <button
-          onClick={handleOpenCreate}
-          className="inline-flex items-center gap-1.5 bg-primary text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-primary/90 transition-colors"
-        >
-          <Plus className="h-4 w-4" />
-          Agregar dirección
-        </button>
-      </div>
-
-      {/* Error */}
-      {error && (
-        <div className="bg-red-50 text-red-700 border border-red-200 px-4 py-3 rounded-xl text-sm">
-          {error}
-        </div>
-      )}
-
-      {/* Empty state */}
-      {addresses.length === 0 && (
-        <div className="bg-white rounded-2xl border border-slate-200 p-10 text-center">
-          <MapPin className="h-10 w-10 text-slate-300 mx-auto mb-3" />
-          <p className="text-sm text-slate-500">
-            No tenés direcciones guardadas todavía.
-          </p>
-          <button
+      <AccountSectionHeader
+        title="Mis direcciones"
+        description={
+          addresses.length > 0
+            ? `${addresses.length} dirección${addresses.length === 1 ? "" : "es"} guardada${addresses.length === 1 ? "" : "s"}`
+            : "Gestioná tus direcciones de envío"
+        }
+        action={
+          <Button
+            type="button"
+            size="sm"
             onClick={handleOpenCreate}
-            className="mt-4 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
           >
-            Agregar tu primera dirección
-          </button>
+            <Plus className="w-4 h-4" />
+            Agregar dirección
+          </Button>
+        }
+      />
+
+      {actionError && (
+        <div
+          role="alert"
+          className="bg-red-50 text-red-700 border border-red-200 px-4 py-3 rounded-xl text-sm"
+        >
+          {actionError}
         </div>
       )}
 
-      {/* Address grid */}
-      {addresses.length > 0 && (
+      {addresses.length === 0 ? (
+        <AccountCard
+          padding="lg"
+          className="flex flex-col items-center justify-center py-12 text-center"
+        >
+          <span
+            className="w-14 h-14 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-4"
+            aria-hidden
+          >
+            <MapPin className="w-6 h-6" />
+          </span>
+          <h2 className="font-display text-[18px] sm:text-[20px] font-normal tracking-tight text-foreground mb-1.5">
+            Aún no tenés direcciones guardadas
+          </h2>
+          <p className="text-sm text-muted-foreground max-w-sm mb-6">
+            Agregá tu primera dirección para agilizar el checkout en cada
+            compra.
+          </p>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={handleOpenCreate}
+            className="text-primary hover:text-primary/80"
+          >
+            <Plus className="w-4 h-4" />
+            Agregar tu primera dirección
+          </Button>
+        </AccountCard>
+      ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {addresses.map((addr) => (
             <AddressCard
@@ -253,7 +287,7 @@ export default function DireccionesPage() {
         </div>
       )}
 
-      {/* Address form modal */}
+      {/* Address form modal (componente externo con su propio modal) */}
       <AddressForm
         isOpen={formOpen}
         onClose={handleCloseForm}
@@ -278,44 +312,34 @@ export default function DireccionesPage() {
         }
       />
 
-      {/* Delete confirmation dialog */}
-      {deleteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={() => {
-              setDeleteConfirm(false);
-              setDeletingId(null);
-            }}
-          />
-          <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-sm p-6">
-            <h3 className="text-lg font-bold text-slate-900 mb-2">
-              Eliminar dirección
-            </h3>
-            <p className="text-sm text-slate-600 mb-6">
-              ¿Estás seguro de que querés eliminar esta dirección? Esta acción no
-              se puede deshacer.
-            </p>
-            <div className="flex items-center gap-3 justify-end">
-              <button
-                onClick={() => {
-                  setDeleteConfirm(false);
-                  setDeletingId(null);
-                }}
-                className="px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleConfirmDelete}
-                className="px-4 py-2 rounded-xl text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition-colors"
-              >
-                Eliminar
-              </button>
-            </div>
-          </div>
+      {/* Delete confirmation — Modal del sistema */}
+      <Modal
+        isOpen={deleteConfirmOpen}
+        onClose={handleDeleteCancel}
+        title="Eliminar dirección"
+        description="¿Estás seguro de que querés eliminar esta dirección? Esta acción no se puede deshacer."
+        className="max-w-sm"
+      >
+        <div className="flex items-center gap-3 justify-end pt-2">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={handleDeleteCancel}
+            disabled={deletingInProgress}
+          >
+            Cancelar
+          </Button>
+          <Button
+            type="button"
+            variant="destructive"
+            onClick={handleConfirmDelete}
+            isLoading={deletingInProgress}
+            disabled={deletingInProgress}
+          >
+            Eliminar
+          </Button>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }
