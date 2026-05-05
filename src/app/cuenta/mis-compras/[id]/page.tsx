@@ -1,10 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import {
   ArrowLeft,
   Package,
@@ -12,75 +10,32 @@ import {
   CreditCard,
   Truck,
   ExternalLink,
-  Loader2,
 } from "lucide-react";
-import { Order } from "@/lib/customer";
+import { GlassButton } from "@/components/ui/glass-button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { AccountCard } from "@/components/cuenta/AccountCard";
+import { useCustomer } from "@/hooks/useCustomer";
 import { OrderTimeline } from "@/components/shop/OrderTimeline";
+import type { Order } from "@/lib/customer";
 
 export default function OrderDetailPage() {
   const params = useParams<{ id: string }>();
-  const [order, setOrder] = useState<Order | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
+  const { customer, isLoading, error } = useCustomer();
 
-  const fetchOrder = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res = await fetch("/api/customer/profile");
-      if (!res.ok) throw new Error("Error al cargar datos");
-      const data = await res.json();
-      const orders: { node: Order }[] = data.customer?.orders?.edges ?? [];
-      const found = orders.find(
-        ({ node }) => node.orderNumber === Number(params.id)
-      );
-      if (found) {
-        setOrder(found.node);
-      } else {
-        setNotFound(true);
-      }
-    } catch {
-      setNotFound(true);
-    } finally {
-      setLoading(false);
-    }
-  }, [params.id]);
-
-  useEffect(() => {
-    fetchOrder();
-  }, [fetchOrder]);
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-primary" />
-      </div>
-    );
+  if (isLoading) {
+    return <OrderDetailSkeleton />;
   }
 
-  if (notFound || !order) {
-    return (
-      <div className="space-y-6">
-        <Link
-          href="/cuenta/mis-compras"
-          className="text-sm font-medium text-slate-500 hover:text-slate-900 flex items-center gap-2 transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Volver a mis compras
-        </Link>
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 text-center py-16">
-          <Package className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-slate-900 mb-2">
-            Pedido no encontrado
-          </h2>
-          <p className="text-slate-500 text-sm">
-            No pudimos encontrar el pedido que buscas. Verificá el número e
-            intentá de nuevo.
-          </p>
-        </div>
-      </div>
-    );
+  const orders: { node: Order }[] = customer?.orders?.edges ?? [];
+  const found = orders.find(
+    ({ node }) => node.orderNumber === Number(params.id)
+  );
+
+  if (error || !customer || !found) {
+    return <OrderNotFound />;
   }
 
+  const order = found.node;
   const formattedDate = new Date(order.processedAt).toLocaleDateString(
     "es-UY",
     { year: "numeric", month: "long", day: "numeric" }
@@ -88,6 +43,22 @@ export default function OrderDetailPage() {
 
   const trackingUrl =
     order.successfulFulfillments?.[0]?.trackingInfo?.[0]?.url;
+
+  const statusBadge = (() => {
+    if (order.fulfillmentStatus === "FULFILLED")
+      return {
+        text: "Completado",
+        className: "bg-emerald-100 text-emerald-800",
+      };
+    if (
+      order.fulfillmentStatus === "IN_PROGRESS" ||
+      order.fulfillmentStatus === "PARTIALLY_FULFILLED"
+    )
+      return { text: "En proceso", className: "bg-blue-100 text-blue-800" };
+    if (order.financialStatus === "PENDING")
+      return { text: "Pendiente", className: "bg-yellow-100 text-yellow-800" };
+    return { text: "Pendiente", className: "bg-slate-100 text-slate-700" };
+  })();
 
   const subtotal = order.subtotalPrice
     ? `$${order.subtotalPrice.amount}`
@@ -102,53 +73,78 @@ export default function OrderDetailPage() {
       ? shippingAmount === 0
         ? "Gratis"
         : `$${order.totalShippingPrice!.amount}`
-      : "Calculado";
+      : "Calculado en checkout";
 
-  const statusBadge = (() => {
-    if (order.fulfillmentStatus === "FULFILLED")
-      return { text: "Completado", className: "bg-emerald-100 text-emerald-800" };
-    if (order.fulfillmentStatus === "IN_PROGRESS" || order.fulfillmentStatus === "PARTIALLY_FULFILLED")
-      return { text: "En proceso", className: "bg-amber-100 text-amber-800" };
-    return {
-      text: order.fulfillmentStatus || "Pendiente",
-      className: "bg-slate-100 text-slate-700",
-    };
-  })();
+  const totalItems = order.lineItems.edges.reduce(
+    (sum, { node }) => sum + (node.quantity ?? 1),
+    0
+  );
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="space-y-6"
-    >
+    <div className="space-y-6 animate-in fade-in-0 slide-in-from-bottom-2 duration-300">
       {/* Back link */}
       <Link
         href="/cuenta/mis-compras"
-        className="text-sm font-medium text-slate-500 hover:text-slate-900 flex items-center gap-2 transition-colors"
+        className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-md"
       >
         <ArrowLeft className="w-4 h-4" />
-        Volver a Mis Compras
+        Volver a mis compras
       </Link>
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold text-slate-900">
-            Pedido #{order.orderNumber}
-          </h1>
-          <span
-            className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider ${statusBadge.className}`}
-          >
-            {statusBadge.text}
-          </span>
+      {/* Order header card destacado */}
+      <section className="relative overflow-hidden rounded-2xl border border-neutral-200/70 bg-white shadow-sm">
+        <div
+          className="absolute inset-0 bg-gradient-to-br from-primary/8 via-white to-secondary/8 pointer-events-none"
+          aria-hidden
+        />
+        <div className="relative p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
+          <div className="space-y-2 min-w-0">
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <h1 className="font-display text-[24px] sm:text-[28px] font-normal tracking-tight text-foreground leading-tight">
+                Pedido #{order.orderNumber}
+              </h1>
+              <span
+                className={`text-[11px] font-semibold px-2.5 py-1 rounded-full uppercase tracking-wider ${statusBadge.className}`}
+              >
+                {statusBadge.text}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+              <span>{formattedDate}</span>
+              <span aria-hidden>·</span>
+              <span className="font-medium text-foreground">
+                ${order.totalPrice.amount}{" "}
+                <span className="text-xs font-normal text-muted-foreground">
+                  {order.totalPrice.currencyCode}
+                </span>
+              </span>
+              <span aria-hidden>·</span>
+              <span>
+                {totalItems} {totalItems === 1 ? "ítem" : "ítems"}
+              </span>
+            </div>
+          </div>
+
+          {trackingUrl && (
+            <GlassButton variant="light" size="md" asChild>
+              <a
+                href={trackingUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Rastrear envío en una nueva pestaña"
+              >
+                <Truck className="w-4 h-4" aria-hidden />
+                Rastrear envío
+                <ExternalLink className="w-3.5 h-3.5" aria-hidden />
+              </a>
+            </GlassButton>
+          )}
         </div>
-        <p className="text-sm text-slate-500">{formattedDate}</p>
-      </div>
+      </section>
 
       {/* Timeline */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-6">
-        <h2 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-5">
+      <AccountCard padding="lg" as="section" aria-label="Estado del pedido">
+        <h2 className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground mb-5">
           Estado del pedido
         </h2>
         <OrderTimeline
@@ -157,44 +153,33 @@ export default function OrderDetailPage() {
           processedAt={order.processedAt}
           trackingUrl={trackingUrl}
         />
-        {trackingUrl && (
-          <a
-            href={trackingUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 mt-6 bg-primary text-white text-sm font-medium px-5 py-2.5 rounded-xl hover:bg-primary/90 transition-colors"
-          >
-            <Truck className="w-4 h-4" />
-            Rastrear envío
-            <ExternalLink className="w-3.5 h-3.5" />
-          </a>
-        )}
-      </div>
+      </AccountCard>
 
       {/* Products */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-6">
-        <h2 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-5 flex items-center gap-2">
-          <Package className="w-4 h-4" />
+      <AccountCard padding="lg" as="section" aria-label="Productos del pedido">
+        <h2 className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground mb-4 flex items-center gap-2">
+          <Package className="w-3.5 h-3.5" aria-hidden />
           Productos
         </h2>
-        <div className="space-y-4">
+        <ul className="space-y-3">
           {order.lineItems.edges.map(({ node }, index) => {
             const lineTotal = node.variant?.price
               ? (Number(node.variant.price.amount) * node.quantity).toFixed(2)
               : null;
 
             return (
-              <div
+              <li
                 key={index}
-                className="flex gap-4 items-center bg-slate-50 p-4 rounded-xl border border-slate-100"
+                className="flex gap-3 sm:gap-4 items-center p-3 sm:p-4 rounded-xl bg-neutral-50/70 border border-neutral-100"
               >
-                <div className="w-16 h-16 rounded-lg bg-white overflow-hidden relative shrink-0 border border-slate-100">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-lg bg-white overflow-hidden relative shrink-0 border border-neutral-100">
                   {node.variant?.image?.url ? (
                     <Image
                       src={node.variant.image.url}
                       alt={node.variant.image.altText || node.title}
                       fill
                       className="object-cover"
+                      sizes="64px"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-slate-300">
@@ -203,97 +188,148 @@ export default function OrderDetailPage() {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-slate-900 text-sm truncate">
+                  <p className="font-medium text-foreground text-sm leading-snug line-clamp-2">
                     {node.title}
                   </p>
                   {node.variant?.title &&
                     node.variant.title !== "Default Title" && (
-                      <p className="text-xs text-slate-500 mt-0.5">
+                      <p className="text-xs text-muted-foreground mt-0.5">
                         {node.variant.title}
                       </p>
                     )}
-                  <p className="text-xs text-slate-400 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     Cant. {node.quantity}
                     {node.variant?.price && (
-                      <> &middot; ${node.variant.price.amount} c/u</>
+                      <> · ${node.variant.price.amount} c/u</>
                     )}
                   </p>
                 </div>
                 {lineTotal && (
-                  <p className="text-sm font-bold text-slate-900 shrink-0">
+                  <p className="text-sm font-semibold text-foreground shrink-0 tabular-nums">
                     ${lineTotal}
                   </p>
                 )}
-              </div>
+              </li>
             );
           })}
-        </div>
-      </div>
+        </ul>
+      </AccountCard>
 
       {/* Shipping address */}
       {order.shippingAddress && (
-        <div className="bg-white rounded-2xl border border-slate-200 p-6">
-          <h2 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-            <MapPin className="w-4 h-4" />
+        <AccountCard padding="lg" as="section" aria-label="Dirección de envío">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground mb-4 flex items-center gap-2">
+            <MapPin className="w-3.5 h-3.5" aria-hidden />
             Dirección de envío
           </h2>
-          <div className="text-sm text-slate-700 space-y-1">
-            <p>{order.shippingAddress.address1}</p>
+          <address className="not-italic text-sm text-foreground space-y-1 leading-relaxed">
+            <p className="font-medium">{order.shippingAddress.address1}</p>
             {order.shippingAddress.address2 && (
-              <p>{order.shippingAddress.address2}</p>
+              <p className="text-muted-foreground">
+                {order.shippingAddress.address2}
+              </p>
             )}
-            <p>
+            <p className="text-muted-foreground">
               {order.shippingAddress.city}, {order.shippingAddress.province}
+              {order.shippingAddress.zip && ` — ${order.shippingAddress.zip}`}
             </p>
-            <p>
-              {order.shippingAddress.country}{" "}
-              {order.shippingAddress.zip && `— ${order.shippingAddress.zip}`}
+            <p className="text-muted-foreground">
+              {order.shippingAddress.country}
             </p>
-          </div>
-        </div>
+          </address>
+        </AccountCard>
       )}
 
       {/* Payment summary */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-6">
-        <h2 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-          <CreditCard className="w-4 h-4" />
+      <AccountCard padding="lg" as="section" aria-label="Resumen de pago">
+        <h2 className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground mb-4 flex items-center gap-2">
+          <CreditCard className="w-3.5 h-3.5" aria-hidden />
           Resumen de pago
         </h2>
-        <div className="space-y-3">
+        <div className="space-y-2.5">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-slate-500">Subtotal</span>
-            <span className="text-slate-900">{subtotal}</span>
+            <span className="text-muted-foreground">Subtotal</span>
+            <span className="text-foreground tabular-nums">{subtotal}</span>
           </div>
           <div className="flex items-center justify-between text-sm">
-            <span className="text-slate-500">Envío</span>
-            <span className="text-slate-900">{shippingLabel}</span>
+            <span className="text-muted-foreground">Envío</span>
+            <span className="text-foreground tabular-nums">
+              {shippingLabel}
+            </span>
           </div>
-          <div className="border-t border-slate-100 pt-3 flex items-center justify-between">
-            <span className="text-sm font-semibold text-slate-900">Total</span>
-            <span className="text-lg font-bold text-primary">
+          <div className="border-t border-neutral-100 pt-3 mt-2 flex items-center justify-between">
+            <span className="text-sm font-semibold text-foreground">
+              Total
+            </span>
+            <span className="text-[18px] font-display font-normal tracking-tight text-primary tabular-nums">
               ${order.totalPrice.amount}{" "}
-              <span className="text-xs font-medium text-slate-500">
+              <span className="text-xs font-medium text-muted-foreground">
                 {order.totalPrice.currencyCode}
               </span>
             </span>
           </div>
         </div>
-      </div>
+      </AccountCard>
 
       {/* Shopify receipt link */}
       {order.statusUrl && (
-        <div className="flex justify-center">
+        <div className="flex justify-center pt-2">
           <a
             href={order.statusUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors"
+            className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-md"
           >
-            Ver recibo en Shopify
-            <ExternalLink className="w-3.5 h-3.5" />
+            Ver recibo oficial
+            <ExternalLink className="w-3.5 h-3.5" aria-hidden />
           </a>
         </div>
       )}
-    </motion.div>
+    </div>
+  );
+}
+
+function OrderNotFound() {
+  return (
+    <div className="space-y-6">
+      <Link
+        href="/cuenta/mis-compras"
+        className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        Volver a mis compras
+      </Link>
+      <AccountCard
+        padding="lg"
+        className="flex flex-col items-center justify-center py-14 text-center"
+      >
+        <span
+          className="w-16 h-16 rounded-full bg-neutral-100 text-slate-400 flex items-center justify-center mb-5"
+          aria-hidden
+        >
+          <Package className="w-7 h-7" />
+        </span>
+        <h2 className="font-display text-[20px] sm:text-[22px] font-normal tracking-tight text-foreground mb-2">
+          Pedido no encontrado
+        </h2>
+        <p className="text-sm text-muted-foreground max-w-sm">
+          No pudimos encontrar este pedido. Verificá el número o volvé al
+          listado de compras.
+        </p>
+      </AccountCard>
+    </div>
+  );
+}
+
+function OrderDetailSkeleton() {
+  return (
+    <div className="space-y-6">
+      <Skeleton className="h-5 w-44 rounded-md" />
+      <Skeleton className="h-32 w-full rounded-2xl" />
+      <Skeleton className="h-64 w-full rounded-2xl" />
+      <Skeleton className="h-72 w-full rounded-2xl" />
+      <Skeleton className="h-40 w-full rounded-2xl" />
+      <Skeleton className="h-44 w-full rounded-2xl" />
+    </div>
   );
 }
