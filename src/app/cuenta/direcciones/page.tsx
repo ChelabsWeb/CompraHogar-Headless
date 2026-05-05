@@ -194,7 +194,7 @@ export default function DireccionesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-[#21645d]" />
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
       </div>
     );
   }
@@ -206,7 +206,7 @@ export default function DireccionesPage() {
         <h1 className="text-2xl font-bold text-slate-900">Mis direcciones</h1>
         <button
           onClick={handleOpenCreate}
-          className="inline-flex items-center gap-1.5 bg-[#21645d] text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-[#1a504a] transition-colors"
+          className="inline-flex items-center gap-1.5 bg-primary text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-primary/90 transition-colors"
         >
           <Plus className="h-4 w-4" />
           Agregar dirección
@@ -229,7 +229,7 @@ export default function DireccionesPage() {
           </p>
           <button
             onClick={handleOpenCreate}
-            className="mt-4 text-sm font-medium text-[#21645d] hover:text-[#1a504a] transition-colors"
+            className="mt-4 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
           >
             Agregar tu primera dirección
           </button>

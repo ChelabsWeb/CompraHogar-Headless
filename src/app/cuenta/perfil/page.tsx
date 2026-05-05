@@ -119,7 +119,7 @@ export default function PerfilPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-[#21645d]" />
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
       </div>
     );
   }
@@ -151,7 +151,7 @@ export default function PerfilPage() {
         {!editing && (
           <button
             onClick={handleEdit}
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-[#21645d] hover:text-[#1a504a] transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
           >
             <Pencil className="h-4 w-4" />
             Editar
@@ -186,7 +186,7 @@ export default function PerfilPage() {
                 required
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
-                className="w-full h-11 px-4 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#21645d]/20 focus:border-[#21645d]"
+                className="w-full h-11 px-4 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               />
             </div>
 
@@ -200,7 +200,7 @@ export default function PerfilPage() {
                 type="text"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
-                className="w-full h-11 px-4 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#21645d]/20 focus:border-[#21645d]"
+                className="w-full h-11 px-4 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               />
             </div>
 
@@ -214,7 +214,7 @@ export default function PerfilPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full h-11 px-4 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#21645d]/20 focus:border-[#21645d]"
+                className="w-full h-11 px-4 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               />
             </div>
 
@@ -228,7 +228,7 @@ export default function PerfilPage() {
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-full h-11 px-4 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#21645d]/20 focus:border-[#21645d]"
+                className="w-full h-11 px-4 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               />
             </div>
 
@@ -239,7 +239,7 @@ export default function PerfilPage() {
                 type="checkbox"
                 checked={acceptsMarketing}
                 onChange={(e) => setAcceptsMarketing(e.target.checked)}
-                className="h-4 w-4 rounded border-slate-300 text-[#21645d] focus:ring-[#21645d]/20"
+                className="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary/20"
               />
               <label htmlFor="acceptsMarketing" className="text-sm text-slate-700">
                 Recibir ofertas y novedades por email
@@ -251,7 +251,7 @@ export default function PerfilPage() {
               <button
                 type="submit"
                 disabled={saving}
-                className="inline-flex items-center gap-2 bg-[#21645d] text-white px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-[#1a504a] transition-colors disabled:opacity-60"
+                className="inline-flex items-center gap-2 bg-primary text-white px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-60"
               >
                 {saving ? (
                   <Loader2 className="h-4 w-4 animate-spin" />

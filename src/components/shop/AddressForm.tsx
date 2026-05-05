@@ -64,9 +64,9 @@ const emptyForm: AddressFormData = {
 };
 
 const inputClass =
-  "w-full h-11 px-4 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#21645d]/20 focus:border-[#21645d]";
+  "w-full h-11 px-4 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary";
 const selectClass =
-  "w-full h-11 px-4 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#21645d]/20 focus:border-[#21645d] bg-white";
+  "w-full h-11 px-4 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white";
 
 export default function AddressForm({
   isOpen,
@@ -328,7 +328,7 @@ export default function AddressForm({
               type="checkbox"
               checked={form.setAsDefault}
               onChange={(e) => update("setAsDefault", e.target.checked)}
-              className="h-4 w-4 rounded border-slate-300 text-[#21645d] focus:ring-[#21645d]/20"
+              className="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary/20"
             />
             <label htmlFor="setAsDefault" className="text-sm text-slate-700">
               Marcar como predeterminada
@@ -340,7 +340,7 @@ export default function AddressForm({
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-2 bg-[#21645d] text-white px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-[#1a504a] transition-colors disabled:opacity-60"
+              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-60"
             >
               {saving && <Loader2 className="h-4 w-4 animate-spin" />}
               {saving ? "Guardando..." : "Guardar"}

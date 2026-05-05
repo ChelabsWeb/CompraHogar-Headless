@@ -52,7 +52,7 @@ export default function OrderDetailPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-[#21645d]" />
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
       </div>
     );
   }
@@ -162,7 +162,7 @@ export default function OrderDetailPage() {
             href={trackingUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 mt-6 bg-[#21645d] text-white text-sm font-medium px-5 py-2.5 rounded-xl hover:bg-[#1a504a] transition-colors"
+            className="inline-flex items-center gap-2 mt-6 bg-primary text-white text-sm font-medium px-5 py-2.5 rounded-xl hover:bg-primary/90 transition-colors"
           >
             <Truck className="w-4 h-4" />
             Rastrear envío
@@ -270,7 +270,7 @@ export default function OrderDetailPage() {
           </div>
           <div className="border-t border-slate-100 pt-3 flex items-center justify-between">
             <span className="text-sm font-semibold text-slate-900">Total</span>
-            <span className="text-lg font-bold text-[#21645d]">
+            <span className="text-lg font-bold text-primary">
               ${order.totalPrice.amount}{" "}
               <span className="text-xs font-medium text-slate-500">
                 {order.totalPrice.currencyCode}

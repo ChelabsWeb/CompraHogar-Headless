@@ -42,9 +42,9 @@ export default async function CuentaLayout({
   }
 
   return (
-    <div className="w-full min-h-screen bg-[#f7f7f8]">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 lg:py-12">
-        <div className="flex flex-col lg:flex-row gap-8">
+    <div className="w-full min-h-screen bg-neutral-50">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 lg:py-12">
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-10">
           <AccountSidebar
             customer={{
               firstName: customer.firstName,

@@ -230,7 +230,7 @@ export default function FavoritosPage() {
                                                 handleAddToCart(product);
                                             }}
                                             disabled={isAdding}
-                                            className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-[#21645d] text-white text-xs sm:text-sm font-medium hover:bg-[#1a504a] transition-colors disabled:opacity-60"
+                                            className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-primary text-white text-xs sm:text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-60"
                                         >
                                             {isAdding ? (
                                                 <Loader2 className="w-3.5 h-3.5 animate-spin" />

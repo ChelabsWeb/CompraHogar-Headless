@@ -88,12 +88,12 @@ export function OrderTimeline({
               {/* Circle */}
               <div className="relative flex items-center justify-center">
                 {isCurrent && (
-                  <span className="absolute inset-0 w-4 h-4 rounded-full bg-[#21645d]/20 animate-ping" />
+                  <span className="absolute inset-0 w-4 h-4 rounded-full bg-primary/20 animate-ping" />
                 )}
                 <div
                   className={`relative z-10 w-4 h-4 rounded-full flex items-center justify-center shrink-0 transition-colors ${
                     isComplete
-                      ? "bg-[#21645d]"
+                      ? "bg-primary"
                       : "bg-white border-2 border-slate-300"
                   }`}
                 >
@@ -107,9 +107,9 @@ export function OrderTimeline({
                 <div
                   className={`w-0.5 h-8 transition-colors ${
                     nextStepComplete || (isComplete && steps[index + 1]?.complete)
-                      ? "bg-[#21645d]"
+                      ? "bg-primary"
                       : isComplete
-                        ? "bg-[#21645d]/30"
+                        ? "bg-primary/30"
                         : "bg-slate-200"
                   }`}
                 />

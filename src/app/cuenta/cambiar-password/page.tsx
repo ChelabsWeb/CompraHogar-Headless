@@ -60,7 +60,7 @@ export default function CambiarPasswordPage() {
   }
 
   const inputClass =
-    "w-full h-11 pl-10 pr-12 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#21645d]/20 focus:border-[#21645d] transition-colors";
+    "w-full h-11 pl-10 pr-12 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors";
 
   return (
     <div className="space-y-6">
@@ -150,7 +150,7 @@ export default function CambiarPasswordPage() {
           <button
             type="submit"
             disabled={loading}
-            className="bg-[#21645d] text-white px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-[#1a504a] disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center gap-2"
+            className="bg-primary text-white px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center gap-2"
           >
             {loading ? (
               <>
