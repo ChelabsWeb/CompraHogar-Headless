@@ -1,84 +1,82 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { Pencil, Check, X, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Pencil, Check, X, User as UserIcon, Mail, Phone, Bell } from "lucide-react";
+import { useCustomer } from "@/hooks/useCustomer";
 import { updateCustomerProfile } from "../actions";
-
-interface CustomerProfile {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string | null;
-  acceptsMarketing: boolean;
-}
+import { AccountSectionHeader } from "@/components/cuenta/AccountSectionHeader";
+import { AccountCard } from "@/components/cuenta/AccountCard";
+import {
+  AccountSkeletonHeader,
+  AccountSkeletonCard,
+} from "@/components/cuenta/AccountSkeleton";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 
 export default function PerfilPage() {
-  const [customer, setCustomer] = useState<CustomerProfile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { customer, isLoading, error, mutate } = useCustomer();
+
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [success, setSuccess] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
 
-  // Form state
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [acceptsMarketing, setAcceptsMarketing] = useState(false);
-
-  const fetchProfile = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res = await fetch("/api/customer/profile");
-      if (!res.ok) throw new Error("Error al cargar perfil");
-      const data = await res.json();
-      const c = data.customer;
-      setCustomer(c);
-      populateForm(c);
-    } catch {
-      setErrorMessage("No se pudo cargar tu perfil. Intent\u00e1 de nuevo.");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  function populateForm(c: CustomerProfile) {
-    setFirstName(c.firstName || "");
-    setLastName(c.lastName || "");
-    setEmail(c.email || "");
-    setPhone(c.phone || "");
-    setAcceptsMarketing(c.acceptsMarketing ?? false);
-  }
+  const [firstNameError, setFirstNameError] = useState("");
 
   useEffect(() => {
-    fetchProfile();
-  }, [fetchProfile]);
+    if (customer && !editing) {
+      setFirstName(customer.firstName || "");
+      setLastName(customer.lastName || "");
+      setEmail(customer.email || "");
+      setPhone(customer.phone || "");
+      setAcceptsMarketing(customer.acceptsMarketing ?? false);
+    }
+  }, [customer, editing]);
 
   function handleEdit() {
-    if (customer) populateForm(customer);
-    setSuccessMessage("");
-    setErrorMessage("");
+    if (!customer) return;
+    setFirstName(customer.firstName || "");
+    setLastName(customer.lastName || "");
+    setEmail(customer.email || "");
+    setPhone(customer.phone || "");
+    setAcceptsMarketing(customer.acceptsMarketing ?? false);
+    setSuccess("");
+    setErrorMsg("");
+    setFirstNameError("");
     setEditing(true);
   }
 
   function handleCancel() {
-    if (customer) populateForm(customer);
+    if (customer) {
+      setFirstName(customer.firstName || "");
+      setLastName(customer.lastName || "");
+      setEmail(customer.email || "");
+      setPhone(customer.phone || "");
+      setAcceptsMarketing(customer.acceptsMarketing ?? false);
+    }
     setEditing(false);
-    setErrorMessage("");
+    setErrorMsg("");
+    setFirstNameError("");
   }
 
-  async function handleSave(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setErrorMsg("");
+    setSuccess("");
+    setFirstNameError("");
+
     if (!firstName.trim()) {
-      setErrorMessage("El nombre es obligatorio.");
+      setFirstNameError("El nombre es obligatorio");
       return;
     }
 
     setSaving(true);
-    setErrorMessage("");
-    setSuccessMessage("");
-
     try {
       const result = await updateCustomerProfile({
         firstName: firstName.trim(),
@@ -89,204 +87,277 @@ export default function PerfilPage() {
       });
 
       if (result.customerUserErrors && result.customerUserErrors.length > 0) {
-        setErrorMessage(
-          result.customerUserErrors.map((err: { message: string }) => err.message).join(". ")
+        setErrorMsg(
+          result.customerUserErrors
+            .map((err: { message: string }) => err.message)
+            .join(". ")
         );
         return;
       }
 
-      if (result.customer) {
-        const updated: CustomerProfile = {
-          firstName: result.customer.firstName ?? firstName,
-          lastName: result.customer.lastName ?? lastName,
-          email: result.customer.email ?? email,
-          phone: result.customer.phone ?? phone,
-          acceptsMarketing,
-        };
-        setCustomer(updated);
-        populateForm(updated);
-      }
-
-      setSuccessMessage("Perfil actualizado correctamente.");
+      await mutate();
+      setSuccess("Perfil actualizado correctamente.");
       setEditing(false);
     } catch {
-      setErrorMessage("Error al guardar los cambios. Intent\u00e1 de nuevo.");
+      setErrorMsg("Error al guardar los cambios. Intentá de nuevo.");
     } finally {
       setSaving(false);
     }
   }
 
-  if (loading) {
+  if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      <div className="space-y-6">
+        <AccountSkeletonHeader />
+        <AccountSkeletonCard rows={5} />
       </div>
     );
   }
 
-  if (!customer && !loading) {
+  if (error || !customer) {
     return (
-      <div className="bg-red-50 text-red-700 border border-red-200 px-4 py-3 rounded-xl text-sm">
-        No se pudo cargar tu perfil. Intent\u00e1 de nuevo m\u00e1s tarde.
+      <div className="space-y-6">
+        <AccountSectionHeader
+          title="Mi perfil"
+          description="Gestioná tus datos personales y preferencias de comunicación"
+        />
+        <div
+          role="alert"
+          className="bg-red-50 text-red-700 border border-red-200 px-4 py-3 rounded-xl text-sm"
+        >
+          No pudimos cargar tu perfil. Recargá la página o intentá de nuevo en
+          unos minutos.
+        </div>
       </div>
     );
   }
 
-  const infoRows: { label: string; value: string }[] = [
-    { label: "Nombre", value: customer?.firstName || "-" },
-    { label: "Apellido", value: customer?.lastName || "-" },
-    { label: "Email", value: customer?.email || "-" },
-    { label: "Tel\u00e9fono", value: customer?.phone || "-" },
-    {
-      label: "Marketing",
-      value: customer?.acceptsMarketing ? "Suscrito" : "No suscrito",
-    },
-  ];
+  const initials =
+    (customer.firstName?.charAt(0) || "") +
+    (customer.lastName?.charAt(0) || "");
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-900">Mi perfil</h1>
-        {!editing && (
-          <button
-            onClick={handleEdit}
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
-          >
-            <Pencil className="h-4 w-4" />
-            Editar
-          </button>
-        )}
-      </div>
+      <AccountSectionHeader
+        title="Mi perfil"
+        description="Gestioná tus datos personales y preferencias de comunicación"
+        action={
+          !editing && (
+            <Button variant="ghost" size="sm" onClick={handleEdit}>
+              <Pencil className="w-4 h-4" />
+              Editar
+            </Button>
+          )
+        }
+      />
 
-      {/* Messages */}
-      {successMessage && (
-        <div className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-4 py-3 rounded-xl text-sm">
-          {successMessage}
-        </div>
-      )}
-      {errorMessage && (
-        <div className="bg-red-50 text-red-700 border border-red-200 px-4 py-3 rounded-xl text-sm">
-          {errorMessage}
+      {success && (
+        <div
+          role="status"
+          className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-4 py-3 rounded-xl text-sm flex items-start gap-2"
+        >
+          <Check className="w-4 h-4 mt-0.5 shrink-0" />
+          <span>{success}</span>
         </div>
       )}
 
-      {/* Card */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8">
-        {editing ? (
-          <form onSubmit={handleSave} className="space-y-5">
-            {/* First Name */}
-            <div>
-              <label htmlFor="firstName" className="block text-sm font-medium text-slate-700 mb-1.5">
-                Nombre <span className="text-red-500">*</span>
-              </label>
-              <input
-                id="firstName"
-                type="text"
-                required
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                className="w-full h-11 px-4 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-              />
+      {errorMsg && (
+        <div
+          role="alert"
+          className="bg-red-50 text-red-700 border border-red-200 px-4 py-3 rounded-xl text-sm"
+        >
+          {errorMsg}
+        </div>
+      )}
+
+      {editing ? (
+        <AccountCard padding="lg" as="section">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="firstName"
+                  className="block text-sm font-medium text-foreground"
+                >
+                  Nombre <span className="text-destructive">*</span>
+                </label>
+                <Input
+                  id="firstName"
+                  type="text"
+                  value={firstName}
+                  onChange={(e) => {
+                    setFirstName(e.target.value);
+                    if (firstNameError) setFirstNameError("");
+                  }}
+                  error={firstNameError}
+                  autoComplete="given-name"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="lastName"
+                  className="block text-sm font-medium text-foreground"
+                >
+                  Apellido
+                </label>
+                <Input
+                  id="lastName"
+                  type="text"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  autoComplete="family-name"
+                />
+              </div>
             </div>
 
-            {/* Last Name */}
-            <div>
-              <label htmlFor="lastName" className="block text-sm font-medium text-slate-700 mb-1.5">
-                Apellido
-              </label>
-              <input
-                id="lastName"
-                type="text"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                className="w-full h-11 px-4 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-              />
-            </div>
-
-            {/* Email */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1.5">
+            <div className="space-y-1.5">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-foreground"
+              >
                 Email
               </label>
-              <input
+              <Input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full h-11 px-4 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                iconLeft={<Mail className="w-4 h-4" />}
+                autoComplete="email"
               />
             </div>
 
-            {/* Phone */}
-            <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-1.5">
-                Tel\u00e9fono
+            <div className="space-y-1.5">
+              <label
+                htmlFor="phone"
+                className="block text-sm font-medium text-foreground"
+              >
+                Teléfono
               </label>
-              <input
+              <Input
                 id="phone"
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-full h-11 px-4 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                iconLeft={<Phone className="w-4 h-4" />}
+                autoComplete="tel"
+                placeholder="099 123 456"
               />
             </div>
 
-            {/* Accepts Marketing */}
-            <div className="flex items-center gap-3">
-              <input
+            <div className="flex items-start gap-3 py-2">
+              <Switch
                 id="acceptsMarketing"
-                type="checkbox"
                 checked={acceptsMarketing}
-                onChange={(e) => setAcceptsMarketing(e.target.checked)}
-                className="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary/20"
+                onCheckedChange={setAcceptsMarketing}
+                aria-label="Recibir ofertas y novedades por email"
               />
-              <label htmlFor="acceptsMarketing" className="text-sm text-slate-700">
+              <label
+                htmlFor="acceptsMarketing"
+                className="text-sm text-foreground cursor-pointer leading-tight"
+              >
                 Recibir ofertas y novedades por email
+                <span className="block text-xs text-muted-foreground mt-0.5">
+                  Podés cancelar la suscripción en cualquier momento.
+                </span>
               </label>
             </div>
 
-            {/* Actions */}
-            <div className="flex items-center gap-3 pt-2">
-              <button
+            <div className="flex items-center gap-3 pt-4 border-t border-neutral-100">
+              <Button
                 type="submit"
+                isLoading={saving}
                 disabled={saving}
-                className="inline-flex items-center gap-2 bg-primary text-white px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-60"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
               >
-                {saving ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Check className="h-4 w-4" />
-                )}
-                {saving ? "Guardando..." : "Guardar"}
-              </button>
-              <button
+                <Check className="w-4 h-4" />
+                {saving ? "Guardando..." : "Guardar cambios"}
+              </Button>
+              <Button
                 type="button"
+                variant="ghost"
                 onClick={handleCancel}
                 disabled={saving}
-                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors disabled:opacity-60"
               >
-                <X className="h-4 w-4" />
+                <X className="w-4 h-4" />
                 Cancelar
-              </button>
+              </Button>
             </div>
           </form>
-        ) : (
-          <div className="divide-y divide-slate-100">
-            {infoRows.map((row) => (
+        </AccountCard>
+      ) : (
+        <>
+          {/* Identidad */}
+          <AccountCard padding="lg" as="section">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-6">
               <div
-                key={row.label}
-                className="flex flex-col sm:flex-row py-3 first:pt-0 last:pb-0"
+                className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-display text-2xl sm:text-3xl shrink-0 shadow-md"
+                aria-hidden
               >
-                <span className="text-sm text-slate-500 sm:w-32 shrink-0">
-                  {row.label}
-                </span>
-                <span className="text-sm text-slate-900">{row.value}</span>
+                {initials || <UserIcon className="w-8 h-8" />}
               </div>
-            ))}
-          </div>
-        )}
-      </div>
+              <div className="space-y-1.5 min-w-0 flex-1">
+                <h2 className="font-display text-[20px] sm:text-[22px] font-normal tracking-tight text-foreground leading-snug">
+                  {customer.firstName} {customer.lastName}
+                </h2>
+                <div className="space-y-1 text-sm">
+                  <p className="text-muted-foreground break-words flex items-center gap-2">
+                    <Mail className="w-3.5 h-3.5 shrink-0" aria-hidden />
+                    {customer.email}
+                  </p>
+                  {customer.phone ? (
+                    <p className="text-muted-foreground flex items-center gap-2">
+                      <Phone className="w-3.5 h-3.5 shrink-0" aria-hidden />
+                      {customer.phone}
+                    </p>
+                  ) : (
+                    <p className="text-muted-foreground italic flex items-center gap-2">
+                      <Phone className="w-3.5 h-3.5 shrink-0" aria-hidden />
+                      Sin teléfono registrado
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </AccountCard>
+
+          {/* Preferencias */}
+          <AccountCard padding="md" as="section">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-start gap-3 min-w-0">
+                <span
+                  className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5"
+                  aria-hidden
+                >
+                  <Bell className="w-[18px] h-[18px]" />
+                </span>
+                <div className="min-w-0">
+                  <h3 className="text-sm font-medium text-foreground">
+                    Comunicaciones por email
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Ofertas, novedades y campañas de CompraHogar
+                  </p>
+                </div>
+              </div>
+              <div className="shrink-0">
+                {customer.acceptsMarketing ? (
+                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-2.5 py-1 rounded-full">
+                    <Check className="w-3 h-3" />
+                    Suscrito
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 text-xs font-medium text-slate-600 bg-slate-100 px-2.5 py-1 rounded-full">
+                    No suscrito
+                  </span>
+                )}
+              </div>
+            </div>
+          </AccountCard>
+        </>
+      )}
     </div>
   );
 }
