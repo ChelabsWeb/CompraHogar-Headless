@@ -136,18 +136,12 @@ export function AccountSidebar({ customer, counts }: AccountSidebarProps) {
                       <Link
                         href={item.href}
                         aria-current={active ? "page" : undefined}
-                        className={`relative group flex items-center gap-2.5 pl-3 pr-2 py-1.5 rounded-lg text-[13.5px] font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${
+                        className={`group flex items-center gap-2.5 pl-3 pr-2 py-1.5 rounded-lg text-[13.5px] font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${
                           active
                             ? "bg-primary/[0.08] text-primary"
                             : "text-slate-600 hover:bg-neutral-100 hover:text-slate-900"
                         }`}
                       >
-                        {active && (
-                          <span
-                            className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r-full bg-primary"
-                            aria-hidden
-                          />
-                        )}
                         <span
                           className={`flex items-center justify-center w-7 h-7 rounded-md transition-colors shrink-0 ${
                             active
