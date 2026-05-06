@@ -20,7 +20,15 @@ export default async function CuentaLayout({
     redirect("/login");
   }
 
-  let customer: { firstName: string; lastName: string; email: string } | null = null;
+  type CustomerLayoutData = {
+    firstName: string;
+    lastName: string;
+    email: string;
+    orders?: { edges: unknown[] };
+    addresses?: { edges: unknown[] };
+  };
+
+  let customer: CustomerLayoutData | null = null;
 
   try {
     const { body } = await shopifyFetch({
@@ -41,6 +49,9 @@ export default async function CuentaLayout({
     redirect("/login");
   }
 
+  const ordersCount = customer.orders?.edges?.length ?? 0;
+  const addressesCount = customer.addresses?.edges?.length ?? 0;
+
   return (
     <div className="min-h-screen bg-neutral-50">
       <AccountSidebar
@@ -49,6 +60,7 @@ export default async function CuentaLayout({
           lastName: customer.lastName,
           email: customer.email,
         }}
+        counts={{ orders: ordersCount, addresses: addressesCount }}
       />
       <div className="lg:pl-72">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
