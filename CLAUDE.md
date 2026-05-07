@@ -178,3 +178,57 @@ This section consolidates actionable guidance from specialized engineering agent
 - Push notifications — low ROI without user base
 - Live chat widget — WhatsApp button already covers this
 - Virtualized lists — not needed until 100+ products
+
+---
+
+# Account Section Patterns (`/cuenta/*`)
+
+This section was redesigned end-to-end (PRs #10 and follow-up). Follow these conventions when adding new account pages or modifying existing ones.
+
+## Data fetching
+
+- **Use `useCustomer()` hook** (`src/hooks/useCustomer.ts`) as the single source of truth for the authenticated customer in `/cuenta/*` pages. SWR-based with `dedupingInterval: 60_000` and `revalidateOnFocus: false`.
+- **Call `mutate()`** from the hook after any mutation (profile update, address CRUD, etc.) to refresh the shared cache.
+- **Do NOT add new manual `fetch('/api/customer/profile')` + `useState`/`useEffect`** patterns — migrate to the hook instead.
+- **Wishlist (favorites)** lives in `useWishlist()` (localStorage-backed via `WishlistProvider`). Counts come from `count`.
+
+## Shared primitives
+
+All in `src/components/cuenta/`:
+
+- `<AccountSectionHeader title description action />` — every page's H1. Uses `font-display` (Cal Sans) at 26/30/32px responsive. The `action` slot is for top-right buttons (e.g., "Editar", "Agregar dirección").
+- `<AccountCard padding="md|sm|lg|none" as="section|div|article" interactive>` — standard card wrapper: `bg-white rounded-2xl border border-neutral-200/70 shadow-sm`. Use this instead of inlining classes.
+- `<AccountCardHeader icon title action />` — uppercase tracking-wide section heading inside cards.
+- `<AccountSkeleton*>` — `Header`, `Card`, `Grid`, `OrderRow`. Use these for loading states. **Never use `<Loader2 />` spinners in `/cuenta/*`** — always skeletons.
+- `<DashboardSummaryCard>` — only for the dashboard at `/cuenta`. Inline an empty state via `<DashboardSummaryEmpty message="..." />`.
+
+## Visual system
+
+- **Tokens, not hex**: use `bg-primary`, `text-primary`, `hover:bg-primary/90`, `focus:ring-primary/20`. Never `#21645d` hardcoded.
+- **Cal Sans on h1–h6**: applied globally in `globals.css`. Use `font-normal` (not `font-bold`) — Cal Sans is already display.
+- **Avatar gradient** `bg-gradient-to-br from-primary to-secondary` only on hero avatars (dashboard-style cards, profile, sidebar). For repeated/compact badges, use solid `bg-primary` or `bg-primary/10`.
+- **`<GlassButton>` rule: max 1–2 visible per screen.** Reserved for the primary CTA of the page (e.g., dashboard banner, empty state CTA, "Rastrear envío" in order detail). For everything else use `<Button>` from `src/components/ui/button.tsx`.
+
+## Sidebar / shell
+
+- The shell uses a fixed Tailwind Pro Application UI sidebar (`lg:fixed lg:top-[140px] lg:bottom-0 lg:w-72`). Main content is offset with `lg:pl-72`.
+- Top sticky offsets are calibrated to the site Header: `lg:top-[140px]` for the sidebar and `top-[72px]` for mobile tabs.
+- Brand badge follows the project rule: **logo always over white background**, never on a colored fill.
+- Active state: `bg-primary/[0.08]` + icon chip `bg-primary/[0.12]` + stroke 2 (idle is 1.75).
+- Mobile tap targets must be **≥44px** (enforced via `min-h-[44px]`).
+
+## States checklist
+
+Every `/cuenta/*` page must implement:
+
+- **Loading** — skeleton matching the final structure (use `AccountSkeleton*`).
+- **Error** — `role="alert"` red banner with a recovery message ("Recargá la página o intentá de nuevo en unos minutos").
+- **Empty** — `<AccountCard>` centered with icon-in-circle (`bg-primary/10`), Cal Sans heading, descriptive copy, and a CTA. The CTA is a `<GlassButton>` only if it's the page's primary CTA; otherwise `<Button variant="ghost">`.
+- **Success** — `role="status"` emerald banner for transient confirmations.
+
+## Component vs page choices
+
+- **Pages stay Client Components** by default (consistency with `useCustomer` and other hooks). Server Component conversion is only worthwhile if you can avoid the customer fetch entirely.
+- **Avoid `framer-motion` in account pages** — it's heavy for a private auth area. Use `animate-in fade-in-0 slide-in-from-bottom-2 duration-300` from `tailwindcss-animate` instead. Internal animations of shared components (`OrderTimeline`) can keep their motion.
+- **Form inputs**: use `<Input>` from `src/components/ui/input.tsx` with `iconLeft`/`iconRight` and the `error` prop. Don't reinvent input shells.
+- **Modals**: use `<Modal>` from `src/components/ui/modal.tsx` for confirm-delete and similar dialogs. Don't hand-roll `fixed inset-0` overlays.
