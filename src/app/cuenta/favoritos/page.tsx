@@ -21,16 +21,19 @@ export default function FavoritosPage() {
   const { addToCart, setIsCartOpen } = useCart();
   const [products, setProducts] = useState<WishlistCardProduct[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(false);
   const [addingToCart, setAddingToCart] = useState<string | null>(null);
 
   const fetchProducts = useCallback(async (ids: string[]) => {
     if (ids.length === 0) {
       setProducts([]);
+      setFetchError(false);
       setLoading(false);
       return;
     }
 
     setLoading(true);
+    setFetchError(false);
     try {
       const { body } = await shopifyFetch({
         query: getProductsByIdsQuery,
@@ -42,6 +45,7 @@ export default function FavoritosPage() {
     } catch (error) {
       console.error("Error fetching wishlist products:", error);
       setProducts([]);
+      setFetchError(true);
     } finally {
       setLoading(false);
     }
@@ -85,13 +89,23 @@ export default function FavoritosPage() {
     <div className="space-y-6">
       <AccountSectionHeader title="Mis favoritos" description={description} />
 
+      {fetchError && !loading && (
+        <div
+          role="alert"
+          className="bg-red-50 text-red-700 border border-red-200 px-4 py-3 rounded-xl text-sm"
+        >
+          No pudimos cargar tus productos favoritos. Recargá la página o
+          intentá de nuevo en unos minutos.
+        </div>
+      )}
+
       {loading ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {Array.from({ length: count || 4 }).map((_, i) => (
             <WishlistCardSkeleton key={i} />
           ))}
         </div>
-      ) : (
+      ) : products.length > 0 ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {products.map((product) => (
             <WishlistCard
@@ -102,7 +116,7 @@ export default function FavoritosPage() {
             />
           ))}
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

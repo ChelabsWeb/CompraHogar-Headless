@@ -215,7 +215,7 @@ export function AccountSidebar({ customer, counts }: AccountSidebarProps) {
       {/* Mobile sticky tabs */}
       <div className="lg:hidden sticky top-[72px] z-30 bg-neutral-50/95 backdrop-blur-sm border-b border-neutral-200/70">
         <nav
-          className="flex gap-2 overflow-x-auto scrollbar-hide px-4 sm:px-6 py-3"
+          className="flex items-center gap-2 overflow-x-auto scrollbar-hide px-4 sm:px-6 py-3"
           aria-label="Navegación de cuenta"
         >
           {allItems.map((item) => {
@@ -227,7 +227,7 @@ export function AccountSidebar({ customer, counts }: AccountSidebarProps) {
                 key={item.href}
                 href={item.href}
                 aria-current={active ? "page" : undefined}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors shrink-0 min-h-[40px] ${
+                className={`flex items-center gap-2 px-4 rounded-full text-sm font-medium whitespace-nowrap transition-colors shrink-0 min-h-[44px] ${
                   active
                     ? "bg-primary text-primary-foreground shadow-sm"
                     : "bg-white text-slate-600 border border-neutral-200/70 hover:bg-neutral-100"
@@ -242,6 +242,7 @@ export function AccountSidebar({ customer, counts }: AccountSidebarProps) {
                         ? "bg-white/20 text-primary-foreground"
                         : "bg-neutral-100 text-slate-500"
                     }`}
+                    aria-label={`${badge} ${badge === 1 ? "elemento" : "elementos"}`}
                   >
                     {badge > 99 ? "99+" : badge}
                   </span>
@@ -249,6 +250,16 @@ export function AccountSidebar({ customer, counts }: AccountSidebarProps) {
               </Link>
             );
           })}
+          <span className="h-6 w-px bg-neutral-200 shrink-0 mx-1" aria-hidden />
+          <form action={logout} className="shrink-0">
+            <button
+              type="submit"
+              className="flex items-center gap-2 px-4 rounded-full text-sm font-medium whitespace-nowrap shrink-0 min-h-[44px] text-red-600 bg-white border border-neutral-200/70 hover:bg-red-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/30"
+            >
+              <LogOut className="w-4 h-4 shrink-0" strokeWidth={1.75} />
+              Cerrar sesión
+            </button>
+          </form>
         </nav>
       </div>
     </>

@@ -66,7 +66,10 @@ export default function CuentaDashboardPage() {
         <h1 className="font-display text-[26px] sm:text-[30px] lg:text-[32px] font-normal tracking-tight text-foreground leading-tight">
           Mi cuenta
         </h1>
-        <div className="bg-red-50 text-red-700 border border-red-200 px-4 py-3 rounded-xl text-sm">
+        <div
+          role="alert"
+          className="bg-red-50 text-red-700 border border-red-200 px-4 py-3 rounded-xl text-sm"
+        >
           No pudimos cargar la información de tu cuenta. Recargá la página o
           intentá de nuevo en unos minutos.
         </div>
