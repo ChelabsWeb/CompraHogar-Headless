@@ -81,7 +81,7 @@ export default function AddressCard({
         <div className="flex items-center gap-2">
           <button
             onClick={onEdit}
-            className="inline-flex items-center gap-1.5 text-sm text-slate-600 hover:text-[#21645d] transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm text-slate-600 hover:text-primary transition-colors"
           >
             <Pencil className="h-3.5 w-3.5" />
             Editar
@@ -98,7 +98,7 @@ export default function AddressCard({
         {!isDefault && (
           <button
             onClick={onSetDefault}
-            className="text-xs font-medium text-[#21645d] hover:text-[#1a504a] transition-colors"
+            className="text-xs font-medium text-primary hover:text-primary/80 transition-colors"
           >
             Marcar como predeterminada
           </button>

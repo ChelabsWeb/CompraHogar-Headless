@@ -219,3 +219,44 @@
   white-space: nowrap;
   border-width: 0;
 }
+
+@layer utilities {
+  .pt-safe { padding-top: env(safe-area-inset-top); }
+  .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+  .pl-safe { padding-left: env(safe-area-inset-left); }
+  .pr-safe { padding-right: env(safe-area-inset-right); }
+  .px-safe {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+  .py-safe {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .top-safe { top: env(safe-area-inset-top); }
+  .bottom-safe { bottom: env(safe-area-inset-bottom); }
+  /* For elements that need extra spacing ABOVE the safe area (e.g. floating buttons). */
+  .bottom-safe-offset-5 {
+    bottom: calc(1.25rem + env(safe-area-inset-bottom));
+  }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  /* Disable the hover scale on product card images */
+  .group:hover img.group-hover\:scale-\[1\.03\] {
+    transform: none !important;
+  }
+  /* Soften the active scale-95 micro-interaction on buttons */
+  button:active,
+  [role="button"]:active {
+    transform: none !important;
+  }
+  /* Cap any transition duration at 0.01s — effectively instant but preserves transitionend events */
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}

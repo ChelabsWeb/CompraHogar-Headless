@@ -8,6 +8,7 @@ import { Footer } from "@/components/layout/Footer";
 import { CartProvider } from "@/components/cart/CartProvider";
 import { WishlistProvider } from "@/components/shop/WishlistProvider";
 import { CompareProvider } from "@/components/shop/CompareProvider";
+import { ToastProvider } from "@/components/ui/toast";
 import { CompareBar } from "@/components/shop/CompareBar";
 import { shopifyFetch } from "@/lib/shopify";
 import { getCollectionsQuery } from "@/lib/queries";
@@ -246,17 +247,19 @@ fbq('track', 'PageView');`,
         )}
         <CartProvider customerAccessToken={customerAccessToken}>
           <WishlistProvider isLoggedIn={isLoggedIn}>
-            <CompareProvider>
-              <Header collections={collections} isLoggedIn={isLoggedIn} />
-              <main className="flex-1 w-full pt-[96px] lg:pt-[116px]">
-                {children}
-              </main>
-              <Footer />
-              <ExitIntentPopup />
-              <WhatsAppButton />
-              <CompareBar />
-              <ServiceWorkerRegister />
-            </CompareProvider>
+            <ToastProvider>
+              <CompareProvider>
+                <Header collections={collections} isLoggedIn={isLoggedIn} />
+                <main className="flex-1 w-full pt-[96px] lg:pt-[116px]">
+                  {children}
+                </main>
+                <Footer />
+                <ExitIntentPopup />
+                <WhatsAppButton />
+                <CompareBar />
+                <ServiceWorkerRegister />
+              </CompareProvider>
+            </ToastProvider>
           </WishlistProvider>
         </CartProvider>
       </body>

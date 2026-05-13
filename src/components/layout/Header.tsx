@@ -4,9 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useScroll, useMotionValueEvent } from "framer-motion";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { ShoppingBag, Search, Menu, ChevronDown, User, ChevronRight, Home, Tag, Clock, Store, List, X, Heart } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetClose } from "@/components/ui/sheet";
+import { ShoppingBag, Search, User, ChevronRight, X, Heart } from "lucide-react";
 import { CartDrawer } from "@/components/cart/CartSheet";
 import { useCart } from "@/components/cart/CartProvider";
 import { useWishlist } from "@/components/shop/WishlistProvider";
@@ -15,12 +13,11 @@ import { FavoritesSheet } from "@/components/shop/FavoritesSheet";
 import { PredictiveSearch } from "@/components/shared/PredictiveSearch";
 import { LocationSelector } from "@/components/shop/LocationSelector";
 import { MegaMenu } from "./MegaMenu";
+import { MobileMenuShell } from "./MobileMenuShell";
 import { LocaleSwitcher } from "./LocaleSwitcher";
-import { MAIN_CATEGORIES, categoryHref } from "@/lib/constants/categories";
 
 export function Header({ collections = [], isLoggedIn }: { collections?: any[], isLoggedIn?: boolean }) {
     const { scrollY } = useScroll();
-    const pathname = usePathname();
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
     const mobileSearchRef = useRef<HTMLInputElement>(null);
@@ -65,68 +62,7 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
                             <div className={`flex items-center justify-between w-full transition-opacity duration-150 ${mobileSearchOpen ? "opacity-0 pointer-events-none absolute inset-0 items-center" : "opacity-100"}`}>
                                 {/* Left: Hamburger menu */}
                                 <div className="flex items-center shrink-0">
-                                    <Sheet>
-                                        <SheetTrigger asChild>
-                                            <button className="p-2 -ml-2 text-slate-700 active:bg-slate-100 rounded-full transition-colors">
-                                                <Menu className="w-6 h-6" strokeWidth={1.5} />
-                                            </button>
-                                        </SheetTrigger>
-                                        <SheetContent side="left" className="w-[85vw] max-w-[320px] p-0 flex flex-col bg-white border-r-0">
-                                            <SheetTitle className="sr-only">Menú de navegación</SheetTitle>
-
-                                            {/* Drawer Header with Logo */}
-                                            <div className="px-5 pt-10 pb-4 flex items-center justify-center">
-                                                <div className="relative w-[260px] h-[65px]">
-                                                    <Image src="/logo.png" alt="CompraHogar" fill className="object-contain" sizes="260px" />
-                                                </div>
-                                            </div>
-                                            <div className="h-px bg-primary/20 mx-5" />
-
-                                            {/* Drawer Links */}
-                                            <div className="flex-1 overflow-y-auto py-2">
-                                                <div className="flex flex-col px-2">
-                                                    <SheetClose asChild>
-                                                        <Link href="/" className="flex items-center gap-4 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg font-medium text-[15px] transition-colors">
-                                                            <Home className="w-5 h-5 text-slate-400" /> Inicio
-                                                        </Link>
-                                                    </SheetClose>
-                                                    <SheetClose asChild>
-                                                        <Link href="/collections/ofertas" className="flex items-center gap-4 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg font-medium text-[15px] transition-colors">
-                                                            <Tag className="w-5 h-5 text-slate-400" /> Ofertas
-                                                        </Link>
-                                                    </SheetClose>
-                                                    <SheetClose asChild>
-                                                        <Link href="/cuenta/mis-compras" className="flex items-center gap-4 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg font-medium text-[15px] transition-colors">
-                                                            <Clock className="w-5 h-5 text-slate-400" /> Mis compras
-                                                        </Link>
-                                                    </SheetClose>
-                                                    <SheetClose asChild>
-                                                        <Link href="/cuenta/favoritos" className="flex items-center gap-4 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg font-medium text-[15px] transition-colors">
-                                                            <Heart className="w-5 h-5 text-slate-400" /> Favoritos
-                                                        </Link>
-                                                    </SheetClose>
-                                                    <SheetClose asChild>
-                                                        <Link href="/collections" className="flex items-center gap-4 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg font-medium text-[15px] transition-colors">
-                                                            <Store className="w-5 h-5 text-slate-400" /> Catálogo
-                                                        </Link>
-                                                    </SheetClose>
-
-                                                    <div className="h-px bg-slate-200 my-2 mx-4" />
-
-                                                    <div className="px-4 py-3 pb-1">
-                                                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Categorías</span>
-                                                    </div>
-                                                    {MAIN_CATEGORIES.map(cat => (
-                                                        <SheetClose key={cat.handle} asChild>
-                                                            <Link href={categoryHref(cat.handle)} className="flex items-center gap-4 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg font-medium text-[15px] transition-colors">
-                                                                <List className="w-5 h-5 text-slate-400" /> {cat.shortName}
-                                                            </Link>
-                                                        </SheetClose>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        </SheetContent>
-                                    </Sheet>
+                                    <MobileMenuShell collections={collections} />
                                 </div>
 
                                 {/* Center: Logo */}
