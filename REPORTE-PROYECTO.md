@@ -1,268 +1,219 @@
-# Reporte: CompraHogar Headless
-
-Generado: 2026-03-23
+# Reporte: CompraHogar
+Generado: 2026-05-04 (sustituye reporte previo del 2026-03-23)
 
 ## Resumen ejecutivo
 
-CompraHogar es un e-commerce headless de artículos para construcción y hogar, orientado al mercado uruguayo, con backend en Shopify y frontend custom en Next.js 16. El proyecto está considerablemente avanzado: cuenta con catálogo de productos, carrito completo, autenticación de clientes, sistema de favoritos, búsqueda predictiva, páginas de cuenta y contenido estático. **Completitud estimada: ~70-75%.** Los pendientes principales son integraciones con servicios externos (reviews, CRM, email transaccional) y hardening para producción.
+CompraHogar es un e-commerce headless para Uruguay (materiales, herramientas, sanitaria, electricidad), con Shopify como backend de comercio y un frontend Next.js 16 / React 19 con catálogo, carrito, checkout (vía Shopify), auth de clientes, búsqueda predictiva, comparador, cotizador de pintura, PWA instalable y assets de marca generados (Higgsfield) ya integrados. **Estado real: ~85% del web listo para producción, 0% de Capacitor / apps móviles (no hay nada iniciado), ~60% del "design system"** (CSS variables sí, sistema formal no). Crítico: faltan credenciales en `.env.local`, hay 2 errores de lint, 3 errores de TypeScript en webhooks (firma de `revalidateTag` Next 16), y la app móvil nativa no existe en absoluto.
 
-## Información general
-
-- **Nombre del proyecto:** CompraHogar Headless (`comprahogar-headless`)
-- **Descripción:** Storefront headless de e-commerce para materiales de construcción y hogar. Conectado a Shopify como backend de comercio, con frontend Next.js para control total del diseño y experiencia de usuario. Mercado target: Uruguay.
-- **URL de producción:** Deployado en Vercel (proyecto `comprahogar-headless`, ID: `prj_tGSZqgzH3CTtsPDopQ3ZmmYAAerr`). No se detectó dominio custom configurado — probablemente accesible vía `comprahogar-headless.vercel.app` o similar. Verificar manualmente.
-- **Repositorio:** GitHub — `ChelabsWeb/CompraHogar-Headless`. Repositorio single-project (no monorepo).
-- **Estructura de carpetas principal:**
-  ```
-  src/
-  ├── app/              # App Router: páginas, layouts, API routes, server actions
-  │   ├── api/          # Endpoints: webhooks, newsletter, back-in-stock, wishlist, location, customer
-  │   ├── collections/  # Listado y detalle de colecciones
-  │   ├── products/     # Detalle de producto
-  │   ├── cuenta/       # Dashboard de cuenta (perfil, pedidos, direcciones, favoritos, cambiar password)
-  │   ├── login/        # Login y recuperar password
-  │   ├── registro/     # Registro de cuenta
-  │   └── [páginas estáticas]  # sobre-nosotros, envíos, devoluciones, privacidad, términos
-  ├── components/
-  │   ├── analytics/    # Tracker de GA4
-  │   ├── cart/         # CartProvider y CartSheet
-  │   ├── layout/       # Header, Footer, MegaMenu, MobileMenu, LocaleSwitcher
-  │   ├── shared/       # ErrorFallback, InfoDrawer, PredictiveSearch
-  │   ├── shop/         # Componentes de negocio (ProductGrid, ProductView, Filters, Wishlist, etc.)
-  │   └── ui/           # Componentes base (button, card, input, modal, sheet, etc.)
-  ├── hooks/            # useStoreFilters
-  └── lib/              # shopify.ts, queries.ts, types.ts, analytics.ts, customer.ts, reviews.ts, utils.ts, rate-limit.ts
-      └── constants/    # collectionHierarchy.ts, shippingRates.ts
-  ```
+---
 
 ## Stack técnico
 
 | Tecnología | Versión | Propósito |
 |---|---|---|
-| Next.js | 16.1.6 | Framework principal (App Router) |
-| React | 19.2.3 | Biblioteca de UI |
-| TypeScript | ^5 | Tipado estático |
-| Tailwind CSS | ^4 | Framework de estilos utility-first |
-| SWR | ^2.4.1 | Data fetching client-side |
-| Radix UI | ^1.4.3 | Primitivos headless de UI (+ progress ^1.1.8, switch ^1.2.6, tooltip ^1.2.8) |
+| Next.js | 16.2.2 | Framework App Router (RSC, route handlers) |
+| React | 19.2.3 | UI library |
+| TypeScript | ^5 | Tipado estricto |
+| Tailwind CSS | ^4 | Estilos utility-first (PostCSS plugin) |
+| Radix UI | ^1.4.3 + progress/switch/tooltip | Accesibilidad headless |
+| SWR | ^2.4.1 | Data fetching client / cache |
 | Framer Motion | ^12.34.3 | Animaciones |
-| Lucide React | ^0.575.0 | Iconografía |
-| Vaul | ^1.1.2 | Drawer/sheet component |
-| class-variance-authority | ^0.7.1 | Gestión de variantes de componentes |
-| clsx / tailwind-merge | ^2.1.1 / ^3.5.0 | Utilidades de clases CSS |
-| tailwindcss-animate / tw-animate-css | ^1.0.7 / ^1.4.0 | Animaciones CSS con Tailwind |
-| js-cookie | ^3.0.5 | Manejo de cookies en cliente |
-| shadcn | ^3.8.5 (dev) | CLI para generación de componentes UI |
-| ESLint | ^9 + eslint-config-next 16.1.6 | Linting |
-| @tailwindcss/typography | ^0.5.19 | Plugin tipografía Tailwind |
-| @tailwindcss/postcss | ^4 | Integración PostCSS |
+| Vaul | ^1.1.2 | Drawers móviles (cart, filtros) |
+| lucide-react | ^0.575.0 | Iconografía |
+| gradient-border-plugin | ^1.1.3 | Bordes con gradiente (UI nuevo) |
+| js-cookie | ^3.0.5 | Lectura de cookies en cliente |
+| shadcn (CLI) | ^3.8.5 (dev) | Generación de componentes |
+| Vitest | ^4.1.1 | Tests unitarios |
+| ESLint + eslint-config-next | 9 / 16.1.6 | Lint |
+| docx | ^9.6.1 | Generación de docs internos (scripts) |
+| pnpm | (usado) | Package manager |
+
+---
 
 ## Servicios externos
 
 | Servicio | Plan actual | Costo mensual estimado | Propósito |
 |---|---|---|---|
-| Vercel | No determinado — verificar manualmente (proyecto vinculado, ID: `prj_tGSZqgzH3CTtsPDopQ3ZmmYAAerr`) | $0 (Free) / $20 (Pro por miembro) | Hosting y deploy |
-| Shopify | Tienda activa: `comprahogaruy.myshopify.com`. Plan no determinado — verificar en admin de Shopify | Variable según plan Shopify | Backend de comercio (Storefront API + Admin API) |
-| Google Tag Manager / GA4 | Gratuito | $0 | Analytics (snippet GTM implementado, pendiente configurar `NEXT_PUBLIC_GTM_ID`) |
-| Judge.me | Scripts cargados en layout.tsx (widget_preloader + installed.js) | $0 (Free) / $15 (Awesome) | Sistema de reviews de productos (scripts cargados pero integración server-side NO implementada) |
-| Google Fonts (Inter) | Gratuito | $0 | Tipografía |
-| Unsplash | Gratuito (imágenes referenciadas en hero/promos) | $0 | Imágenes placeholder |
+| Shopify | Lo paga el cliente | USD 39–105 | Catálogo, checkout, clientes |
+| Vercel | Pro asumido | USD 20/mes/miembro | Hosting Next.js, edge, ISR |
+| Judge.me | Free / Awesome | USD 0 / 15 | Reseñas |
+| GTM + GA4 | Free | USD 0 | Analytics y eventos e-commerce |
+| Meta Pixel | Free | USD 0 | Tracking ads |
+| WhatsApp Business | Free (link `wa.me`) | USD 0 | Soporte |
+| Klaviyo / Resend | No conectado | USD 0–45 | Email tx / CRM (placeholders) |
+| Mercado Pago | Activación pendiente | Comisión por txn | Pasarela de pago local |
+| Higgsfield / Nano Banana | Pago por uso (consumido) | One-shot | Generación de assets visuales |
 
-**Servicios referenciados en código pero NO integrados aún:**
+---
 
-| Servicio | Estado | Propósito planificado |
-|---|---|---|
-| Klaviyo | Mencionado en backlog como CRM/email | CRM, back-in-stock notifications, email marketing |
-| Resend | Mencionado en backlog | Email transaccional |
-| ERP externo | Referenciado en webhook handler | Sincronización de órdenes |
+## Integraciones Shopify
 
-## Base de datos
+- **Storefront API 2024-04** vía `shopifyFetch` (`src/lib/shopify.ts`) con header `X-Shopify-Storefront-Access-Token`. Soporta `tags` para revalidación ISR.
+- **Queries (`src/lib/queries.ts`):** `getCollectionMeta`, `getProducts`, `getProductByHandle` (media: imágenes, video, model3d; metafields; variants, options, tags), `getProductRecommendations`, `getCollections`, `getCollectionWithProducts` (filters, sortKey, cursor `after`/`before`), `predictiveSearch`.
+- **Cart API completa:** `cartCreate`, `cartLinesAdd`, `cartLinesUpdate`, `cartLinesRemove`, `getCart`, `cartBuyerIdentityUpdate`, `cartDiscountCodesUpdate`, `cartGiftCardCodesUpdate`. Persistencia del `cartId` en localStorage. Checkout vía `cart.checkoutUrl`.
+- **Customer API:** `customerCreate`, `customerAccessTokenCreate`, `getCustomer` (con orders), reset/recover password, update profile.
+- **Webhooks (`src/app/api/webhooks/route.ts`):** firma HMAC-SHA256 verificada. Topics: `products/{create,update,delete}`, `collections/*`, `orders/{create,updated}`, `inventory_levels/update`. **Bug:** Next 16 cambió firma de `revalidateTag`; quedan 3 errores TS.
+- **Endpoints internos:** `/api/back-in-stock`, `/api/newsletter`, `/api/location`, `/api/wishlist/sync`, `/api/customer/profile`.
+- **Server Actions:** `collection.ts`, `location.ts`, `search.ts`.
 
-Este proyecto **NO usa Supabase ni base de datos propia**. Todo el almacenamiento de datos se gestiona a través de Shopify:
-
-| Recurso de datos | Plataforma | Descripción |
-|---|---|---|
-| Productos | Shopify Storefront API | Catálogo completo con variantes, precios, imágenes, metafields (material, instrucciones de cuidado, rendimiento) |
-| Colecciones | Shopify Storefront API | Categorías y agrupaciones de productos |
-| Carrito | Shopify Storefront API | Cart API con líneas, costos, códigos de descuento, gift cards |
-| Clientes | Shopify Storefront API | Auth, perfil, direcciones, órdenes, wishlist (metafield) |
-| Órdenes | Shopify Storefront API | Historial de compras, estado financiero, estado de fulfillment, tracking |
-| Newsletter | Shopify Storefront API | Creación de customer con `acceptsMarketing: true` |
-| Back-in-stock | Shopify Admin API | Metafield `custom.back_in_stock_emails` en productos (JSON con emails) |
-| Wishlist (remoto) | Shopify Storefront API | Metafield `custom.wishlist` en customer + localStorage como fuente primaria |
-| Webhooks | Shopify → Next.js API | Eventos: products/create/update/delete, collections/create/update/delete, orders/create/updated, inventory_levels/update |
-
-**Nota:** No se encontraron carpetas `supabase/`, archivos de migraciones, ni configuración de Supabase en el proyecto. El stack real es **Next.js + Shopify + Vercel**, no Next.js + Supabase + Vercel.
+---
 
 ## Funcionalidades completadas
 
-- ✅ **Homepage completa**: Hero banner responsive (mobile/desktop), trust bar con iconos, card de autenticación, categorías con shortcuts, sección "Oferta del día", banners de promociones, productos destacados vía Shopify API — `src/app/page.tsx`
-
-- ✅ **Catálogo de productos**: Listado por colección con filtros dinámicos de Shopify (sidebar desktop + drawer mobile), sorting, paginación con cursores, subcategorías jerárquicas, breadcrumbs — `src/app/collections/[handle]/page.tsx`, `src/components/shop/SidebarFilter.tsx`, `src/components/shop/MobileFilterDrawer.tsx`, `src/hooks/useStoreFilters.ts`
-
-- ✅ **Página de producto**: Galería multimedia (imágenes, video MP4, modelo 3D via model-viewer), selector de variantes con color swatches, tabs (descripción/ficha técnica/garantía), sticky buy box mobile, "Avisarme cuando vuelva" para out-of-stock, recomendaciones, calculadora de materiales (m²), calculadora de envío por departamento, breadcrumbs — `src/app/products/[handle]/page.tsx`, `src/components/shop/ProductView.tsx`, `src/components/shop/ShippingCalculator.tsx`, `src/components/shop/MaterialsCalculator.tsx`
-
-- ✅ **Carrito completo**: CartProvider con React Context, CartSheet (drawer lateral), agregar/actualizar/eliminar productos, códigos de descuento, gift cards, asociación automática de carrito a cliente autenticado, redirect a Shopify Checkout — `src/components/cart/CartProvider.tsx`, `src/components/cart/CartSheet.tsx`
-
-- ✅ **Autenticación de clientes**: Login con email/password via Shopify Customer API, registro, logout, recuperar contraseña (flujo email + reset por token URL), rate limiting por IP, cookies HTTP-only, middleware de protección de rutas `/cuenta/*` — `src/app/login/`, `src/app/registro/`, `src/app/olvide-password/`, `src/app/recuperar-password/`, `src/middleware.ts`
-
-- ✅ **Dashboard de cuenta**: Perfil editable, historial de pedidos con detalle y timeline, gestión de direcciones (CRUD + dirección default), página de favoritos, cambiar contraseña — `src/app/cuenta/`
-
-- ✅ **Sistema de favoritos/wishlist**: WishlistProvider con localStorage + sync a Shopify metafield para usuarios autenticados, botón de favorito en productos, drawer de favoritos, página de favoritos en cuenta — `src/components/shop/WishlistProvider.tsx`, `src/components/shop/FavoriteButton.tsx`, `src/components/shop/FavoritesSheet.tsx`, `src/app/api/wishlist/sync/route.ts`
-
-- ✅ **Búsqueda predictiva**: Componente en header con búsqueda en tiempo real via Shopify Predictive Search API — `src/components/shared/PredictiveSearch.tsx`, `src/app/actions/search.ts`
-
-- ✅ **Página de búsqueda**: Resultados de búsqueda completos — `src/app/search/page.tsx`
-
-- ✅ **Newsletter**: Endpoint que crea customer en Shopify con `acceptsMarketing: true`, formulario en Footer — `src/app/api/newsletter/route.ts`
-
-- ✅ **Back-in-stock notifications**: Endpoint real conectado a Shopify Admin API, guarda emails en metafield del producto con deduplicación y cap de 500 entradas — `src/app/api/back-in-stock/route.ts`
-
-- ✅ **Webhooks de Shopify**: Endpoint con validación HMAC estricta (timingSafeEqual), routing por topic (catálogo, órdenes, inventario), revalidación de cache — `src/app/api/webhooks/route.ts`
-
-- ✅ **Mega menú y navegación**: Header con mega menu desktop, menú mobile hamburguesa, fallback a datos mock si Shopify no responde — `src/components/layout/Header.tsx`, `src/components/layout/MegaMenu.tsx`, `src/components/layout/MobileMenu.tsx`
-
-- ✅ **Analytics GA4/GTM**: Capa de analytics tipada con eventos `view_item` y `add_to_cart`, snippet GTM condicional en layout (se activa con env var), tracker de página de producto — `src/lib/analytics.ts`, `src/components/analytics/ProductPageTracker.tsx`, `src/app/layout.tsx`
-
-- ✅ **SEO**: Sitemap dinámico con paginación (productos + colecciones de Shopify), robots.ts, metadata OG/Twitter, URLs canónicas — `src/app/sitemap.ts`, `src/app/robots.ts`
-
-- ✅ **Security headers**: CSP, HSTS, X-Frame-Options DENY, X-Content-Type-Options nosniff, Referrer-Policy, Permissions-Policy — `next.config.ts`
-
-- ✅ **Páginas estáticas**: Sobre nosotros, envíos y entregas, devoluciones y garantías, política de privacidad, términos y condiciones — `src/app/sobre-nosotros/`, `src/app/envios-y-entregas/`, etc.
-
-- ✅ **Tarifas de envío**: Sistema de cálculo por departamento (19 departamentos de Uruguay) con umbral de envío gratis ($4,000) — `src/lib/constants/shippingRates.ts`
-
-- ✅ **Jerarquía de colecciones**: Mapeo de categorías/subcategorías para navegación — `src/lib/constants/collectionHierarchy.ts`
-
-- ✅ **Componentes UI completos**: Sistema de componentes basado en shadcn/ui — button, card, input, modal, sheet, drawer, accordion, tabs, badge, breadcrumbs, checkbox, radio, select, textarea, tooltip, switch, progress, pagination, skeleton, separator, scroll-area, toast, toggle, quantity-selector, navigation-menu — `src/components/ui/`
-
-- ✅ **Rate limiting**: Implementación in-memory para endpoints de auth — `src/lib/rate-limit.ts`
-
-- ✅ **Error handling**: Error boundaries por ruta (`error.tsx`), página 404 (`not-found.tsx`), loading states (`loading.tsx`), componente ErrorFallback reutilizable — `src/app/error.tsx`, `src/app/not-found.tsx`
+- ✅ Homepage (HeroCarousel, trust bar, atajos categorías, bento promos, productos destacados, CollectionShowcase)
+- ✅ Listado de colecciones con filtros URL-first, paginación cursor, sort, sidebar y MobileFilterDrawer
+- ✅ Detalle de producto con galería multimedia (imágenes/video/model-viewer 3D), variantes, calculadora m², calculadora envío, tabs, sticky buy box, recomendaciones, JSON-LD
+- ✅ Carrito (drawer Vaul, descuentos, gift cards, asociación a customer)
+- ✅ Auth completo: login, registro, logout, olvide-password, reset por token, cambio password
+- ✅ Dashboard de cuenta: pedidos, direcciones, favoritos, perfil
+- ✅ Comparador
+- ✅ Cotizador de pintura
+- ✅ Búsqueda predictiva + página `/search`
+- ✅ MegaMenu y MobileMenu con fallback mock
+- ✅ PWA instalable (manifest, SW, offline.html)
+- ✅ Analytics: GA4 vía GTM + Meta Pixel + eventos `view_item`/`add_to_cart`
+- ✅ Webhook Shopify con HMAC validado
+- ✅ WhatsApp flotante, ExitIntentPopup (10% OFF), iconos pagos, Recently Viewed, Wishlist, Favoritos
+- ✅ Páginas legales y SEO (sobre-nosotros, envíos, devoluciones, privacidad, términos, zonas/[slug])
+- ✅ SEO: JSON-LD Organization/Store/WebSite/Product/BreadcrumbList, sitemap dinámico, robots, OG default, preconnects
+- ✅ Security: CSP estricto (unsafe-eval solo dev), HSTS, X-Frame-Options DENY, Permissions-Policy
+- ✅ Rate limiting (`src/lib/rate-limit.ts`)
+- ✅ Tests: `analytics.test.ts`, `shipping.test.ts`
 
 ## Funcionalidades pendientes
 
-- ⏳ **Integración de reviews real**: `lib/reviews.ts` retorna `null` (mock). Necesita conectar con Judge.me API server-side o metafields de Shopify (`reviews.rating`, `reviews.rating_count`). Scripts de Judge.me ya están cargados en `layout.tsx` — Complejidad: **media**
+- ⏳ **Capacitor iOS/Android: 0% iniciado** — Complejidad: alta
+- ⏳ Configurar `.env.local` con credenciales reales — Complejidad: baja
+- ⏳ Reemplazar `lib/reviews.ts` mock por Judge.me real — Complejidad: media
+- ⏳ Endpoint back-in-stock real (Klaviyo/Resend) — Complejidad: media
+- ⏳ Webhook handlers: ERP/CRM/email tx — Complejidad: media
+- ⏳ Eliminar/proteger `/dev/button-preview` — Complejidad: baja
+- ⏳ Reemplazar "1024 vendidos" hardcoded en `ProductView.tsx` — Complejidad: baja
+- ⏳ Newsletter Footer a proveedor real — Complejidad: baja
+- ⏳ Activar Mercado Pago en Shopify Admin — Complejidad: baja (config)
+- ⏳ Sistema formal de design tokens (Style Dictionary) — Complejidad: media
+- ⏳ Fix 3 errores TS en `api/webhooks/route.ts` — Complejidad: baja
+- ⏳ Fix 2 errores ESLint en `PredictiveSearch.tsx:173` — Complejidad: baja
+- ⏳ Verificar dominio en Search Console y submitir sitemap — Complejidad: baja
 
-- ⏳ **Webhook handlers de órdenes**: `handleOrderWebhook()` en `api/webhooks/route.ts` está vacío (solo un TODO). Falta integrar con ERP externo, Klaviyo (CRM) y Resend (email transaccional) — Complejidad: **alta**
-
-- ⏳ **Google Tag Manager ID**: El snippet GTM está implementado en `layout.tsx` pero requiere la variable de entorno `NEXT_PUBLIC_GTM_ID` para activarse. Sin ella, no hay tracking — Complejidad: **baja** (solo configuración)
-
-- ⏳ **Dominio de producción y URL canónica**: `NEXT_PUBLIC_SITE_URL` no está configurada; sitemap y metadata usan `localhost:3000` como fallback — Complejidad: **baja**
-
-- ⏳ **Dato "vendidos" hardcodeado**: "1024 vendidos" en `ProductView.tsx` es un valor estático, no proviene de Shopify ni analytics — Complejidad: **baja**
-
-- ⏳ **Paginación hacia atrás en colecciones**: El código actual solo soporta paginación `direction=next`. Falta implementar el query con `last` y `before: cursor` — Complejidad: **media**
-
-- ⏳ **Mock recommendations en EmptyState**: `EmptyState.tsx` tiene `mockRecommendations` hardcodeados en lugar de productos reales de Shopify — Complejidad: **baja**
-
-- ⏳ **LocaleSwitcher**: Componente existe pero sin implementación real de multimoneda/multilenguaje — Complejidad: **alta**
-
-- ⏳ **Calculadora de envío real**: `ShippingCalculator.tsx` usa tarifas estáticas por departamento (`shippingRates.ts`), no está conectado a la API de Shopify ni a un proveedor logístico real — Complejidad: **media**
-
-- ⏳ **Modelo 3D en producción**: Usa `model-viewer` cargado desde CDN externo; evaluar impacto en performance y bundling — Complejidad: **baja**
-
-- ⏳ **Metadata dinámica de colecciones**: `generateMetadata` en `collections/[handle]/page.tsx` construye el título desde el handle formateado, no desde datos reales de la colección en Shopify — Complejidad: **baja**
-
-- ⏳ **Tipado estricto**: Múltiples usos de `any` en `layout.tsx`, `CartProvider.tsx`, `MegaMenu.tsx` y otros. Falta tipar respuestas de Storefront API — Complejidad: **media**
-
-- ⏳ **Tests E2E**: No hay tests. Se necesitan tests Playwright para flujos críticos: agregar al carrito, checkout redirect, login/registro — Complejidad: **alta**
-
-- ⏳ **Pipeline CI/CD**: No hay pipeline configurado. Falta configurar preview deployments por PR y verificaciones automáticas — Complejidad: **media**
-
-- ⏳ **Accesibilidad (a11y)**: Color picker en `ProductView.tsx` usa botones sin `aria-label` descriptivo. Falta revisión completa de accesibilidad — Complejidad: **media**
-
-- ⏳ **Categorías dinámicas en homepage**: Array `categories` en `page.tsx` está hardcodeado. Debería venir de `collectionHierarchy.ts` o de Shopify directamente — Complejidad: **baja**
-
-- ⏳ **Eliminar página `/ui-test`**: `src/app/ui-test/page.tsx` expone la hoja de estilos interna. Debe eliminarse antes de producción — Complejidad: **baja**
+---
 
 ## Estado del código
 
-- **Archivos fuente (ts/tsx/css):** 131
-- **Líneas de código:** ~15,290
-- **Tests:** 0 tests del proyecto (No implementado)
-- **Errores de TypeScript:** 3 errores conocidos en `src/app/api/webhooks/route.ts` (firma de `revalidateTag` con Next.js 16 requiere segundo argumento)
-- **Vulnerabilidades npm:** 2 (1 moderate en `next@16.1.6` — 5 CVEs, 1 high en `flatted` — Prototype Pollution). Fix disponible via `npm audit fix`.
-- **Último commit:** 2026-03-20 — `fix: shipping calculator UI, progress bar colors, mobile drawer z-index` (autor: Mate-Cardenas)
-- **Total commits:** 29 (21 de Mate-Cardenas, 8 de Chelabs)
-- **Primer commit:** ~2026-02-26
+- Archivos TS/TSX en `src/`: **156**
+- Líneas de código aprox: **~19.576**
+- Tests: 2 archivos (`analytics.test.ts`, `shipping.test.ts`) — pasan/fallan: No determinado
+- **Errores de TypeScript: 3** (`src/app/api/webhooks/route.ts:53,54,62` — firma `revalidateTag` Next 16)
+- **Errores de ESLint: 2 errors + 2 warnings** (entidades `"` en `PredictiveSearch.tsx`; missing dep `CartProvider.tsx`; eslint-disable directive sin uso en webhooks)
+- Último commit: 2026-04-28 19:07 — `Merge branch 'pre-launch-hardening'` (~6 días)
+- Cambios sin commitear: 5 archivos (`package.json`, `pnpm-lock.yaml`, `globals.css`, `page.tsx`, `HeroCarousel.tsx`)
+- Untracked: `src/app/dev/`, `src/components/ui/gradient-border*`, `src/styles/`
+- TODOs en código: 3 (todos en `Footer.tsx`: dirección, teléfono, redes)
+- **Branches locales:** `main`, `Kenmiti`, `Mobile-Fixes`, `ShopifyAPI-Conexiones`, `claude/add-claude-documentation-3Ic2R`, `felipebranch`, `pre-launch-hardening`
+- **Branches remotas extras:** `felidesopapi`, `felidisenio`, `login`
 
-### Branches activas
-
-| Branch | Propósito | Estado |
-|---|---|---|
-| `main` | Branch principal de producción | Base |
-| `pre-launch-hardening` * | Hardening de pre-lanzamiento (GTM, security, SEO, webhooks) | **Branch activa actual — NO mergeada a main** |
-| `Mobile-Fixes` | Correcciones de UX mobile | Mergeada (PR #2) |
-| `ShopifyAPI-Conexiones` | Conexiones iniciales con Shopify API | Mergeada (PR #1) |
-| `felipebranch` | Branch de desarrollo de Felipe | Sin detalles |
-| `Kenmiti` | Branch de desarrollo | Sin detalles |
-| `remotes/origin/felidesopapi` | Branch remota de Felipe | Sin detalles |
-| `remotes/origin/felidisenio` | Branch remota de Felipe (diseño) | Sin detalles |
-| `remotes/origin/login` | Branch de feature login | Sin detalles |
-
-**⚠️ IMPORTANTE:** La branch `pre-launch-hardening` contiene TODO el trabajo de hardening (security headers, HMAC webhooks, GTM, back-in-stock real, newsletter real, cuenta de usuario, wishlist sync, etc.) y aún NO está mergeada a `main`. Esto significa que `main` está significativamente desactualizada.
+---
 
 ## Variables de entorno requeridas
 
-| Variable | Propósito | Estado |
-|---|---|---|
-| `SHOPIFY_STORE_DOMAIN` | Dominio de la tienda Shopify (server-side) | ✅ Configurada: `comprahogaruy.myshopify.com` |
-| `NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN` | Dominio de la tienda Shopify (client-side) | ✅ Configurada |
-| `SHOPIFY_STOREFRONT_ACCESS_TOKEN` | Token de Storefront API (server-side) | ✅ Configurada |
-| `NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN` | Token de Storefront API (client-side) | ✅ Configurada |
-| `SHOPIFY_ADMIN_ACCESS_TOKEN` | Token de Admin API (para back-in-stock, webhooks) | ✅ Configurada |
-| `SHOPIFY_WEBHOOK_SECRET` | Secreto para validación HMAC de webhooks | ✅ Configurada |
-| `NEXT_PUBLIC_GTM_ID` | ID de Google Tag Manager (formato `GTM-XXXXXXX`) | ❌ No configurada — analytics desactivado |
-| `NEXT_PUBLIC_SITE_URL` | URL canónica del sitio (para sitemap, metadata) | ❌ No configurada — usa `localhost:3000` como fallback |
+- `SHOPIFY_STORE_DOMAIN` / `NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN`
+- `SHOPIFY_STOREFRONT_ACCESS_TOKEN` / `NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN`
+- `SHOPIFY_ADMIN_ACCESS_TOKEN`: token Admin (`shpat_...`) server-only
+- `SHOPIFY_WEBHOOK_SECRET`: secreto HMAC de webhooks
+- `NEXT_PUBLIC_GTM_ID`
+- `NEXT_PUBLIC_FB_PIXEL_ID`
+- `NEXT_PUBLIC_SITE_URL`
 
-**⚠️ RIESGO DE SEGURIDAD:** El archivo `.env.local` contiene tokens reales de Shopify (Storefront + Admin). Verificar que NO esté commiteado al repositorio (actualmente está en `.gitignore`).
+---
 
-## Plataformas
+## Plataformas target
 
-- [x] Web (Next.js 16 — responsive mobile-first)
-- [ ] Mobile (React Native / Expo)
-- [ ] Desktop (Electron / Tauri)
+- [x] Web (Next.js + Vercel)
+- [x] PWA instalable (manifest + SW activos)
+- [ ] Mobile iOS (Capacitor) — **no iniciado**
+- [ ] Mobile Android (Capacitor) — **no iniciado**
+- [ ] Desktop — fuera de scope
 
-**Notas:** El proyecto es exclusivamente web. No hay planes documentados de app móvil nativa ni desktop. El diseño es mobile-first responsive con breakpoints para tablet y desktop. No hay estructura de monorepo multiplataforma.
+---
+
+## Estado del Capacitor / Apps móviles
+
+**No existe nada de Capacitor en el repo.** Verificado:
+- No hay `capacitor.config.ts/json`
+- No existen carpetas `ios/` ni `android/`
+- `package.json` no contiene `@capacitor/*` ni plugins
+- Cero referencias a "capacitor"/"ionic"/"expo" en TS/TSX/MD/JSON
+- Lo único "móvil-first" es la PWA instalable (manifest + SW + offline.html)
+
+**Para builds móviles haría falta:**
+- Instalar `@capacitor/core` + `@capacitor/cli` + plataformas
+- Decidir estrategia: Next exportado estático no es viable por SSR/RSC; lo realista es **WebView wrapper** apuntando a la URL de Vercel
+- Generar `capacitor.config.ts`, `npx cap add ios|android`
+- Splash/íconos (parcialmente reusables del PWA)
+- Permisos, signing iOS (Apple Developer USD 99/año) y Android (keystore + Play Console USD 25 one-time)
+
+**Estimación: 3–5 semanas** combinando ambas plataformas (WebView wrapper); **6–10 semanas** si se quiere experiencia nativa con plugins (push, biometría, share).
+
+---
+
+## Estado del Design System / Tokens
+
+**No existe un sistema formal de tokens.** Lo que hay:
+- CSS custom properties en `src/app/globals.css` bajo `@theme` y `:root` (Tailwind v4 native): brand colors (`--color-brand-teal #21645d`, `--color-brand-orange #f3843e`), neutrales, primary/secondary/destructive, radius (`--radius: 0.75rem`)
+- `components.json` (config shadcn CLI)
+- Utilities sueltas: `.glass-nav`, `.hover-lift`, `gradient-border-plugin.css` recién agregado
+- 32 componentes UI en `src/components/ui/` (Radix/shadcn-style)
+- `/dev/button-preview` para revisar variantes (debe protegerse antes de producción)
+
+**Lo que falta:** fuente única de verdad (JSON o `tokens/` con Style Dictionary), tokens semánticos versionados, documentación visual (Storybook/Ladle), naming convention consistente.
+
+**Si solo se quieren ajustes finales: 2–4 días. Sistema formal Style Dictionary: +1–2 semanas.**
+
+---
 
 ## Deuda técnica y riesgos
 
-1. **Branch `pre-launch-hardening` sin mergear a `main`**: Todo el trabajo significativo de los últimos días (security, auth, cuenta, wishlist, API routes) está en una branch separada. Si `main` es la que está deployada, la versión en producción carece de estas funcionalidades. **Impacto: CRÍTICO — mergear antes de la presentación.**
+1. **0% de Capacitor**: el bloqueante más grande para shipping multiplataforma
+2. **3 errores TypeScript** en `api/webhooks/route.ts` (firma `revalidateTag` Next 16)
+3. **Sin `.env.local`**: páginas con Shopify caen al error boundary silencioso
+4. **`alert()` nativo en back-in-stock** (`ProductView.tsx`): pésima UX y no captura leads
+5. **Mock data**: `lib/reviews.ts` (setTimeout 300ms penaliza TTFB), MegaMenu/MobileMenu fallback puede romper links, "1024 vendidos" hardcoded
+6. **Ruta `/dev/button-preview` pública** (untracked): expone styleguide
+7. **8 branches sin mergear** (Felipe, Kenmiti, Mobile-Fixes, ShopifyAPI-Conexiones, login)
+8. **5 archivos modificados sin commitear hace 6 días** (incluye `package.json` con `gradient-border-plugin`)
+9. **Newsletter Footer y formularios sin proveedor real**
+10. **Tests cubren solo `analytics` y `shipping`**: 0% sobre cart, auth, checkout, webhooks. Sin E2E
+11. **Sin pipeline CI/CD configurado** (no hay `.github/workflows`, no hay `vercel.json`)
+12. **`SHOPIFY_ADMIN_ACCESS_TOKEN` declarado**: si filtra el real, da escritura completa a Shopify
+13. **`script-src 'unsafe-inline'`** en CSP de producción — riesgo XSS aceptado
 
-2. **Tokens de Shopify en `.env.local`**: Los tokens de Storefront y Admin API están en el archivo local. Están en `.gitignore` pero es fundamental verificar que nunca se commitearon al historial de git. El Admin token (`shpat_...`) da acceso de escritura a la tienda. **Impacto: ALTO si se filtra.**
-
-3. **Next.js 16.1.6 con vulnerabilidades conocidas**: 5 CVEs moderadas (HTTP smuggling, disk cache DoS, CSRF bypass, HMR CSRF, resume buffering DoS). Fix disponible actualizando a 16.2.1. **Impacto: MEDIO — actualizar antes de producción.**
-
-4. **`flatted` con Prototype Pollution (high severity)**: Dependencia transitiva con CVE. Fix disponible via `npm audit fix`. **Impacto: MEDIO.**
-
-5. **3 errores de TypeScript**: En `webhooks/route.ts`, la función `revalidateTag` se llama con 1 argumento pero Next.js 16 requiere 2. El wrapper `revalidate()` al inicio del archivo maneja esto, pero las llamadas directas en `handleInventoryLevelWebhook` y `handleCatalogWebhook` usan `revalidate()` correctamente — los errores podrían ser del archivo `ts_errors.txt` desactualizado. Verificar. **Impacto: BAJO.**
-
-6. **Rate limiting in-memory**: `rate-limit.ts` usa un `Map` en memoria. Se resetea con cada deploy/restart y no funciona en entornos con múltiples instancias (Vercel Edge). Para producción real considerar Upstash Redis o similar. **Impacto: BAJO a corto plazo.**
-
-7. **Reviews mock (`lib/reviews.ts`)**: Retorna `null`, la sección de reviews no se muestra. Los scripts de Judge.me están cargados en el layout pero no hay integración server-side. **Impacto: MEDIO — feature visible faltante.**
-
-8. **Webhook handlers de órdenes vacíos**: `handleOrderWebhook()` no hace nada. No hay notificación por email de órdenes ni sincronización con ERP. **Impacto: MEDIO — funcionalidad operativa faltante.**
-
-9. **Datos hardcodeados**: "1024 vendidos" en ProductView, categorías en homepage, mock recommendations en EmptyState, "Oferta del día" con datos estáticos y enlace a `/`. **Impacto: BAJO — cosmético.**
-
-10. **Sin tests**: 0 tests automatizados. Cualquier cambio puede romper funcionalidades sin detección. **Impacto: MEDIO a largo plazo.**
-
-11. **Sin CI/CD pipeline**: No hay verificaciones automáticas en PRs. Los deploys dependen de la configuración manual de Vercel. **Impacto: BAJO a corto plazo.**
-
-12. **Página `/ui-test` expuesta**: Muestra la hoja de estilos interna del proyecto. Debe eliminarse antes de producción. **Impacto: BAJO — estético/profesionalismo.**
+---
 
 ## Costos mensuales estimados en producción
 
 | Concepto | Mínimo | Esperado | Notas |
 |---|---|---|---|
-| Hosting (Vercel) | $0 | $20-40 | Free tier soporta el tráfico inicial. Pro = $20/miembro si se necesitan features avanzadas (2 miembros = $40) |
-| Shopify | $39 | $39-105 | Basic Shopify $39/mes. Shopify $105/mes si se necesitan reportes avanzados. El Storefront API está incluido en todos los planes |
-| Judge.me (Reviews) | $0 | $15 | Plan Free limitado. Plan Awesome $15/mes para features completas |
-| Google Analytics / GTM | $0 | $0 | Gratuito |
-| Dominio (.com.uy o .uy) | $2 | $2-5 | Precio anual de dominio uruguayo prorrateado mensual |
-| Klaviyo (si se integra) | $0 | $20-45 | Free hasta 250 contactos. $20/mes para 251-500. Escala con la base de clientes |
-| Resend (si se integra) | $0 | $0-20 | Free tier: 3,000 emails/mes. Pro: $20/mes para 50,000 emails |
-| **TOTAL** | **$41** | **$96-225** | Rango según planes elegidos y volumen de negocio |
+| Vercel Pro | USD 20 | USD 40 | $20/mes/miembro; 2 founders ≈ $40 |
+| Shopify | USD 39 | USD 105 | Lo paga el cliente típicamente |
+| Dominio `.com.uy` | USD 1 | USD 5 | Anualizado ~$10–60/año |
+| Judge.me Awesome | USD 0 | USD 15 | Free tier funcional |
+| Mercado Pago / Pasarelas | USD 0 | Comisión txn | ~3–6% por venta + IVA |
+| Email tx (Resend / Klaviyo) | USD 0 | USD 20 | Resend free hasta 3k/mes |
+| Apple Developer Program | USD 8 | USD 8 | $99/año = $8.25/mes |
+| Google Play Console | USD 0 | USD 0 | One-time $25 |
+| GTM + GA4 + Meta Pixel | USD 0 | USD 0 | Free |
+| **TOTAL** | **~USD 68/mes** | **~USD 193/mes** | Sin contar comisiones de pasarela |
 
-**Nota:** Los costos de Shopify son el componente principal y fijo. Shopify también cobra comisiones por transacción (2.9% + $0.30 en Basic, reducibles con planes superiores). Los costos de Vercel y servicios auxiliares pueden mantenerse en tier gratuito durante la fase de lanzamiento.
+---
+
+## Tiempo estimado para shipping
+
+- **Web pulido + fixes** (TS errors, lint, mocks reemplazados, `.env`, eliminar `/dev`, integrar Judge.me, conectar newsletter, back-in-stock real, webhook handlers): **5–8 días hábiles**
+- **Design tokens consolidados**: **2–4 días**. Sistema formal Style Dictionary: +1–2 semanas (opcional)
+- **Capacitor iOS** (init + WebView wrapper + splash/íconos + Apple Developer + signing + submission TestFlight → App Store, incluye review Apple): **2–3 semanas**
+- **Capacitor Android** (init + WebView wrapper + signing + Play Console + submission): **1–2 semanas**
+- **Configuración no-código** (Mercado Pago en Shopify, abandoned cart emails, Search Console, Meta Pixel ID, WhatsApp number, og-default.png): **1–2 días**
+
+**Total realista web + apps: 5–8 semanas (shipping aproximado entre 2026-06-08 y 2026-06-29).**
+
+**Si se omite Capacitor, web puede cerrarse en ~2 semanas (2026-05-18).**
