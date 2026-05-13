@@ -240,3 +240,23 @@
     bottom: calc(1.25rem + env(safe-area-inset-bottom));
   }
 }
+
+
+@media (prefers-reduced-motion: reduce) {
+  /* Disable the hover scale on product card images */
+  .group:hover img.group-hover\:scale-\[1\.03\] {
+    transform: none !important;
+  }
+  /* Soften the active scale-95 micro-interaction on buttons */
+  button:active,
+  [role="button"]:active {
+    transform: none !important;
+  }
+  /* Cap any transition duration at 0.01s — effectively instant but preserves transitionend events */
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
