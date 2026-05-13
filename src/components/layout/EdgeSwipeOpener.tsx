@@ -2,8 +2,8 @@
 
 import { useEffect } from "react";
 
-const EDGE_ZONE_PX = 96;
-const MIN_HORIZONTAL_PX = 60;
+const EDGE_ZONE_PX = 128;
+const MIN_HORIZONTAL_PX = 50;
 const MAX_VERTICAL_PX = 40;
 
 interface EdgeSwipeOpenerProps {

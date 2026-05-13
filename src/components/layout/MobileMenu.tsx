@@ -57,15 +57,20 @@ export default function MobileMenu({
       );
       if (mainCol) {
         const expectedSubs = COLLECTION_HIERARCHY[handle] || [];
-        const foundSubs = expectedSubs.map((sub) => {
-          const foundCol = collections.find((c) => c.handle === sub.handle);
-          return {
-            id: foundCol ? foundCol.id || foundCol.handle : sub.handle,
-            name: foundCol ? foundCol.title : sub.name,
-            href: `/collections/${sub.handle}`,
-            handle: sub.handle,
-          };
-        });
+        // Only include sub-categories that actually exist as Shopify collections.
+        // Otherwise the link would navigate to a blank /collections/<handle> page.
+        const foundSubs = expectedSubs
+          .map((sub) => {
+            const foundCol = collections.find((c) => c.handle === sub.handle);
+            if (!foundCol) return null;
+            return {
+              id: foundCol.id || foundCol.handle,
+              name: foundCol.title || sub.name,
+              href: `/collections/${foundCol.handle}`,
+              handle: foundCol.handle,
+            };
+          })
+          .filter((s): s is NonNullable<typeof s> => s !== null);
 
         finalCategories.push({
           id: mainCol.id || mainCol.handle,
@@ -185,7 +190,7 @@ export default function MobileMenu({
                     <>
                       <MobileMenuProfileHeader onClose={closeAndGo} />
 
-                      <nav className="flex-1 overflow-y-auto overscroll-contain py-1">
+                      <nav className="flex-1 overflow-y-auto overscroll-contain py-1 pb-safe">
                         <ul>
                           {view.items.map((item) => {
                             const Icon = item.handle
@@ -268,24 +273,6 @@ export default function MobileMenu({
                           </li>
                         </ul>
                       </nav>
-
-                      <div className="px-5 py-3 pb-safe border-t border-slate-100 bg-neutral-50/60 flex items-center justify-between">
-                        <Link
-                          href="/envios-y-entregas"
-                          onClick={closeAndGo}
-                          className="text-[13px] font-medium text-slate-600"
-                        >
-                          Ayuda · Envíos
-                        </Link>
-                        <a
-                          href="https://wa.me/59896244003"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="bg-primary text-white text-[13px] font-semibold px-3.5 py-1.5 rounded-full active:bg-primary/90 transition-colors"
-                        >
-                          WhatsApp
-                        </a>
-                      </div>
                     </>
                   ) : (
                     /* ---------- DRILLED VIEW ---------- */
