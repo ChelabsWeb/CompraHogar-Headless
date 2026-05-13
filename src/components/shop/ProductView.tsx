@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, ShieldCheck, ArrowRight, X, Zap, Play, Box, Loader2 } from "lucide-react";
 import { FavoriteButton } from "@/components/shop/FavoriteButton";
-import { motion } from "framer-motion";
+import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CartDrawer } from "@/components/cart/CartSheet";
@@ -46,6 +46,26 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
     const [quantity, setQuantity] = useState(1);
     const [isVariantChanging, setIsVariantChanging] = useState(false);
     const [lightboxOpen, setLightboxOpen] = useState(false);
+
+    // Sticky CTA: hide on scroll-down, reveal on scroll-up (mobile only).
+    // Tracks the previous scroll position to detect direction; only flips state
+    // after a 5px threshold to avoid jitter on bounce / inertial scroll.
+    const { scrollY } = useScroll();
+    const [isStickyCtaHidden, setIsStickyCtaHidden] = useState(false);
+    const lastScrollY = useRef(0);
+    useMotionValueEvent(scrollY, "change", (latest: number) => {
+        const diff = latest - lastScrollY.current;
+        if (Math.abs(diff) < 5) return;
+        // Always reveal near the top of the page (first 200px of scroll).
+        if (latest < 200) {
+            setIsStickyCtaHidden(false);
+        } else if (diff > 0) {
+            setIsStickyCtaHidden(true);
+        } else {
+            setIsStickyCtaHidden(false);
+        }
+        lastScrollY.current = latest;
+    });
     const galleryRef = useRef<HTMLDivElement>(null);
     // Prevent onScroll from updating activeImageIndex mid-flight during a
     // programmatic smooth scroll (triggered by thumbnail click or arrows).
@@ -730,11 +750,11 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
 
             </div>
 
-            {/* Sticky Buy Box Movil (App Native Style ML) */}
+            {/* Sticky Buy Box Movil (App Native Style ML) — hides on scroll-down, reveals on scroll-up */}
             {!isQuickView && !isOutOfStock && (
                 <motion.div
                     initial={{ y: 100 }}
-                    animate={{ y: 0 }}
+                    animate={{ y: isStickyCtaHidden ? 110 : 0 }}
                     transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                     className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-slate-200/60 p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] z-[100] shadow-[0_-4px_16px_rgba(0,0,0,0.08)] flex flex-col gap-2"
                 >

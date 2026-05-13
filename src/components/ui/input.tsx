@@ -20,7 +20,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           <input
             type={type}
             className={cn(
-              "flex h-12 w-full rounded-lg border border-input bg-background px-4 py-2 text-sm text-foreground shadow-sm transition-all duration-300 ease-in-out file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-transparent disabled:cursor-not-allowed disabled:opacity-50",
+              // text-base (16px) en mobile evita el auto-zoom de iOS Safari al hacer focus.
+              // En desktop volvemos a text-sm (14px) para mantener la densidad visual.
+              "flex h-12 w-full rounded-lg border border-input bg-background px-4 py-2 text-base md:text-sm text-foreground shadow-sm transition-all duration-300 ease-in-out file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-transparent disabled:cursor-not-allowed disabled:opacity-50",
               iconLeft && "pl-10",
               iconRight && "pr-10",
               error && "border-destructive focus-visible:ring-destructive",
