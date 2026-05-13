@@ -5,7 +5,6 @@ import {
   Zap,
   Droplets,
   Sofa,
-  Lightbulb,
   Leaf,
   Briefcase,
   Package,
