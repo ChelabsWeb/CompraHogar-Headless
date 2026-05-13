@@ -62,3 +62,6 @@ next-env.d.ts
 
 .vercel
 .tmp-screenshots/
+
+# Superpowers brainstorm sessions (visual companion mockups, server state)
+.superpowers/
