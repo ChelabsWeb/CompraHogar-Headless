@@ -12,7 +12,7 @@ export function WhatsAppButton() {
     const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(DEFAULT_MESSAGE)}`;
 
     return (
-        <div className="fixed bottom-5 right-5 z-[100] flex items-end gap-2">
+        <div className="fixed bottom-safe-offset-5 right-5 z-[100] flex items-end gap-2">
             {/* Tooltip bubble */}
             {isTooltipVisible && (
                 <div className="relative bg-white rounded-lg shadow-lg border border-slate-100 px-3 py-2 mb-1 max-w-[180px] animate-in fade-in slide-in-from-right-2 duration-300">
