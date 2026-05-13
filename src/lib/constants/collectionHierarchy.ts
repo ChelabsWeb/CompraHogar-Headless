@@ -1,3 +1,17 @@
+import {
+  Hammer,
+  PaintBucket,
+  Wrench,
+  Zap,
+  Droplets,
+  Sofa,
+  Lightbulb,
+  Leaf,
+  Briefcase,
+  Package,
+  type LucideIcon,
+} from "lucide-react";
+
 export interface Subcollection {
   name: string;
   handle: string;
@@ -63,4 +77,28 @@ export const MAIN_COLLECTION_HANDLES = Object.keys(COLLECTION_HIERARCHY);
 
 export function getSubcollections(parentHandle: string): Subcollection[] | undefined {
   return COLLECTION_HIERARCHY[parentHandle];
+}
+
+/**
+ * Icon per main collection handle. Falls back to `Package` if a handle is not
+ * present in this map. The icon renders on the LEFT of each item in
+ * MobileMenu's root view at 26px.
+ */
+export const COLLECTION_ICONS: Record<string, LucideIcon> = {
+  "construccion-y-materiales": Hammer,
+  "herramientas-y-maquinaria": Wrench,
+  "electricidad-e-iluminacion": Zap,
+  "sanitaria-y-griferia": Droplets,
+  "pinturas-y-acabados": PaintBucket,
+  "hogar-y-decoracion": Sofa,
+  "jardin-y-exteriores": Leaf,
+  "servicios-y-alquileres": Briefcase,
+};
+
+/**
+ * Helper that returns the icon for a collection handle, or `Package` if no
+ * mapping exists. Always returns a valid `LucideIcon` — never undefined.
+ */
+export function getCollectionIcon(handle: string): LucideIcon {
+  return COLLECTION_ICONS[handle] ?? Package;
 }
