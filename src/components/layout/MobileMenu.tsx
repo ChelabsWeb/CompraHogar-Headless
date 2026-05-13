@@ -136,7 +136,6 @@ export default function MobileMenu({
       direction="left"
       open={isOpen}
       onOpenChange={setIsOpen}
-      shouldScaleBackground
     >
       {!isControlled && (
         <Drawer.Trigger asChild>
