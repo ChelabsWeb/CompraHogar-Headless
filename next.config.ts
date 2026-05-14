@@ -35,6 +35,24 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
+      // PWA: SW must NOT be cached so updates propagate immediately on next load.
+      // Vercel/CDN respect Cache-Control: no-cache.
+      {
+        source: "/sw.js",
+        headers: [
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Service-Worker-Allowed", value: "/" },
+          { key: "Content-Type", value: "application/javascript; charset=utf-8" },
+        ],
+      },
+      // Manifest: short cache so name/icon changes propagate within 1h on returning users.
+      {
+        source: "/manifest.webmanifest",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=3600, must-revalidate" },
+          { key: "Content-Type", value: "application/manifest+json; charset=utf-8" },
+        ],
+      },
       {
         source: "/(.*)",
         headers: [
