@@ -18,7 +18,7 @@ export function VariantBottomSheet({
   open,
   onOpenChange,
 }: VariantBottomSheetProps) {
-  const { addToCart } = useCart();
+  const { addToCart, setIsCartOpen } = useCart();
   const { toast } = useToast();
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
   const [quantity, setQuantity] = useState(1);
@@ -63,6 +63,10 @@ export function VariantBottomSheet({
       toast({
         title: `Agregado al carrito · ${product.title}`,
         variant: "success",
+        action: {
+          label: "Ver carrito",
+          onClick: () => setIsCartOpen(true),
+        },
       });
       onOpenChange(false);
     } catch {

@@ -8,11 +8,21 @@ import { cn } from "@/lib/utils"
 
 export type ToastVariant = "default" | "success" | "error" | "info"
 
+export interface ToastAction {
+  label: string
+  onClick: () => void
+}
+
 export interface ToastMessage {
   id: string
   title: string
   description?: string
   variant?: ToastVariant
+  /**
+   * Optional inline action button (e.g. "Ver carrito" after add-to-cart).
+   * Rendered next to the dismiss X. Clicking the action also dismisses.
+   */
+  action?: ToastAction
 }
 
 interface ToastContextType {
@@ -30,9 +40,9 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const toast = React.useCallback(
-    ({ title, description, variant = "default" }: Omit<ToastMessage, "id">) => {
+    ({ title, description, variant = "default", action }: Omit<ToastMessage, "id">) => {
       const id = Math.random().toString(36).substring(2, 9)
-      const newToast = { id, title, description, variant }
+      const newToast = { id, title, description, variant, action }
       setToasts((prev) => [...prev, newToast])
 
       // Auto dismiss after 4 seconds
@@ -103,7 +113,7 @@ function ToastItem({ toast, onRemove }: { toast: ToastMessage; onRemove: () => v
       )}
     >
       {toast.variant !== "default" && icons[toast.variant || "default"]}
-      
+
       <div className="flex-1 space-y-1">
         <p className="font-medium text-sm leading-none">{toast.title}</p>
         {isDesc && (
@@ -111,9 +121,24 @@ function ToastItem({ toast, onRemove }: { toast: ToastMessage; onRemove: () => v
         )}
       </div>
 
+      {toast.action && (
+        <button
+          type="button"
+          onClick={() => {
+            toast.action!.onClick()
+            onRemove()
+          }}
+          className="shrink-0 rounded-md px-3 py-1.5 text-sm font-semibold text-primary hover:bg-primary/10 active:bg-primary/15 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        >
+          {toast.action.label}
+        </button>
+      )}
+
       <button
+        type="button"
         onClick={onRemove}
         className="shrink-0 rounded-md p-1 opacity-50 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2"
+        aria-label="Cerrar notificación"
       >
         <X className="h-4 w-4" />
         <span className="sr-only">Close</span>

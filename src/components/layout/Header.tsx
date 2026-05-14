@@ -25,6 +25,26 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
     const { count: wishlistCount } = useWishlist();
     const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
 
+    // Cart bump: ping the cart icon when totalQuantity INCREASES (e.g. user
+    // tapped quick-add or submitted a variant sheet). Decreases (item removed)
+    // don't trigger an animation. We defer the setState through rAF so it
+    // doesn't trip react-hooks/set-state-in-effect — the animation still
+    // starts on the next paint, indistinguishable to the user.
+    const [cartBumping, setCartBumping] = useState(false);
+    const prevTotalQuantity = useRef(totalQuantity);
+    useEffect(() => {
+        if (totalQuantity > prevTotalQuantity.current) {
+            prevTotalQuantity.current = totalQuantity;
+            const rafId = requestAnimationFrame(() => setCartBumping(true));
+            const t = setTimeout(() => setCartBumping(false), 350);
+            return () => {
+                cancelAnimationFrame(rafId);
+                clearTimeout(t);
+            };
+        }
+        prevTotalQuantity.current = totalQuantity;
+    }, [totalQuantity]);
+
     useEffect(() => {
         if (mobileSearchOpen && mobileSearchRef.current) {
             mobileSearchRef.current.focus();
@@ -83,10 +103,11 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
                                     <button
                                         className="relative p-2.5 -mr-2 text-slate-700 active:bg-slate-100 rounded-full transition-colors"
                                         onClick={() => setIsCartOpen(true)}
+                                        aria-label="Carrito"
                                     >
-                                        <ShoppingBag className="w-5 h-5" strokeWidth={1.5} />
+                                        <ShoppingBag className={`w-5 h-5 transition-transform duration-200 ${cartBumping ? "scale-125" : "scale-100"}`} strokeWidth={1.5} />
                                         {totalQuantity > 0 && (
-                                            <span className="absolute top-1 right-0 w-4 h-4 bg-secondary text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm" aria-live="polite" aria-atomic="true" role="status">
+                                            <span className={`absolute top-1 right-0 w-4 h-4 bg-secondary text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm transition-transform duration-200 ${cartBumping ? "scale-125" : "scale-100"}`} aria-live="polite" aria-atomic="true" role="status">
                                                 {totalQuantity}
                                             </span>
                                         )}
@@ -170,10 +191,11 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
                                 <button
                                     className="relative flex items-center justify-center w-11 h-11 mx-1 hover:bg-black/10 rounded-full transition-colors"
                                     onClick={() => setIsCartOpen(true)}
+                                    aria-label="Carrito"
                                 >
-                                    <ShoppingBag className="w-5 h-5" />
+                                    <ShoppingBag className={`w-5 h-5 transition-transform duration-200 ${cartBumping ? "scale-125" : "scale-100"}`} />
                                     {totalQuantity > 0 && (
-                                        <span className="absolute top-0 right-0 w-4 h-4 bg-white text-primary text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm border border-primary" aria-live="polite" aria-atomic="true" role="status">
+                                        <span className={`absolute top-0 right-0 w-4 h-4 bg-white text-primary text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm border border-primary transition-transform duration-200 ${cartBumping ? "scale-125" : "scale-100"}`} aria-live="polite" aria-atomic="true" role="status">
                                             {totalQuantity}
                                         </span>
                                     )}

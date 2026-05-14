@@ -15,7 +15,7 @@ interface UseQuickAddOptions {
 }
 
 export function useQuickAdd({ openVariantSheet }: UseQuickAddOptions) {
-  const { addToCart } = useCart();
+  const { addToCart, setIsCartOpen } = useCart();
   const { toast } = useToast();
 
   const quickAdd = useCallback(
@@ -52,6 +52,10 @@ export function useQuickAdd({ openVariantSheet }: UseQuickAddOptions) {
         toast({
           title: `Agregado al carrito · ${product.title}`,
           variant: "success",
+          action: {
+            label: "Ver carrito",
+            onClick: () => setIsCartOpen(true),
+          },
         });
       } catch (err) {
         toast({
@@ -61,7 +65,7 @@ export function useQuickAdd({ openVariantSheet }: UseQuickAddOptions) {
         });
       }
     },
-    [addToCart, toast, openVariantSheet]
+    [addToCart, toast, openVariantSheet, setIsCartOpen]
   );
 
   return { quickAdd };

@@ -10,11 +10,12 @@ type Product = {
 };
 
 const mockAddToCart = vi.fn();
+const mockSetIsCartOpen = vi.fn();
 const mockToast = vi.fn();
 const mockOpenSheet = vi.fn();
 
 vi.mock("@/components/cart/CartProvider", () => ({
-  useCart: () => ({ addToCart: mockAddToCart }),
+  useCart: () => ({ addToCart: mockAddToCart, setIsCartOpen: mockSetIsCartOpen }),
 }));
 
 vi.mock("@/components/ui/toast", () => ({
@@ -23,6 +24,7 @@ vi.mock("@/components/ui/toast", () => ({
 
 beforeEach(() => {
   mockAddToCart.mockReset();
+  mockSetIsCartOpen.mockReset();
   mockToast.mockReset();
   mockOpenSheet.mockReset();
 });
@@ -100,5 +102,25 @@ describe("useQuickAdd", () => {
     });
 
     expect(mockAddToCart).toHaveBeenCalled();
+  });
+
+  it("includes a 'Ver carrito' action in the success toast that opens the cart drawer", async () => {
+    const p = product([{ id: "gid://Variant/1", availableForSale: true }]);
+    const { result } = renderHook(() =>
+      useQuickAdd({ openVariantSheet: mockOpenSheet })
+    );
+
+    await act(async () => {
+      await result.current.quickAdd(p as any);
+    });
+
+    // Toast was called with an action object containing the cart-open handler
+    const toastArg = mockToast.mock.calls[0][0];
+    expect(toastArg.action).toBeDefined();
+    expect(toastArg.action.label).toBe("Ver carrito");
+
+    // Invoking the action's onClick opens the cart drawer
+    toastArg.action.onClick();
+    expect(mockSetIsCartOpen).toHaveBeenCalledWith(true);
   });
 });
