@@ -10,6 +10,7 @@ import { getSubcollections } from "@/lib/constants/collectionHierarchy";
 import { SubcategoryCarousel } from "@/components/shop/SubcategoryCarousel";
 import { CollectionHero } from "@/components/shop/CollectionHero";
 import { CollectionSeoBlock } from "@/components/shop/CollectionSeoBlock";
+import { RouterRefreshPull } from "@/components/shared/RouterRefreshPull";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
@@ -201,6 +202,7 @@ export default async function CollectionPage(props: {
     };
 
     return (
+        <RouterRefreshPull>
         <div className="flex flex-col w-full bg-[#f7f7f8] min-h-screen pb-16">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
 
@@ -295,5 +297,6 @@ export default async function CollectionPage(props: {
 
             </div>
         </div>
+        </RouterRefreshPull>
     );
 }
