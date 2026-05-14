@@ -81,6 +81,45 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
     const initialVariant = variants.find(({ node }: { node: ShopifyVariant }) => node.availableForSale)?.node || variants[0]?.node;
 
     const [activeImageIndex, setActiveImageIndex] = useState(0);
+
+    // Mobile swipe hint: badge "Deslizá →" + nudge animation on first mount.
+    // Auto-dismisses after 3s. Only renders when there's more than 1 image and
+    // viewport is mobile. Honors prefers-reduced-motion via CSS only (badge
+    // still shows; nudge skipped).
+    const [showSwipeHint, setShowSwipeHint] = useState(media.length > 1);
+    const nudgePlayedRef = useRef(false);
+    useEffect(() => {
+        if (media.length <= 1) return;
+        // Auto-dismiss the badge after 3s
+        const dismiss = setTimeout(() => setShowSwipeHint(false), 3000);
+
+        // One-shot scroll nudge on first paint: 25px right then back. Mobile only.
+        // We detect via clientWidth: if the gallery is narrower than 768px we
+        // assume mobile/tablet. Skipped if user prefers reduced motion.
+        if (!nudgePlayedRef.current && typeof window !== "undefined") {
+            const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+            const container = galleryRef.current;
+            if (!prefersReduced && container && container.clientWidth < 768) {
+                nudgePlayedRef.current = true;
+                const nudgeIn = setTimeout(() => {
+                    isProgrammaticScrollRef.current = true;
+                    container.scrollBy({ left: 25, behavior: "smooth" });
+                }, 350);
+                const nudgeOut = setTimeout(() => {
+                    container.scrollBy({ left: -25, behavior: "smooth" });
+                    // Release the programmatic scroll guard after the nudge settles
+                    setTimeout(() => { isProgrammaticScrollRef.current = false; }, 350);
+                }, 700);
+                return () => {
+                    clearTimeout(dismiss);
+                    clearTimeout(nudgeIn);
+                    clearTimeout(nudgeOut);
+                };
+            }
+        }
+        return () => clearTimeout(dismiss);
+    }, [media.length]);
+
     const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>(() => {
         const initialStates: Record<string, string> = {};
         if (initialVariant && initialVariant.selectedOptions) {
@@ -317,6 +356,18 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                     {media.length > 1 && (
                         <div className="absolute bottom-3 right-3 z-20 bg-black/50 backdrop-blur-sm text-white text-xs font-medium px-2.5 py-1 rounded-full pointer-events-none">
                             {activeImageIndex + 1}/{media.length}
+                        </div>
+                    )}
+
+                    {/* Mobile swipe hint — sutil badge "Deslizá →" en bottom-left.
+                        Auto-dismiss a los 3s o cuando el usuario realmente desliza. */}
+                    {media.length > 1 && (
+                        <div
+                            className={`lg:hidden absolute bottom-3 left-3 z-20 bg-black/50 backdrop-blur-sm text-white text-xs font-medium px-2.5 py-1 rounded-full pointer-events-none flex items-center gap-1 transition-opacity duration-500 ${showSwipeHint && activeImageIndex === 0 ? "opacity-100" : "opacity-0"}`}
+                            aria-hidden
+                        >
+                            <span>Deslizá</span>
+                            <ChevronRight className="w-3 h-3" />
                         </div>
                     )}
                 </div>
