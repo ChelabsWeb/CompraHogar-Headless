@@ -36,7 +36,7 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
     });
 
     return (
-        <div className={`fixed top-0 inset-x-0 z-50 flex flex-col pointer-events-auto transition-transform duration-300 ${isScrolled ? "lg:-translate-y-[72px] -translate-y-[60px]" : "translate-y-0"}`}>
+        <div className={`fixed top-0 inset-x-0 z-50 flex flex-col pointer-events-auto transition-transform duration-300 ${isScrolled ? "lg:-translate-y-[72px]" : "translate-y-0"}`}>
 
             <header className="w-full shadow-sm border-b border-black/5">
                 {/* TOP ROW: Green on mobile, white on desktop */}
@@ -44,7 +44,7 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
 
                     {/* === MOBILE TOP ROW === */}
                     <div className="lg:hidden container mx-auto max-w-7xl px-4">
-                        <div className="flex items-center justify-between w-full h-[56px] relative">
+                        <div className={`flex items-center justify-between w-full relative transition-[height] duration-200 ease-out ${isScrolled ? "h-[44px]" : "h-[56px]"}`}>
                             {/* Search mode: full-width search bar — CSS toggle avoids hydration mismatch */}
                             <div className={`flex items-center gap-2 w-full transition-opacity duration-150 ${mobileSearchOpen ? "opacity-100" : "opacity-0 pointer-events-none absolute inset-0 items-center"}`}>
                                 <div className="flex-1 bg-slate-100 rounded-full overflow-hidden h-[40px] flex items-center">
@@ -67,7 +67,7 @@ export function Header({ collections = [], isLoggedIn }: { collections?: any[], 
 
                                 {/* Center: Logo */}
                                 <Link href="/" className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center">
-                                    <div className="relative w-[42px] h-[42px]">
+                                    <div className={`relative transition-all duration-200 ease-out ${isScrolled ? "w-[32px] h-[32px]" : "w-[42px] h-[42px]"}`}>
                                         <Image src="/logo2.png" alt="CompraHogar" fill className="object-contain" priority sizes="42px" />
                                     </div>
                                 </Link>
