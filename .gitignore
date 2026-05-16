@@ -41,6 +41,10 @@ yarn-error.log*
 .debug_*.ts
 .debug_*.mjs
 
+# debug screenshots/artifacts en raíz
+/debug-*.png
+/debug-*.jpg
+
 # sales/proposal artifacts — live outside the repo or in docs/ventas/
 /*.xlsx
 /*.pdf
