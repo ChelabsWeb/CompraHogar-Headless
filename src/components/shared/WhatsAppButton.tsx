@@ -17,11 +17,12 @@ export function WhatsAppButton() {
             {isTooltipVisible && (
                 <div className="relative bg-white rounded-lg shadow-lg border border-slate-100 px-3 py-2 mb-1 max-w-[180px] animate-in fade-in slide-in-from-right-2 duration-300">
                     <button
+                        type="button"
                         onClick={() => setIsTooltipVisible(false)}
-                        className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-slate-200 rounded-full flex items-center justify-center hover:bg-slate-300 transition-colors"
+                        className="absolute -top-2 -right-2 w-6 h-6 bg-slate-200 rounded-full flex items-center justify-center hover:bg-slate-300 transition-colors shadow-sm"
                         aria-label="Cerrar"
                     >
-                        <X className="w-2.5 h-2.5 text-slate-600" />
+                        <X className="w-3 h-3 text-slate-700" />
                     </button>
                     <p className="text-[11px] text-slate-600 leading-tight">
                         ¿Necesitás ayuda? <span className="font-semibold text-slate-800">Escribinos!</span>

@@ -230,7 +230,7 @@ export default async function Home() {
                 <div className="absolute inset-0 bg-[url('/promo-griferia.jpg')] bg-cover bg-center transition-transform duration-700 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80" />
                 <div className="relative z-10 h-full p-5 md:p-8 flex flex-col justify-end">
-                  <Badge variant="secondary" className="w-fit mb-2 md:mb-3 text-[11px] md:text-sm">Sanitaria</Badge>
+                  <Badge variant="secondary" className="w-fit mb-2 md:mb-3 text-[11px] md:text-sm text-slate-950">Sanitaria</Badge>
                   <h3 className="text-lg md:text-2xl font-bold text-white mb-2 md:mb-4 leading-tight">Hasta 40% OFF<br />en grifería</h3>
                   <span className="w-fit inline-flex items-center gap-1 text-white text-xs md:text-sm font-semibold">
                     Ver colección
@@ -246,7 +246,7 @@ export default async function Home() {
                 <div className="absolute inset-0 bg-[url('/promo-taladros.jpg')] bg-cover bg-center transition-transform duration-700 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80" />
                 <div className="relative z-10 h-full p-5 md:p-8 flex flex-col justify-end">
-                  <Badge variant="secondary" className="w-fit mb-2 md:mb-3 text-[11px] md:text-sm">Herramientas</Badge>
+                  <Badge variant="secondary" className="w-fit mb-2 md:mb-3 text-[11px] md:text-sm text-slate-950">Herramientas</Badge>
                   <h3 className="text-lg md:text-2xl font-bold text-white mb-2 md:mb-4 leading-tight">Nuevos taladros<br />inalámbricos</h3>
                   <span className="w-fit inline-flex items-center gap-1 text-white text-xs md:text-sm font-semibold">
                     Descubrir
@@ -262,7 +262,7 @@ export default async function Home() {
                 <div className="absolute inset-0 bg-[url('/promo-iluminacion.jpg')] bg-cover bg-center transition-transform duration-700 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                 <div className="relative z-10 h-full p-5 md:p-8 flex flex-col justify-end">
-                  <Badge variant="secondary" className="w-fit mb-2 md:mb-3 text-[11px] md:text-sm">Iluminación</Badge>
+                  <Badge variant="secondary" className="w-fit mb-2 md:mb-3 text-[11px] md:text-sm text-slate-950">Iluminación</Badge>
                   <h3 className="text-lg md:text-2xl font-bold text-white mb-2 md:mb-4 leading-tight">Renová tus<br />ambientes</h3>
                   <span className="w-fit inline-flex items-center gap-1 text-white text-xs md:text-sm font-semibold">
                     Ver ofertas

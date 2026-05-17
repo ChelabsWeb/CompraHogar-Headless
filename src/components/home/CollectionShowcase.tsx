@@ -101,12 +101,12 @@ export function CollectionShowcase({ title, handle, description, bannerImage, ba
                                         </div>
                                     )}
                                     {priceAmount > 1000 && (
-                                        <span className="text-[10px] md:text-[11px] text-green-600 font-medium mb-1">
+                                        <span className="text-[10px] md:text-[11px] text-emerald-700 font-medium mb-1">
                                             12x ${installments} sin interés
                                         </span>
                                     )}
                                     {priceAmount > 2000 && (
-                                        <span className="inline-flex items-center text-[#00a650] text-[10px] font-bold w-fit bg-[#00a650]/8 px-1 py-0.5 rounded mb-1">
+                                        <span className="inline-flex items-center text-emerald-800 text-[10px] font-bold w-fit bg-[#00a650]/10 px-1 py-0.5 rounded mb-1">
                                             <Truck className="w-2.5 h-2.5 mr-0.5" /> Envío gratis
                                         </span>
                                     )}

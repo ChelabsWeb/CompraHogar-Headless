@@ -183,19 +183,25 @@ export function HeroCarousel() {
         <ChevronRight className="w-5 h-5" />
       </button>
 
-      {/* Dots */}
-      <div className="absolute bottom-5 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
+      {/* Dots — wrapper button is 28x28 to meet WCAG AA tap target; visual stays small */}
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center">
         {slides.map((_, i) => (
           <button
             key={i}
+            type="button"
             onClick={() => setCurrent(i)}
-            className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
-              i === current
-                ? "w-7 bg-secondary"
-                : "w-2 bg-white/40 hover:bg-white/60"
-            }`}
             aria-label={`Ir a slide ${i + 1}`}
-          />
+            aria-current={i === current ? "true" : undefined}
+            className="flex items-center justify-center w-7 h-7 cursor-pointer"
+          >
+            <span
+              className={`block h-2 rounded-full transition-all duration-300 ${
+                i === current
+                  ? "w-7 bg-secondary"
+                  : "w-2 bg-white/40 group-hover:bg-white/60"
+              }`}
+            />
+          </button>
         ))}
       </div>
     </div>

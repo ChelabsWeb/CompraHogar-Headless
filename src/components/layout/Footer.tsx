@@ -181,7 +181,7 @@ export function Footer() {
 
         {/* Payment methods */}
         <div className="flex flex-col items-center gap-3 mb-8 md:mb-10">
-          <h4 className="text-[11px] font-bold text-slate-400 tracking-widest uppercase">
+          <h4 className="text-[11px] font-bold text-slate-600 tracking-widest uppercase">
             Medios de pago
           </h4>
           <PaymentMethodIcons />
@@ -238,7 +238,7 @@ export function Footer() {
           </div>
 
           {/* Copyright */}
-          <p className="text-[12px] text-slate-400 font-medium order-1 md:order-2">
+          <p className="text-[12px] text-slate-600 font-medium order-1 md:order-2">
             © {new Date().getFullYear()} CompraHogar · Uruguay
           </p>
         </div>

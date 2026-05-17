@@ -354,7 +354,7 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
 
                     {/* Image counter */}
                     {media.length > 1 && (
-                        <div className="absolute bottom-3 right-3 z-20 bg-black/50 backdrop-blur-sm text-white text-xs font-medium px-2.5 py-1 rounded-full pointer-events-none">
+                        <div className="absolute bottom-3 right-3 z-20 bg-black/70 backdrop-blur-sm text-white text-xs font-medium px-2.5 py-1 rounded-full pointer-events-none">
                             {activeImageIndex + 1}/{media.length}
                         </div>
                     )}
@@ -363,7 +363,7 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                         Auto-dismiss a los 3s o cuando el usuario realmente desliza. */}
                     {media.length > 1 && (
                         <div
-                            className={`lg:hidden absolute bottom-3 left-3 z-20 bg-black/50 backdrop-blur-sm text-white text-xs font-medium px-2.5 py-1 rounded-full pointer-events-none flex items-center gap-1 transition-opacity duration-500 ${showSwipeHint && activeImageIndex === 0 ? "opacity-100" : "opacity-0"}`}
+                            className={`lg:hidden absolute bottom-3 left-3 z-20 bg-black/70 backdrop-blur-sm text-white text-xs font-medium px-2.5 py-1 rounded-full pointer-events-none flex items-center gap-1 transition-opacity duration-500 ${showSwipeHint && activeImageIndex === 0 ? "opacity-100" : "opacity-0"}`}
                             aria-hidden
                         >
                             <span>Deslizá</span>
@@ -478,7 +478,7 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                         <span className="text-[20px] mt-2 mr-1">$</span>
                         {Number(displayPrice?.amount || 0).toLocaleString("es-UY")}
                     </span>
-                    <span className="text-[16px] font-medium mt-1 text-green-600">
+                    <span className="text-[16px] font-medium mt-1 text-emerald-700">
                         en 12x ${(Number(displayPrice?.amount || 0) / 12).toLocaleString("es-UY", { maximumFractionDigits: 0 })} sin interés
                     </span>
                     <div className="mt-2 flex items-center justify-start">
@@ -549,7 +549,10 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                                             return (
                                                 <button
                                                     key={value}
+                                                    type="button"
                                                     onClick={() => handleOptionChange(option.name, value)}
+                                                    aria-label={`${option.name}: ${value}`}
+                                                    aria-pressed={isSelected}
                                                     className={`w-11 h-11 rounded-full border-2 transition-all p-0.5 ${isSelected ? 'border-primary' : 'border-slate-200 hover:border-slate-300'}`}
                                                 >
                                                     <div className="w-full h-full rounded-full border border-black/10" style={{ backgroundColor: bgColor }} />
@@ -561,8 +564,11 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                                         return (
                                             <Button
                                                 key={value}
+                                                type="button"
                                                 variant={isSelected ? "default" : "outline"}
                                                 onClick={() => handleOptionChange(option.name, value)}
+                                                aria-label={`${option.name}: ${value}`}
+                                                aria-pressed={isSelected}
                                                 className={`min-w-[44px] h-11 ${isSelected ? '' : 'text-slate-600'}`}
                                             >
                                                 {value}
@@ -578,12 +584,12 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                 {/* Quantity and Actions */}
                 <div className={`mt-auto flex flex-col gap-4 transition-colors ${isOutOfStock ? 'bg-slate-50 border border-slate-200 p-5 rounded-2xl shadow-sm' : 'bg-transparent border border-transparent p-0'}`}>
                     <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center py-2">
-                        <span className={`text-sm font-medium w-24 shrink-0 ${isOutOfStock ? 'text-slate-400' : 'text-slate-900'}`}>Cantidad</span>
+                        <span className={`text-sm font-medium w-24 shrink-0 ${isOutOfStock ? 'text-slate-500' : 'text-slate-900'}`}>Cantidad</span>
                         <div className={`${isOutOfStock ? 'opacity-50 pointer-events-none grayscale' : ''}`}>
                             <QuantitySelector value={quantity} onChange={setQuantity} min={1} max={10} disabled={isOutOfStock} />
                         </div>
                         {isOutOfStock ? (
-                            <Badge variant="destructive" className="bg-red-50 text-red-600 hover:bg-red-50 border-red-200 shadow-none font-semibold">AGOTADO</Badge>
+                            <Badge variant="destructive" className="bg-red-50 text-red-700 hover:bg-red-50 border-red-200 shadow-none font-semibold">AGOTADO</Badge>
                         ) : (
                             <span className="text-xs text-slate-500">Stock disponible</span>
                         )}
@@ -670,7 +676,7 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                     ) : (
                         <div className="flex flex-col gap-3 pt-2 border-t border-slate-200/60 mt-2">
                             <div>
-                                <h3 className="text-[15px] font-semibold text-slate-900 mb-1">¿Te avisamos cuando vuelva?</h3>
+                                <h2 className="text-[15px] font-semibold text-slate-900 mb-1">¿Te avisamos cuando vuelva?</h2>
                                 <p className="text-[13px] text-slate-500 mb-3 leading-relaxed">Dejanos tu email y te notificaremos apenas ingrese nuevo stock de esta variante.</p>
                             </div>
                             {backInStockSent ? (
