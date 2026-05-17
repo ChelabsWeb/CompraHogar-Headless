@@ -250,7 +250,7 @@ fbq('track', 'PageView');`,
             <ToastProvider>
               <CompareProvider>
                 <Header collections={collections} isLoggedIn={isLoggedIn} />
-                <main className="flex-1 w-full pt-[96px] lg:pt-[116px]">
+                <main className="flex-1 w-full pt-[96px] lg:pt-[128px]">
                   {children}
                 </main>
                 <Footer />
