@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
-import { shopifyFetch, getDealOfTheDay, getCollectionProducts } from "@/lib/shopify";
+import { shopifyFetch, getDealOfTheDay } from "@/lib/shopify";
 import { getProductsQuery } from "@/lib/queries";
 
 export const metadata: Metadata = {
@@ -11,7 +11,8 @@ export const metadata: Metadata = {
 };
 import { ProductGrid } from "@/components/shop/ProductGrid";
 import { ProductGridSkeleton } from "@/components/shop/ProductCardSkeleton";
-import { CollectionShowcase } from "@/components/home/CollectionShowcase";
+import { AsyncCollectionShowcase } from "@/components/home/AsyncCollectionShowcase";
+import { CollectionShowcaseSkeleton } from "@/components/home/CollectionShowcaseSkeleton";
 import Image from "next/image";
 import Link from "next/link";
 import { ShieldCheck, Truck, CreditCard, AlertCircle, Tag } from "lucide-react";
@@ -53,12 +54,7 @@ export default async function Home() {
   const cookieStore = await cookies();
   const isLoggedIn = !!cookieStore.get("customerAccessToken")?.value;
 
-  const [deal, herramientas, sanitaria, electricidad] = await Promise.all([
-    getDealOfTheDay(),
-    getCollectionProducts("herramientas-y-maquinaria", 8),
-    getCollectionProducts("sanitaria-y-griferia", 8),
-    getCollectionProducts("electricidad-e-iluminacion", 8),
-  ]);
+  const deal = await getDealOfTheDay();
   const dealPrice = deal ? parseFloat(deal.priceRange.minVariantPrice.amount) : 0;
   const dealOriginalPrice = deal?.compareAtPriceRange?.maxVariantPrice
     ? parseFloat(deal.compareAtPriceRange.maxVariantPrice.amount)
@@ -272,38 +268,31 @@ export default async function Home() {
               </Link>
             </div>
           </div>
-          {/* SECTION: Collection Showcases */}
+          {/* SECTION: Collection Showcases — streaming individual, cada uno
+              hace su propio fetch y se renderea cuando llega su data. El resto
+              de la home (hero, trust bar, categorias, promos) ya esta visible. */}
           <div className="mt-10 flex flex-col gap-8 md:gap-10">
-            {herramientas && herramientas.products?.edges?.length > 0 && (
-              <CollectionShowcase
-                title={herramientas.title}
-                handle={herramientas.handle}
-                description={herramientas.description}
+            <Suspense fallback={<CollectionShowcaseSkeleton />}>
+              <AsyncCollectionShowcase
+                handle="herramientas-y-maquinaria"
                 bannerImage="/hero-1.png"
                 bannerColor="from-amber-700 to-amber-900"
-                products={herramientas.products.edges}
               />
-            )}
-            {sanitaria && sanitaria.products?.edges?.length > 0 && (
-              <CollectionShowcase
-                title={sanitaria.title}
-                handle={sanitaria.handle}
-                description={sanitaria.description}
+            </Suspense>
+            <Suspense fallback={<CollectionShowcaseSkeleton />}>
+              <AsyncCollectionShowcase
+                handle="sanitaria-y-griferia"
                 bannerImage="/showcase-sanitaria.jpg"
                 bannerColor="from-sky-700 to-sky-900"
-                products={sanitaria.products.edges}
               />
-            )}
-            {electricidad && electricidad.products?.edges?.length > 0 && (
-              <CollectionShowcase
-                title={electricidad.title}
-                handle={electricidad.handle}
-                description={electricidad.description}
+            </Suspense>
+            <Suspense fallback={<CollectionShowcaseSkeleton />}>
+              <AsyncCollectionShowcase
+                handle="electricidad-e-iluminacion"
                 bannerImage="/showcase-electricidad.jpg"
                 bannerColor="from-yellow-600 to-yellow-800"
-                products={electricidad.products.edges}
               />
-            )}
+            </Suspense>
           </div>
 
         </Container>

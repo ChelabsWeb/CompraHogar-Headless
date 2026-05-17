@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import Script from "next/script";
 import { ChevronLeft, ChevronRight, ShieldCheck, ArrowRight, X, Zap, Play, Box, Loader2 } from "lucide-react";
 import { FavoriteButton } from "@/components/shop/FavoriteButton";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
@@ -196,20 +197,18 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
         if (node.mediaContentType === 'MODEL_3D') {
             const modelSource = node.sources?.find((s: ShopifyMediaSource) => s.format === 'glb') || node.sources?.[0];
             const ModelViewer = "model-viewer" as any;
+            // Script de model-viewer se carga UNA vez al top del componente
+            // via `hasModel3D` + Next.js <Script strategy="lazyOnload">.
             return (
-                <>
-                    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
-                    <ModelViewer
-                        src={modelSource?.url}
-                        alt={node.alt || product.title}
-                        auto-rotate="true"
-                        camera-controls="true"
-                        ar="true"
-                        shadow-intensity="1"
-                        style={{ width: '100%', height: '100%', backgroundColor: 'white' }}
-                    >
-                    </ModelViewer>
-                </>
+                <ModelViewer
+                    src={modelSource?.url}
+                    alt={node.alt || product.title}
+                    auto-rotate="true"
+                    camera-controls="true"
+                    ar="true"
+                    shadow-intensity="1"
+                    style={{ width: '100%', height: '100%', backgroundColor: 'white' }}
+                />
             );
         }
 
@@ -266,8 +265,20 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
     const unitName = product.tags?.some((tag: string) => tag.toLowerCase() === "rendimiento") ? "Litros" : "m²";
     const packagingName = product.tags?.some((tag: string) => tag.toLowerCase() === "rendimiento") ? "Lata" : "Caja";
 
+    // Solo se carga el script de model-viewer si el producto tiene un media 3D.
+    // strategy="lazyOnload" => se carga despues de window.onload para no
+    // bloquear LCP. ~150KB; sin esto se incluia inline en cada renderMedia.
+    const hasModel3D = media.some(({ node }) => node.mediaContentType === 'MODEL_3D');
+
     return (
         <div className={cn("w-full flex flex-col lg:flex-row bg-transparent text-slate-900", isQuickView ? "pb-4" : "pb-32 lg:pb-8")}>
+            {hasModel3D && (
+                <Script
+                    src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"
+                    type="module"
+                    strategy="lazyOnload"
+                />
+            )}
 
             {/* LADO IZQUIERDO: Galeria de Fotos Inmersiva */}
             <div className={cn("w-full lg:w-[55%] relative flex flex-col bg-transparent", isQuickView ? "p-5 pt-8 flex items-center justify-center" : "pb-6 lg:pb-0")}>
