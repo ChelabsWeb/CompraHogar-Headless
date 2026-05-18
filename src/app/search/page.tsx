@@ -125,7 +125,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         {hasResults ? (
           // ProductGrid expects a specific shape; we have edges so pass through.
           // Type is unknown[] because Shopify types are complex — ProductGrid accepts any edges.
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           <ProductGrid products={products as any} />
         ) : searchTerm ? (
           // Empty state with suggestions

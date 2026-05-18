@@ -71,7 +71,9 @@ export function CartProvider({ children, customerAccessToken }: { children: Reac
         setEstimatedShipping(shippingInfo?.rate ?? null);
     }, [department, subtotal]);
 
-    // Load Cart ID from local storage on mount
+    // Load Cart ID from local storage on mount. fetchCart/associateCustomer son
+    // closures locales del provider; agregarlas a deps generaria un re-render loop.
+    // Este effect es un "init from localStorage" intencionalmente atado solo a token.
     useEffect(() => {
         const storedCartId = localStorage.getItem("shopify_cart_id");
         if (storedCartId) {
@@ -85,6 +87,7 @@ export function CartProvider({ children, customerAccessToken }: { children: Reac
         } else {
             setIsCartLoading(false);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [customerAccessToken]);
 
     const associateCustomer = async (id: string, token: string) => {

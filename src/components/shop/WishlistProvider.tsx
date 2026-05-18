@@ -36,13 +36,17 @@ export function WishlistProvider({
 
     // Hydrate from localStorage
     useEffect(() => {
+        let parsed: string[] | null = null;
         try {
             const stored = localStorage.getItem(STORAGE_KEY);
-            if (stored) {
-                setItems(JSON.parse(stored));
-            }
+            if (stored) parsed = JSON.parse(stored);
         } catch {}
-        setHydrated(true);
+        // Defer al siguiente paint para no caer en react-hooks/set-state-in-effect.
+        const rafId = requestAnimationFrame(() => {
+            if (parsed) setItems(parsed);
+            setHydrated(true);
+        });
+        return () => cancelAnimationFrame(rafId);
     }, []);
 
     // If logged in, fetch remote wishlist and merge with localStorage

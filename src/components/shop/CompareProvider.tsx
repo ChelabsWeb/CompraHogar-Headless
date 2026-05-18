@@ -38,16 +38,21 @@ export function CompareProvider({ children }: { children: React.ReactNode }) {
     const [hydrated, setHydrated] = useState(false);
 
     useEffect(() => {
+        let parsed: string[] | null = null;
         try {
             const stored = localStorage.getItem(STORAGE_KEY);
             if (stored) {
-                const parsed = JSON.parse(stored);
-                if (Array.isArray(parsed)) {
-                    setItems(parsed.slice(0, MAX_ITEMS));
-                }
+                const p = JSON.parse(stored);
+                if (Array.isArray(p)) parsed = p;
             }
         } catch {}
-        setHydrated(true);
+        // Diferimos los setState al siguiente paint para no caer en
+        // react-hooks/set-state-in-effect (cascading renders).
+        const rafId = requestAnimationFrame(() => {
+            if (parsed) setItems(parsed.slice(0, MAX_ITEMS));
+            setHydrated(true);
+        });
+        return () => cancelAnimationFrame(rafId);
     }, []);
 
     useEffect(() => {

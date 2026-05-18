@@ -21,8 +21,10 @@ export function CompareBar() {
 
     useEffect(() => {
         if (items.length === 0) {
-            setProducts([]);
-            return;
+            // Diferimos el clear al siguiente paint para no caer en
+            // react-hooks/set-state-in-effect (cascading renders).
+            const rafId = requestAnimationFrame(() => setProducts([]));
+            return () => cancelAnimationFrame(rafId);
         }
         let cancelled = false;
         shopifyFetch({

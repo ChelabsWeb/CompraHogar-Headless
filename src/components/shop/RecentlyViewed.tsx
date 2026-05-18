@@ -35,13 +35,19 @@ export function RecentlyViewed({ excludeHandle }: { excludeHandle?: string }) {
     const [products, setProducts] = useState<RecentProduct[]>([]);
 
     useEffect(() => {
+        let next: RecentProduct[] | null = null;
         try {
             const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]") as RecentProduct[];
             const filtered = excludeHandle ? stored.filter((p) => p.handle !== excludeHandle) : stored;
-            setProducts(filtered.slice(0, 8));
+            next = filtered.slice(0, 8);
         } catch {
             // Silent fail
         }
+        if (!next) return;
+        const list = next;
+        // Defer al siguiente paint para no caer en react-hooks/set-state-in-effect.
+        const rafId = requestAnimationFrame(() => setProducts(list));
+        return () => cancelAnimationFrame(rafId);
     }, [excludeHandle]);
 
     if (products.length < 2) return null;
