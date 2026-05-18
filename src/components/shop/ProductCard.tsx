@@ -3,6 +3,7 @@
 import { memo } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { ImageOff } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { FavoriteButton } from "@/components/shop/FavoriteButton";
 import { QuickAddButton } from "@/components/shop/QuickAddButton";
@@ -51,8 +52,11 @@ function ProductCardInner({ product, priority = false }: ProductCardProps) {
               priority={priority}
             />
           ) : (
-            <div className="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center text-slate-300 font-medium text-xs">
-              CH
+            <div className="flex flex-col items-center justify-center gap-2 text-slate-300">
+              <ImageOff className="w-10 h-10 sm:w-12 sm:h-12" strokeWidth={1.25} />
+              <span className="text-[10px] uppercase tracking-wider font-medium text-slate-400">
+                Sin imagen
+              </span>
             </div>
           )}
 

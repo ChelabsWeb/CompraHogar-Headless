@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronRight, Truck } from "lucide-react";
+import { ChevronRight, Truck, ImageOff } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { FavoriteButton } from "@/components/shop/FavoriteButton";
 import { Badge } from "@/components/ui/badge";
@@ -80,7 +80,12 @@ export function CollectionShowcase({ title, handle, description, bannerImage, ba
                                             sizes="240px"
                                         />
                                     ) : (
-                                        <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-300 text-xs">CH</div>
+                                        <div className="flex flex-col items-center justify-center gap-1.5 text-slate-300">
+                                            <ImageOff className="w-9 h-9" strokeWidth={1.25} />
+                                            <span className="text-[10px] uppercase tracking-wider font-medium text-slate-400">
+                                                Sin imagen
+                                            </span>
+                                        </div>
                                     )}
                                     {hasDiscount && (
                                         <Badge className="absolute top-2 left-2 z-10 bg-secondary text-white border-none font-bold px-1.5 py-0.5 text-[10px]">

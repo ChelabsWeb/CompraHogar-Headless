@@ -8,6 +8,7 @@ const scriptSrc = [
   "https://www.googletagmanager.com",
   "https://ajax.googleapis.com",
   "https://cdn.judge.me",
+  "https://cdnwidget.judge.me",
   "https://connect.facebook.net",
 ]
   .filter(Boolean)
