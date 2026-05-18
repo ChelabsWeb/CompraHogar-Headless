@@ -1,46 +1,60 @@
 # Plan — CompraHogar
-_Última actualización: 2026-03-17_
+_Última actualización: 2026-05-17_
 
 ## Estado actual
 
-El proyecto está considerablemente más avanzado de lo que indica el CLAUDE.md (el cual estaba desactualizado). El scaffold inicial fue superado: existe una aplicación e-commerce funcional en estructura, con páginas completas, componentes UI ricos y lógica de Shopify conectada.
+E-commerce headless en avanzado estado. UI/UX pulido (a11y 100/100 Lighthouse, performance con streaming Suspense, lint sin errors). Integraciones externas pendientes.
 
 **Lo que está construido:**
-- Layout raíz con Header/Footer, CartProvider y autenticación por cookie (`customerAccessToken`)
-- Homepage completa: hero, trust bar, categorías, bento de promos, productos destacados via Shopify Storefront API
-- Listado de colecciones (`/collections/[handle]`): filtros por URL, paginación con cursor, sorting, sidebar con filtros de Shopify, drawer móvil, breadcrumbs, subcategorías jerárquicas
-- Página de producto (`/products/[handle]`): galería multimedia (imágenes, video MP4, modelo 3D via model-viewer), selector de variantes, carrito, calculadora de materiales (m²), calculadora de envío, tab descripción/ficha técnica/garantía, "Avisarme cuando vuelva" para out-of-stock, sticky buy box móvil, recomendaciones, breadcrumbs, metadata OG/Twitter
-- Cart completo: `CartProvider` con context, `CartSheet` (drawer lateral), add/update/remove, códigos de descuento y gift cards, asociación de carrito a cliente autenticado
-- Auth completo: login, registro, logout, recuperar contraseña (doble flujo: olvidé-password + token en URL), página de cuenta con historial de pedidos y dirección principal
-- Búsqueda predictiva en header (`PredictiveSearch`)
-- Página de búsqueda (`/search`)
-- MegaMenu y MobileMenu con fallback a mock data si Shopify no retorna colecciones
-- Analytics layer para GA4/GTM: `pushDatalayerEvent`, eventos `view_item` y `add_to_cart` implementados en ProductView y ProductPageTracker
-- Webhook endpoint (`/api/webhooks/route.ts`) estructurado pero con lógica placeholder
-- Páginas de contenido estático: sobre nosotros, envíos y entregas, devoluciones y garantías, política de privacidad, términos y condiciones
-- Página de cuenta con pedidos y dirección, protegida por token
-- Sistema de filtros URL-first con hook `useStoreFilters`
-- Jerarquía de colecciones en `lib/constants/collectionHierarchy.ts`
-- Componente `/ui-test/page.tsx` de prueba de componentes UI (debe eliminarse en producción)
+- Layout raíz con Header/Footer, providers (Cart/Wishlist/Compare), autenticación por cookie
+- Homepage con hero carousel, trust bar, categorías, promociones especiales, showcases por colección (lazy con Suspense individual), productos destacados
+- Listado de colecciones (`/collections/[handle]`): filtros URL-first, cursor pagination forward, sorting, sidebar Shopify, drawer móvil, breadcrumbs, jerarquía
+- Página de producto (`/products/[handle]`): galería multimedia (imágenes, video, 3D vía model-viewer con lazy load), variantes con `aria-pressed`, calculadora materiales m², calculadora envío, tabs descripción/ficha/garantía, back-in-stock, sticky CTA móvil, recomendaciones
+- Cart drawer (no route) con add/update/remove, descuentos, gift cards, asociación a cliente
+- Auth: login, registro, logout, recuperar contraseña doble flujo, sección `/cuenta/*` con dashboard, pedidos, direcciones
+- Búsqueda predictiva en header + página `/search` con SSR
+- MegaMenu desktop + MobileMenu sidebar tipo app con edge-swipe
+- Analytics GA4/GTM cableado (`pushDatalayerEvent` con `view_item` y `add_to_cart`)
+- Meta Pixel integrado (ViewContent, AddToCart)
+- Webhook endpoint estructurado (lógica placeholder)
+- Páginas de contenido estático
+- Sistema de comparación de productos con persistencia localStorage
+- Wishlist persistida (localStorage + sync remoto si logged in)
+- Recently Viewed
+- PWA con manifest, service worker, install hints — **deprecated: vamos a Capacitor**
+- Premium mobile pass: safe-area, bottom sheets, pull-to-refresh en collections, page transitions, predictive search fullscreen mobile, etc.
 
-**Bloqueantes reales confirmados:**
-- Sin `.env.local`: las variables `NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN` y `NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN` no están configuradas. El sitio no puede conectarse a Shopify sin ellas.
-- Reviews (`lib/reviews.ts`): retorna datos mock estáticos. No hay integración real con Judge.me u otro sistema.
-- Back-in-stock (`ProductView.tsx`): el handler `handleBackInStockSubmit` es un mock que hace `console.log` y `alert()`.
-- Webhook (`/api/webhooks/route.ts`): la lógica de ERP, CRM (Klaviyo) y email transaccional (Resend) son placeholders con `console.log`.
-- GTM: la capa de analytics (`lib/analytics.ts`) está lista pero el snippet de GTM no está inyectado en el layout.
-- "1024 vendidos" en ProductView: dato hardcodeado, no viene de Shopify.
-- Favoritos (estrella en ProductView): estado local sin persistencia, no conectado a Shopify Wishlists ni backend.
+**UI/UX cerrado en esta sesión (2026-05-17):**
+- Header desktop tape arreglado (`pt-[128px]`)
+- A11y Lighthouse 92 → **100/100** en home y PDP (badges, dots HeroCarousel, aria-pressed color picker, heading order, contraste micro-copy)
+- Performance: showcases lazy con Suspense + defer model-viewer
+- Lint: 4 errors `react-hooks/set-state-in-effect` resueltos con patrón `requestAnimationFrame`
+- CSP: `cdnwidget.judge.me` agregado a script-src
+- `middleware.ts` → `proxy.ts` (migración Next 16)
+- Placeholder mejorado para productos sin imagen
+
+**Bloqueantes reales (pendientes):**
+- Sin `.env.local`: variables `NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN` y `NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN` no configuradas en algunos entornos.
+- Reviews (`lib/reviews.ts`): datos mock. Sin integración real con Judge.me o metafields Shopify.
+- Back-in-stock (`ProductView.tsx`): handler mock con `console.log` y `alert()`.
+- Webhook (`/api/webhooks/route.ts`): ERP, CRM (Klaviyo), email (Resend) son placeholders.
 
 ## Próximos pasos (ordenados por prioridad)
 
-1. Configurar `.env.local` con las credenciales reales de Shopify (dominio + Storefront Access Token) para habilitar toda la integración existente.
-2. Inyectar el snippet de GTM en `layout.tsx` para activar el tracking GA4 ya implementado.
-3. Integrar sistema de reviews real (Judge.me o metafields de Shopify) reemplazando `lib/reviews.ts` mock.
-4. Implementar el endpoint back-in-stock real en `ProductView` (reemplazar `console.log`/`alert` por llamada a API o Klaviyo).
-5. Completar el webhook de Shopify en `/api/webhooks/route.ts` con la lógica real de ERP, CRM y email transaccional.
-6. Eliminar la página `/ui-test` antes del deploy a producción.
-7. Reemplazar "1024 vendidos" hardcodeado por dato real (metafield de Shopify o analytics).
-8. Persistir favoritos (wishlist) vinculada a la cuenta del cliente o localStorage estructurado.
-9. Configurar variable de entorno `NEXT_PUBLIC_SITE_URL` para las URLs canónicas SEO en collections.
-10. Agregar el snippet HMAC para validar autenticidad de los webhooks de Shopify (actualmente el endpoint no lo verifica).
+1. Configurar `.env.local` con credenciales reales de Shopify en cada entorno.
+2. Configurar `NEXT_PUBLIC_SITE_URL` para canónicas SEO.
+3. Integrar Judge.me real reemplazando `lib/reviews.ts` mock.
+4. Implementar back-in-stock real (Klaviyo o endpoint interno).
+5. Completar webhook Shopify con HMAC + lógica ERP/CRM/email.
+6. Conectar newsletter del footer a Klaviyo/Mailchimp.
+7. Implementar ShippingCalculator real por código postal.
+8. Paginación hacia atrás en colecciones (hoy solo `next`).
+9. Tipar `any` extendido en `layout.tsx`, `CartProvider.tsx`, `MegaMenu.tsx`.
+10. Tests E2E Playwright (carrito, checkout redirect, login/registro).
+11. CI/CD Vercel con preview por PR.
+12. Mover categorías hardcoded en `src/app/page.tsx` a `lib/constants/categories.ts`.
+13. **Iniciar migración a Capacitor** (plan en `docs/superpowers/plans/2026-05-16-medusa-migration.md` y futuro plan Capacitor).
+
+## Decisión estratégica pendiente
+
+- **Backend e-commerce**: Shopify Headless actual vs migración a Medusa.js v2 self-hosted. Plan completo en `docs/superpowers/plans/2026-05-16-medusa-migration.md`.
