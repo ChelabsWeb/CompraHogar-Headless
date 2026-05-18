@@ -45,19 +45,19 @@ export function CategoryShortcutItem({ label, href, icon: iconName, imageKey }: 
         {hasImage ? (
           <>
             <Image
-              src={`/categories/${imageKey}-off.jpg`}
+              src={`/categories/${imageKey}-off.png`}
               alt=""
               fill
               sizes="(max-width: 640px) 72px, (max-width: 1024px) 96px, 112px"
-              className="object-cover transition-opacity duration-300 group-hover:opacity-0"
+              className="object-contain transition-opacity duration-300 group-hover:opacity-0"
               aria-hidden="true"
             />
             <Image
-              src={`/categories/${imageKey}-on.jpg`}
+              src={`/categories/${imageKey}-on.png`}
               alt=""
               fill
               sizes="(max-width: 640px) 72px, (max-width: 1024px) 96px, 112px"
-              className="object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+              className="object-contain opacity-0 transition-opacity duration-300 group-hover:opacity-100"
               aria-hidden="true"
             />
           </>

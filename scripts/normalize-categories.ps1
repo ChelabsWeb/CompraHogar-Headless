@@ -14,11 +14,10 @@ $elongationThreshold = 1.6   # if H/W or W/H exceeds this, refine bbox to dense 
 $denseRatio = 0.4            # rows/cols with >= this fraction of bbox span are "dense"
 
 # Manual bbox overrides for images where automatic detection fails (e.g. subjects
-# with transparent/reflective parts that the white-tolerance check skips, like the
-# pendant lamp's glass bulb).
-$manualBBox = @{
-    "electricidad-off.jpg" = @{ X = 70; Y = 215; W = 135; H = 295 }
-}
+# with transparent/reflective parts that the white-tolerance check skips). Empty
+# by default; populate with @{ "filename.jpg" = @{ X = ...; Y = ...; W = ...; H = ... } }
+# if a specific image needs a forced bbox after visual review.
+$manualBBox = @{}
 
 function Get-Bytes {
     param([System.Drawing.Bitmap]$bmp)
