@@ -19,6 +19,7 @@ describe("useUserLocation", () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue({
+        ok: true,
         json: () => Promise.resolve({ department: "Montevideo" }),
       })
     );
@@ -33,6 +34,7 @@ describe("useUserLocation", () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue({
+        ok: true,
         json: () => Promise.resolve({ department: null }),
       })
     );
@@ -45,6 +47,22 @@ describe("useUserLocation", () => {
 
   it("returns null department when fetch rejects", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network")));
+
+    const { result } = renderHook(() => useUserLocation(), { wrapper });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    expect(result.current.department).toBeNull();
+  });
+
+  it("returns null department when /api/location returns non-2xx", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 500,
+        json: () => Promise.resolve({ error: "boom" }),
+      })
+    );
 
     const { result } = renderHook(() => useUserLocation(), { wrapper });
 
