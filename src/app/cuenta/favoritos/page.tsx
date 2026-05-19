@@ -4,25 +4,20 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { Heart } from "lucide-react";
 import { useWishlist } from "@/components/shop/WishlistProvider";
-import { useCart } from "@/components/cart/CartProvider";
 import { GlassButton } from "@/components/ui/glass-button";
 import { shopifyFetch } from "@/lib/shopify";
 import { getProductsByIdsQuery } from "@/lib/customer";
 import { AccountSectionHeader } from "@/components/cuenta/AccountSectionHeader";
 import { AccountCard } from "@/components/cuenta/AccountCard";
-import {
-  WishlistCard,
-  WishlistCardSkeleton,
-  type WishlistCardProduct,
-} from "@/components/shop/WishlistCard";
+import { ProductCard } from "@/components/shop/ProductCard";
+import { ProductCardSkeleton } from "@/components/shop/ProductCardSkeleton";
+import type { ShopifyProduct } from "@/lib/types";
 
 export default function FavoritosPage() {
   const { items } = useWishlist();
-  const { addToCart, setIsCartOpen } = useCart();
-  const [products, setProducts] = useState<WishlistCardProduct[]>([]);
+  const [products, setProducts] = useState<ShopifyProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
-  const [addingToCart, setAddingToCart] = useState<string | null>(null);
 
   const fetchProducts = useCallback(async (ids: string[]) => {
     if (ids.length === 0) {
@@ -39,8 +34,9 @@ export default function FavoritosPage() {
         query: getProductsByIdsQuery,
         variables: { ids },
       });
-      const fetched: WishlistCardProduct[] =
-        body.data?.nodes?.filter(Boolean) || [];
+      const fetched: ShopifyProduct[] = (body.data?.nodes ?? []).filter(
+        Boolean
+      );
       setProducts(fetched);
     } catch (error) {
       console.error("Error fetching wishlist products:", error);
@@ -54,21 +50,6 @@ export default function FavoritosPage() {
   useEffect(() => {
     fetchProducts(items);
   }, [items, fetchProducts]);
-
-  const handleAddToCart = async (product: WishlistCardProduct) => {
-    const variantId = product.variants?.edges?.[0]?.node?.id;
-    if (!variantId) return;
-
-    setAddingToCart(product.id);
-    try {
-      await addToCart(variantId, 1);
-      setIsCartOpen(true);
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-    } finally {
-      setAddingToCart(null);
-    }
-  };
 
   const count = items.length;
   const description =
@@ -102,18 +83,13 @@ export default function FavoritosPage() {
       {loading ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {Array.from({ length: count || 4 }).map((_, i) => (
-            <WishlistCardSkeleton key={i} />
+            <ProductCardSkeleton key={i} />
           ))}
         </div>
       ) : products.length > 0 ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {products.map((product) => (
-            <WishlistCard
-              key={product.id}
-              product={product}
-              isAdding={addingToCart === product.id}
-              onAddToCart={handleAddToCart}
-            />
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
       ) : null}
