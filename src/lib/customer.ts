@@ -474,14 +474,21 @@ export const getProductsByIdsQuery = `
             currencyCode
           }
         }
+        compareAtPriceRange {
+          maxVariantPrice {
+            amount
+            currencyCode
+          }
+        }
         featuredImage {
           url
           altText
         }
-        variants(first: 1) {
+        variants(first: 10) {
           edges {
             node {
               id
+              availableForSale
             }
           }
         }
