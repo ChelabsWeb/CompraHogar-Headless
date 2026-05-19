@@ -161,16 +161,7 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
                 }} />
                 <ProductView product={product} />
                 
-                <ProductViewTracker
-                    product={{
-                        id: product.id,
-                        handle: product.handle,
-                        title: product.title,
-                        price: Number(product.priceRange?.minVariantPrice?.amount || 0),
-                        image: productImage,
-                        imageAlt: product.title,
-                    }}
-                />
+                <ProductViewTracker product={{ id: product.id }} />
 
                 {recommendations.length > 0 && (
                     <div className="mt-8 lg:mt-12">
