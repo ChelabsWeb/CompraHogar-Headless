@@ -31,10 +31,10 @@ function ProductCardInner({ product, priority = false }: ProductCardProps) {
 
   const heroImage = product.featuredImage ?? product.images?.edges?.[0]?.node;
 
-  const variants = product.variants?.edges?.map((e: any) => e.node) ?? [];
+  const variants = product.variants?.edges?.map((e) => e.node) ?? [];
   const isSoldOut =
     variants.length > 0 &&
-    variants.every((v: any) => v.availableForSale === false);
+    variants.every((v) => v.availableForSale === false);
 
   const installmentLabel =
     priceAmount > INSTALLMENT_THRESHOLD
