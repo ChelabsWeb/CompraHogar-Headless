@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { shopifyFetch } from "@/lib/shopify";
 import { getShippingRate } from "@/lib/constants/shippingRates";
+import { isCheckoutEnabled } from "@/lib/config/storeStatus";
 import { 
     createCartMutation, 
     addToCartMutation, 
@@ -107,7 +108,7 @@ export function CartProvider({ children, customerAccessToken }: { children: Reac
     const parseCartData = (cart: any) => {
         if (!cart) return;
 
-        setCheckoutUrl(cart.checkoutUrl);
+        setCheckoutUrl(isCheckoutEnabled() ? cart.checkoutUrl : null);
         setTotalQuantity(cart.totalQuantity || 0);
         setSubtotal(parseFloat(cart.cost?.subtotalAmount?.amount || "0"));
 
@@ -174,7 +175,7 @@ export function CartProvider({ children, customerAccessToken }: { children: Reac
                 });
                 const newCheckoutUrl = body?.data?.cartLinesAdd?.cart?.checkoutUrl;
                 parseCartData(body?.data?.cartLinesAdd?.cart);
-                return newCheckoutUrl;
+                return isCheckoutEnabled() ? newCheckoutUrl : undefined;
             } else {
                 // Create new cart
                 const { body } = await shopifyFetch({
@@ -191,7 +192,7 @@ export function CartProvider({ children, customerAccessToken }: { children: Reac
                     setCartId(newCart.id);
                     localStorage.setItem("shopify_cart_id", newCart.id);
                     parseCartData(newCart);
-                    return newCart.checkoutUrl;
+                    return isCheckoutEnabled() ? newCart.checkoutUrl : undefined;
                 }
             }
         } catch (error) {
