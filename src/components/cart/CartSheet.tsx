@@ -270,18 +270,19 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                                         size="lg"
                                         className="w-full font-semibold rounded-xl h-[48px]"
                                         disabled
+                                        aria-describedby="checkout-disabled-msg"
                                     >
                                         <Lock className="w-4 h-4 mr-2" />
                                         Pago en construcción
                                     </Button>
-                                    <p className="text-xs text-muted-foreground text-center leading-relaxed px-2">
+                                    <p id="checkout-disabled-msg" className="text-xs text-muted-foreground text-center leading-relaxed px-2">
                                         Estamos terminando de habilitar el pago online. Mientras tanto, escribinos y coordinamos tu compra al instante.
                                     </p>
                                     <a
                                         href={whatsappCheckoutUrl}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center justify-center gap-2 w-full h-[48px] rounded-xl bg-[#25D366] hover:bg-[#20BD5A] text-white font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                                        className="inline-flex items-center justify-center gap-2 w-full h-[48px] rounded-xl bg-[#25D366] hover:bg-[#20BD5A] text-white font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                                     >
                                         <MessageCircle className="w-4 h-4" />
                                         Coordinar compra por WhatsApp
