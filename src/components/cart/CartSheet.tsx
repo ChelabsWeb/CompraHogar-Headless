@@ -1,7 +1,7 @@
 "use client";
 
 import { Drawer } from "@/components/ui/drawer";
-import { Trash2, Plus, Minus, ShieldCheck, ShoppingCart } from "lucide-react";
+import { Trash2, Plus, Minus, ShieldCheck, ShoppingCart, Lock, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GlassButton } from "@/components/ui/glass-button";
 import { Separator } from "@/components/ui/separator";
@@ -9,6 +9,8 @@ import Image from "next/image";
 import { useState } from "react";
 import { useCart } from "@/components/cart/CartProvider";
 import { FREE_SHIPPING_THRESHOLD } from "@/lib/constants/shippingRates";
+import { isCheckoutEnabled } from "@/lib/config/storeStatus";
+import { buildWhatsAppUrl, buildCartWhatsAppMessage } from "@/lib/constants/contact";
 
 interface CartDrawerProps {
     isOpen: boolean;
@@ -37,6 +39,13 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
     const progress = Math.min((subtotal / FREE_SHIPPING_THRESHOLD) * 100, 100);
     const amountLeft = FREE_SHIPPING_THRESHOLD - subtotal;
     const totalEstimated = subtotal + (estimatedShipping || 0);
+    const checkoutEnabled = isCheckoutEnabled();
+    const whatsappCheckoutUrl = buildWhatsAppUrl(
+        buildCartWhatsAppMessage(
+            items.map((i) => ({ productTitle: i.productTitle, quantity: i.quantity })),
+            `$${totalEstimated.toLocaleString(LOCALE)}`,
+        ),
+    );
 
     const drawerTitle = items.length > 0
         ? `Mi carrito · ${itemCount} ${itemCount === 1 ? "ítem" : "ítems"}`
@@ -237,23 +246,48 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                         </div>
 
                         <div className="grid gap-2.5">
-                            <Button
-                                size="lg"
-                                className="w-full font-semibold rounded-xl h-[48px]"
-                                onClick={() => {
-                                    if (checkoutUrl) window.location.href = checkoutUrl;
-                                }}
-                                disabled={isCartLoading || !checkoutUrl}
-                            >
-                                {checkoutUrl ? (
-                                    <>
-                                        <ShieldCheck className="w-4 h-4 mr-2" />
-                                        Finalizar compra
-                                    </>
-                                ) : (
-                                    <span>Preparando checkout...</span>
-                                )}
-                            </Button>
+                            {checkoutEnabled ? (
+                                <Button
+                                    size="lg"
+                                    className="w-full font-semibold rounded-xl h-[48px]"
+                                    onClick={() => {
+                                        if (checkoutUrl) window.location.href = checkoutUrl;
+                                    }}
+                                    disabled={isCartLoading || !checkoutUrl}
+                                >
+                                    {checkoutUrl ? (
+                                        <>
+                                            <ShieldCheck className="w-4 h-4 mr-2" />
+                                            Finalizar compra
+                                        </>
+                                    ) : (
+                                        <span>Preparando checkout...</span>
+                                    )}
+                                </Button>
+                            ) : (
+                                <>
+                                    <Button
+                                        size="lg"
+                                        className="w-full font-semibold rounded-xl h-[48px]"
+                                        disabled
+                                    >
+                                        <Lock className="w-4 h-4 mr-2" />
+                                        Pago en construcción
+                                    </Button>
+                                    <p className="text-xs text-muted-foreground text-center leading-relaxed px-2">
+                                        Estamos terminando de habilitar el pago online. Mientras tanto, escribinos y coordinamos tu compra al instante.
+                                    </p>
+                                    <a
+                                        href={whatsappCheckoutUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center justify-center gap-2 w-full h-[48px] rounded-xl bg-[#25D366] hover:bg-[#20BD5A] text-white font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                                    >
+                                        <MessageCircle className="w-4 h-4" />
+                                        Coordinar compra por WhatsApp
+                                    </a>
+                                </>
+                            )}
                             <Button
                                 variant="outline"
                                 size="lg"
