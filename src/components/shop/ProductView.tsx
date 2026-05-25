@@ -22,6 +22,7 @@ import { InfoDrawer } from "@/components/shared/InfoDrawer";
 import { ProductImageLightbox } from "@/components/shop/ProductImageLightbox";
 import type { ShopifyProduct, ShopifyMediaNode, ShopifyMediaSource, ShopifySelectedOption, ShopifyProductOption, ShopifyVariant } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { isCheckoutEnabled } from "@/lib/config/storeStatus";
 
 interface ProductViewProps {
     product: ShopifyProduct;
@@ -31,6 +32,7 @@ interface ProductViewProps {
 
 export function ProductView({ product, isQuickView = false, onClose }: ProductViewProps) {
     const { addToCart, isCartLoading, checkoutUrl } = useCart();
+    const checkoutEnabled = isCheckoutEnabled();
     // Use media.edges if available, otherwise fallback to images.edges or featuredImage (e.g. in QuickView from grid data)
     const mediaRaw = product.media?.edges || [];
     const media: { node: ShopifyMediaNode }[] = mediaRaw.length > 0
@@ -648,24 +650,26 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
 
                     {!isOutOfStock ? (
                         <div className="hidden lg:flex flex-col gap-2 relative">
-                            <Button
-                                size={isQuickView ? "default" : "lg"}
-                                className={cn(
-                                    "w-full text-base font-semibold h-[48px] rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm transition-all",
-                                    isVariantChanging && "opacity-80"
-                                )}
-                                onClick={async () => {
-                                    if (currentVariant?.id) {
-                                        const url = await addToCart(currentVariant.id, quantity);
-                                        if (url) window.location.href = url;
-                                        else if (checkoutUrl) window.location.href = checkoutUrl;
-                                        else setIsCartOpen(true);
-                                    }
-                                }}
-                                disabled={isCartLoading || !currentVariant?.id || isVariantChanging}
-                            >
-                                {isVariantChanging ? <Loader2 className="w-5 h-5 animate-spin" /> : "Comprar ahora"}
-                            </Button>
+                            {checkoutEnabled && (
+                                <Button
+                                    size={isQuickView ? "default" : "lg"}
+                                    className={cn(
+                                        "w-full text-base font-semibold h-[48px] rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm transition-all",
+                                        isVariantChanging && "opacity-80"
+                                    )}
+                                    onClick={async () => {
+                                        if (currentVariant?.id) {
+                                            const url = await addToCart(currentVariant.id, quantity);
+                                            if (url) window.location.href = url;
+                                            else if (checkoutUrl) window.location.href = checkoutUrl;
+                                            else setIsCartOpen(true);
+                                        }
+                                    }}
+                                    disabled={isCartLoading || !currentVariant?.id || isVariantChanging}
+                                >
+                                    {isVariantChanging ? <Loader2 className="w-5 h-5 animate-spin" /> : "Comprar ahora"}
+                                </Button>
+                            )}
                             <Button
                                 variant="outline"
                                 size={isQuickView ? "default" : "lg"}
@@ -826,24 +830,26 @@ export function ProductView({ product, isQuickView = false, onClose }: ProductVi
                     transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                     className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-slate-200/60 p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] z-[100] shadow-[0_-4px_16px_rgba(0,0,0,0.08)] flex flex-col gap-2"
                 >
-                    <Button
-                        size="lg"
-                        className={cn(
-                            "w-full h-[48px] text-base font-semibold rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-all",
-                            isVariantChanging && "opacity-80"
-                        )}
-                        onClick={async () => {
-                            if (currentVariant?.id) {
-                                const url = await addToCart(currentVariant.id, quantity);
-                                if (url) window.location.href = url;
-                                else if (checkoutUrl) window.location.href = checkoutUrl;
-                                else setIsCartOpen(true);
-                            }
-                        }}
-                        disabled={isCartLoading || !currentVariant?.id || isVariantChanging}
-                    >
-                        {isVariantChanging ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Comprar ahora"}
-                    </Button>
+                    {checkoutEnabled && (
+                        <Button
+                            size="lg"
+                            className={cn(
+                                "w-full h-[48px] text-base font-semibold rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-all",
+                                isVariantChanging && "opacity-80"
+                            )}
+                            onClick={async () => {
+                                if (currentVariant?.id) {
+                                    const url = await addToCart(currentVariant.id, quantity);
+                                    if (url) window.location.href = url;
+                                    else if (checkoutUrl) window.location.href = checkoutUrl;
+                                    else setIsCartOpen(true);
+                                }
+                            }}
+                            disabled={isCartLoading || !currentVariant?.id || isVariantChanging}
+                        >
+                            {isVariantChanging ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Comprar ahora"}
+                        </Button>
+                    )}
                     <Button
                         size="lg"
                         variant="outline"
