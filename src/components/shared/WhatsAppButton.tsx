@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import { X } from "lucide-react";
+import { buildWhatsAppUrl } from "@/lib/constants/contact";
 
-const WHATSAPP_NUMBER = "59896244003";
 const DEFAULT_MESSAGE = "Hola! Tengo una consulta sobre un producto en CompraHogar.";
 
 export function WhatsAppButton() {
     const [isTooltipVisible, setIsTooltipVisible] = useState(true);
 
-    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(DEFAULT_MESSAGE)}`;
+    const whatsappUrl = buildWhatsAppUrl(DEFAULT_MESSAGE);
 
     return (
         <div className="fixed bottom-safe-offset-5 right-5 z-[100] flex items-end gap-2">
